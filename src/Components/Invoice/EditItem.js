@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, TextInput, Label, Checkbox, Button } from 'flowbite-react';
+import {classifyServiceByItemName} from "../../Service/ItemClassificationService"
 
 export function EditItem({ eItem, onSave, onDelete }) {
   const [item, setItem] = useState(
@@ -39,6 +40,18 @@ export function EditItem({ eItem, onSave, onDelete }) {
       amount: nexItem.quantity * nexItem.unitPrice
     }
     setItem(nexxItem)
+  }
+
+  const onItemNameBlur = (e) => {
+    console.log("Classify the service by service name %s", e.target.value)
+    classifyServiceByItemName(e.target.value)
+      .then((srv) => {
+        const nexItem = {
+          ...item,
+          service: srv,
+        }
+        setItem(nexItem)
+      })
   }
 
   const onRemberForLaterUseChange = (e) => {
@@ -92,6 +105,7 @@ export function EditItem({ eItem, onSave, onDelete }) {
                 required={true}
                 value={item.itemName}
                 onChange={onValueChange}
+                onBlur={onItemNameBlur}
               />
             </div>
             <div>
@@ -143,6 +157,21 @@ export function EditItem({ eItem, onSave, onDelete }) {
                 placeholder="1"
                 required={true}
                 value={item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                readOnly={true}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="service"
+                  value="Service"
+                />
+              </div>
+              <TextInput
+                id="service"
+                placeholder="FOOD"
+                required={true}
+                value={item.service}
                 readOnly={true}
               />
             </div>

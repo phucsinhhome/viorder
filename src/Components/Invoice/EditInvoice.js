@@ -22,7 +22,8 @@ export const EditInvoice = () => {
           "itemName": "",
           "unitPrice": 0,
           "quantity": 0,
-          "amount": 0
+          "amount": 0,
+          "service": "FOOD"
         }
       ]
     }
@@ -240,6 +241,7 @@ export const EditInvoice = () => {
                 <th class="px-4 py-2">Unit Price</th>
                 <th class="px-4 py-2">Quantity</th>
                 <th class="px-4 py-2">Amount</th>
+                <th class="px-4 py-2">Service</th>
               </tr>
             </thead>
             <tbody>
@@ -250,6 +252,7 @@ export const EditInvoice = () => {
                     <td class="border px-4 py-2 text-right">{item.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
                     <td class="border px-4 py-2 text-right">{item.quantity}</td>
                     <td class="border px-4 py-2 text-right">{item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
+                    <td class="border px-4 py-2">{item.service}</td>
                     <td class="border px-4 py-2">{<EditItem eItem={item} onSave={handleSaveItem} onDelete={handleDeleteItem} />}</td>
                   </tr>
                 )
@@ -259,6 +262,7 @@ export const EditInvoice = () => {
                 <td class="border px-4 py-2 text-right"></td>
                 <td class="border px-4 py-2 text-right"></td>
                 <td class="border px-4 py-2 text-right">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
+                <td class="border px-4 py-2 text-right"></td>
                 <td class="border px-4 py-2 text-right"></td>
               </tr>
             </tbody>
