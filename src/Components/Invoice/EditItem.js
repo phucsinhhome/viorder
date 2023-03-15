@@ -80,9 +80,7 @@ export function EditItem({ eItem, onSave, onDelete }) {
 
   return (
     <div>
-      <Button onClick={onClick}>
-        Edit
-      </Button>
+      <span onClick={onClick}>Edit</span>
       <Modal
         show={isShown}
         size="md"

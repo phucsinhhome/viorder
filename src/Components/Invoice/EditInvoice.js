@@ -7,6 +7,7 @@ import { TextInput, Label } from 'flowbite-react';
 
 import { AddItem } from "./AddItem";
 import { SelectIssuer } from "./SelectIssuer";
+import { Table } from "flowbite-react";
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
@@ -122,7 +123,7 @@ export const EditInvoice = () => {
       </div>
       <form class="flex flex-wrap mx-1">
         {/** First Column */}
-        <div class="w-full md:w-1/2 mx-1 mb-6">
+        <div class="w-full md:w-1/2 px-1 mb-6">
           <div class="flex flex-wrap -mx-3 mb-6">
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
@@ -233,41 +234,48 @@ export const EditInvoice = () => {
           </div>
         </div>
         {/** Second Column */}
-        <div class="w-full md:w-1/2 mx-1 mb-6">
-          <table class="table-auto">
-            <thead>
-              <tr>
-                <th class="px-4 py-2">Item Name</th>
-                <th class="px-4 py-2">Unit Price</th>
-                <th class="px-4 py-2">Quantity</th>
-                <th class="px-4 py-2">Amount</th>
-                <th class="px-4 py-2">Service</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div class="w-full md:w-1/2 px-1 mb-6">
+          <Table hoverable={true}>
+            <Table.Head>
+              <Table.HeadCell>Item Name</Table.HeadCell>
+              <Table.HeadCell>Unit Price</Table.HeadCell>
+              <Table.HeadCell>Quantity</Table.HeadCell>
+              <Table.HeadCell>Amount</Table.HeadCell>
+              <Table.HeadCell>Service</Table.HeadCell>
+              <Table.HeadCell>
+                <span className="sr-only">
+                  Edit
+                </span>
+              </Table.HeadCell>
+            </Table.Head>
+            <Table.Body className="divide-y">
               {invoice.items.map((item) => {
                 return (
-                  <tr class="bg-gray-100" key={item.id}>
-                    <td class="border px-4 py-2">{item.itemName}</td>
-                    <td class="border px-4 py-2 text-right">{item.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                    <td class="border px-4 py-2 text-right">{item.quantity}</td>
-                    <td class="border px-4 py-2 text-right">{item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                    <td class="border px-4 py-2">{item.service}</td>
-                    <td class="border px-4 py-2">{<EditItem eItem={item} onSave={handleSaveItem} onDelete={handleDeleteItem} />}</td>
-                  </tr>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      {item.itemName}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.quantity}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.service}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {<EditItem eItem={item} onSave={handleSaveItem} onDelete={handleDeleteItem} />}
+                    </Table.Cell>
+                  </Table.Row>
                 )
               })}
-              <tr class="bg-gray-100 font-bold">
-                <td class="border px-4 py-2">Sub Total</td>
-                <td class="border px-4 py-2 text-right"></td>
-                <td class="border px-4 py-2 text-right"></td>
-                <td class="border px-4 py-2 text-right">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                <td class="border px-4 py-2 text-right"></td>
-                <td class="border px-4 py-2 text-right"></td>
-              </tr>
-            </tbody>
-          </table>
-          
+            </Table.Body>
+          </Table>
+
           <div class="py-2 px-2">
             <AddItem fncAddItem={handleAddItem}></AddItem>
           </div>
