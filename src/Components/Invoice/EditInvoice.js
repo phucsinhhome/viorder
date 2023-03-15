@@ -267,6 +267,7 @@ export const EditInvoice = () => {
               </tr>
             </tbody>
           </table>
+          
           <div class="py-2 px-2">
             <AddItem fncAddItem={handleAddItem}></AddItem>
           </div>

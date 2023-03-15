@@ -2,9 +2,9 @@ const requestOptions = {
   method: 'GET'
 }
 
-const listLatestInvoices = () => {
+const listLatestInvoices = (pageNumber, pageSize) => {
   console.info("Fetching report from backend")
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/api/invoice/list?max=15`, requestOptions)
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/api/invoice/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
     .then(response => response.json())
 }
 
