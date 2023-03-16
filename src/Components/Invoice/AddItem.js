@@ -51,55 +51,6 @@ export function AddItem({ fncAddItem }) {
                 })
               }
             </ListGroup>
-            {/* <div>
-              {
-                Object.entries(itemByGroup).map((key, value) => {
-                  return (
-                    <div>
-                      <div class="uppercase text-xs font-bold pb-1">{key}</div>
-                    </div>
-                  )
-                })
-              }
-            </div> */}
-            {/* <div class="uppercase text-xs font-bold pb-1">Room List</div>
-            <ListGroup>
-              {
-                rooms.map((room) => {
-                  return (
-                    <ListGroup.Item key={room.id} onClick={handleItemSelection} value={room.id}>
-                      {room.name + " - " + room.price}
-                    </ListGroup.Item>
-                  )
-                })
-              }
-            </ListGroup>
-
-            <div class="uppercase text-xs font-bold pt-4 pb-1">Food</div>
-            <ListGroup>
-              {
-                foods.map((food) => {
-                  return (
-                    <ListGroup.Item key={food.id} onClick={handleItemSelection}>
-                      {food.name + " - " + food.price}
-                    </ListGroup.Item>
-                  )
-                })
-              }
-            </ListGroup>
-
-            <div class="uppercase text-xs font-bold pt-4 pb-1">Tour</div>
-            <ListGroup>
-              {
-                tours.map((tour) => {
-                  return (
-                    <ListGroup.Item key={tour.id} onClick={handleItemSelection}>
-                      {tour.name + " - " + tour.price}
-                    </ListGroup.Item>
-                  )
-                })
-              }
-            </ListGroup> */}
           </div>
         </Modal.Body>
       </Modal>
