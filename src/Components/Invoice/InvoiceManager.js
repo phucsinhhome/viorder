@@ -30,7 +30,7 @@ export function InvoiceManager() {
 
   useEffect(() => {
     fetchData(pagination.pageNumber, pagination.pageSize)
-  }, []);
+  }, [pagination]);
 
   const fetchData = (pageNumber, pageSize) => {
     listLatestInvoices(pageNumber, pageSize)
