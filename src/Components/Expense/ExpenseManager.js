@@ -34,7 +34,7 @@ export function ExpenseManager() {
 
   useEffect(() => {
     fetchData(pagination.pageNumber, pagination.pageSize)
-  }, []);
+  }, [pagination]);
 
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
