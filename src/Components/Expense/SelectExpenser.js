@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, ListGroup, TextInput } from 'flowbite-react';
 import { getUsers } from "../../db/users";
 
-export const SelectIssuer = ({ is, fncChangeIssuer }) => {
+export const SelectExpenser = ({ is, fncChangeIssuer }) => {
 
   const [isShown, setShow] = useState(false)
   const onClick = () => {
