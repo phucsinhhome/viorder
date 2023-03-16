@@ -4,6 +4,7 @@ import { getExpense } from "../../db/expense";
 import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
 import { SelectExpenser } from "./SelectExpenser";
+import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
@@ -34,6 +35,18 @@ export const EditExpense = () => {
       [e.target.id]: e.target.value
     }
     setExpense(exp)
+  }
+
+  const onItemNameLeave = (e)=>{
+    console.log("Item name input completed with value %s", expense.itemName)
+    classifyServiceByItemName(expense.itemName)
+    .then(serv=>{
+      const exp = {
+        ...expense,
+        service: serv
+      }
+      setExpense(exp)
+    })
   }
 
   const onExpenserChange = (member) => {
@@ -74,6 +87,7 @@ export const EditExpense = () => {
                 required={true}
                 value={expense.itemName}
                 onChange={onDataChange}
+                onBlur={onItemNameLeave}
               />
             </div>
           </div>
