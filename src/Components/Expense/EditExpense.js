@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getExpense } from "../../db/expense";
+import { getExpense, saveExpense } from "../../db/expense";
 import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
@@ -62,11 +62,11 @@ export const EditExpense = () => {
   }
 
   const onExpenserChange = (member) => {
-    console.log("Selected: %s", member.expenserId)
+    console.log("Selected expenser: %s", member.id)
     const exp = {
       ...expense,
-      expenserId: member.expenserId,
-      expenserName: member.expenserName
+      expenserId: member.id,
+      expenserName: member.name
     }
 
     setExpense(exp)
@@ -75,6 +75,11 @@ export const EditExpense = () => {
   const handleSaveExpense = () => {
     console.info("Saving expense")
     console.log(expense)
+    saveExpense(expense)
+      .then(resp=>{
+        console.log("Save expense %s successully",expense.id)
+        console.log(resp)
+      })
   }
 
   return (

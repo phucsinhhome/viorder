@@ -78,11 +78,11 @@ export const EditInvoice = () => {
   }
 
   const onIssuerChange = (member) => {
-    console.log("Selected: %s", member.issuerId)
+    console.log("Selected issuer: %s", member.id)
     const inv = {
       ...invoice,
-      issuerId: member.issuerId,
-      issuer: member.issuer
+      issuerId: member.id,
+      issuer: member.name
     }
 
     setInvoice(inv)
