@@ -3,8 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { getExpense } from "../../db/expense";
 import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
-import { SelectExpenser } from "./SelectExpenser";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
+import { SelectUser } from "../User/SelectUser";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
@@ -36,17 +36,29 @@ export const EditExpense = () => {
     }
     setExpense(exp)
   }
+  const onAmountChange = (e) => {
+    const exp = {
+      ...expense,
+      [e.target.id]: e.target.value
+    }
 
-  const onItemNameLeave = (e)=>{
+    const exp2 = {
+      ...exp,
+      amount: exp.unitPrice * exp.quantity
+    }
+    setExpense(exp2)
+  }
+
+  const onItemNameLeave = (e) => {
     console.log("Item name input completed with value %s", expense.itemName)
     classifyServiceByItemName(expense.itemName)
-    .then(serv=>{
-      const exp = {
-        ...expense,
-        service: serv
-      }
-      setExpense(exp)
-    })
+      .then(serv => {
+        const exp = {
+          ...expense,
+          service: serv
+        }
+        setExpense(exp)
+      })
   }
 
   const onExpenserChange = (member) => {
@@ -106,7 +118,7 @@ export const EditExpense = () => {
                 value={expense.unitPrice}
                 readOnly={false}
                 type="number"
-                onChange={onDataChange}
+                onChange={onAmountChange}
               />
             </div>
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -123,7 +135,7 @@ export const EditExpense = () => {
                 value={expense.quantity}
                 readOnly={false}
                 type="number"
-                onChange={onDataChange}
+                onChange={onAmountChange}
               />
             </div>
           </div>
@@ -132,12 +144,17 @@ export const EditExpense = () => {
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
-                  htmlFor="expenserName"
-                  value="Expenser"
+                  htmlFor="amount"
+                  value="Amount"
                 />
               </div>
-              <SelectExpenser is={{ expenserId: expense.expenserId, expenserName: expense.expenserName }}
-                fncChangeIssuer={onExpenserChange} />
+              <TextInput
+                id="amount"
+                placeholder="0"
+                required={true}
+                value={expense.amount}
+                readOnly={true}
+              />
             </div>
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
@@ -157,6 +174,16 @@ export const EditExpense = () => {
 
           </div>
           <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="expenserName"
+                  value="Expenser"
+                />
+              </div>
+              <SelectUser initialUser={{ id: expense.expenserId, name: expense.expenserName }}
+                handleUserChange={onExpenserChange} />
+            </div>
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label

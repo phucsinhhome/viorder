@@ -6,8 +6,8 @@ import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
 
 import { AddItem } from "./AddItem";
-import { SelectIssuer } from "./SelectIssuer";
 import { Table } from "flowbite-react";
+import { SelectUser } from "../User/SelectUser";
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
@@ -122,7 +122,6 @@ export const EditInvoice = () => {
         <Link to=".." relative="path" >Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">
-        {/** First Column */}
         <div class="w-full md:w-1/2 px-1 mb-6">
           <div class="flex flex-wrap -mx-3 mb-6">
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -142,7 +141,6 @@ export const EditInvoice = () => {
             </div>
           </div>
           <div class="flex flex-wrap -mx-3 mb-6">
-            {/* <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" class="h-5 w-5 text-gray-500 dark:text-gray-400" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg></div> */}
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
@@ -196,25 +194,8 @@ export const EditInvoice = () => {
                   value="Issuer"
                 />
               </div>
-              <SelectIssuer is={{ issuerId: invoice.issuerId, issuer: invoice.issuer }}
-                fncChangeIssuer={onIssuerChange} />
-              {/* <Select
-                id="issuer"
-                required={true}
-                onChange={onIssuerChange}
-                value={invoice.issuerId}
-              >
-                {
-                  issuers.map((iss, i) => {
-                    return (
-                      <option key={iss.issuerId} value={iss.issuerId}
-                      >
-                        {iss.issuer}
-                      </option>
-                    )
-                  })
-                }
-              </Select> */}
+              <SelectUser initialUser={{ id: invoice.issuerId, name: invoice.issuer }}
+                handleUserChange={onIssuerChange} />
             </div>
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">

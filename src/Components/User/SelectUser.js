@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, ListGroup, TextInput } from 'flowbite-react';
 import { getUsers } from "../../db/users";
 
-export const SelectIssuer = ({ is, fncChangeIssuer }) => {
+export const SelectUser = ({ initialUser, handleUserChange }) => {
 
   const [isShown, setShow] = useState(false)
   const onClick = () => {
@@ -14,19 +14,19 @@ export const SelectIssuer = ({ is, fncChangeIssuer }) => {
 
   const members = getUsers()
 
-  const [iss, setIss] = useState({ issuerId: "", issuer: "" })
+  const [user, setUser] = useState({ id: "", name: "" })
 
   useEffect(() => {
-    setIss(is)
-  }, [is]);
+    setUser(initialUser)
+  }, [initialUser]);
 
   const handleItemSelection = (e) => {
     console.log(e)
-    console.info("Selected Issuer: %s ", e.target.value)
+    console.info("Selected User: %s ", e.target.value)
     let selectedItem = members.find((i) => i.id === e.target.value)
     console.log(selectedItem)
-    fncChangeIssuer(selectedItem)
-    setIss(selectedItem)
+    handleUserChange(selectedItem)
+    setUser(selectedItem)
     onClose()
   }
 
@@ -36,7 +36,7 @@ export const SelectIssuer = ({ is, fncChangeIssuer }) => {
         id="issuer"
         placeholder="Liễu Lê"
         required={true}
-        value={iss.issuer}
+        value={user.name}
         readOnly={true}
         onClick={onClick}
       />
@@ -46,7 +46,7 @@ export const SelectIssuer = ({ is, fncChangeIssuer }) => {
         popup={true}
         onClose={onClose}
       >
-        <Modal.Header ><span>Select the issuer</span></Modal.Header>
+        <Modal.Header ><span>Select the user</span></Modal.Header>
         <Modal.Body>
           <div className="w-11/12">
 
