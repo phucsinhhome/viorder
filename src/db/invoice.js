@@ -2,9 +2,9 @@ const requestOptions = {
   method: 'GET'
 }
 
-const listLatestInvoices = () => {
+const listLatestInvoices = (pageNumber, pageSize) => {
   console.info("Fetching report from backend")
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/api/invoice/list?max=15`, requestOptions)
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/api/invoice/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
     .then(response => response.json())
 }
 
@@ -14,21 +14,6 @@ export function getInvoice(invoiceId) {
   console.info("Fetching invoice from backend")
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/api/invoice/${invoiceId}`, requestOptions)
     .then(response => response.json())
-}
-
-export function getIssuers() {
-  return [{
-    issuerId: "1351151927",
-    issuer: "Mẫn Trịnh"
-  },
-  {
-    issuerId: "5114683375",
-    issuer: "Liễu Lê"
-  },
-  {
-    issuerId: "6159537383",
-    issuer: "Hương Thanh"
-  }]
 }
 
 export function getItemList() {

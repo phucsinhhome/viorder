@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
 import UpdateButton from "../Button/Button";
-import listLatestInvoices from "../../db/invoice";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
+import listLatestExpenses from "../../db/expense";
 
 
-export function InvoiceManager() {
-  const [invoices, setInvoices] = useState([
+export function ExpenseManager() {
+  const [expenses, setExpenses] = useState([
     {
-      "id": "000000000000000000",
-      "guestName": "",
-      "issuer": "",
-      "issuerId": "",
-      "subTotal": 0
+      "expenseDate": null,
+      "itemName": null,
+      "quantity": 1,
+      "unitPrice": 0,
+      "expenserName": null,
+      "expenserId": null,
+      "service": null,
+      "id": null,
+      "amount": 0
     }
   ])
 
@@ -33,9 +37,9 @@ export function InvoiceManager() {
   }, []);
 
   const fetchData = (pageNumber, pageSize) => {
-    listLatestInvoices(pageNumber, pageSize)
+    listLatestExpenses(pageNumber, pageSize)
       .then(data => {
-        setInvoices(data.content)
+        setExpenses(data.content)
         setPagination({
           pageNumber: data.number,
           pageSize: data.size,
@@ -55,13 +59,19 @@ export function InvoiceManager() {
       <Table hoverable={true}>
         <Table.Head>
           <Table.HeadCell>
-            Guest Name
+            Item Name
           </Table.HeadCell>
           <Table.HeadCell>
-            Issuer
+            Unit Price
           </Table.HeadCell>
           <Table.HeadCell>
-            Grand Amount
+            Quantity
+          </Table.HeadCell>
+          <Table.HeadCell>
+            Amount
+          </Table.HeadCell>
+          <Table.HeadCell>
+            Expenser
           </Table.HeadCell>
           <Table.HeadCell>
             <span className="sr-only">
@@ -70,20 +80,26 @@ export function InvoiceManager() {
           </Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {invoices.map((inv) => {
+          {expenses.map((exp) => {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  {inv.guestName}
+                  {exp.itemName}
                 </Table.Cell>
                 <Table.Cell>
-                  {inv.issuer}
+                  {exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                 </Table.Cell>
                 <Table.Cell>
-                  {inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                  {exp.quantity}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={inv.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                </Table.Cell>
+                <Table.Cell>
+                  {exp.expenserName}
+                </Table.Cell>
+                <Table.Cell>
+                  <Link to={exp.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
               </Table.Row>
             )
