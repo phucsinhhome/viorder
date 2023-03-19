@@ -23,6 +23,7 @@ export const EditExpense = () => {
   const { expenseId } = useParams()
   const location = useLocation()
   const [loc, setLoc] = useState({ pageNumber: 0, pageSize: 10 })
+  const [choosenDate,setChoosenDate]=useState(new Date().toISOString().substring(0,10))
 
   useEffect(() => {
     // const datepickerEl = document?.getElementById("datepickerId")
@@ -37,6 +38,9 @@ export const EditExpense = () => {
     })
     getExpense(expenseId)
       .then(data => {
+        let dd= new Date(data.expenseDate)
+        console.log("Expense date part")
+        setChoosenDate(dd.toISOString().substring(0,10))
         setExpense(data)
       })
   }, [expenseId, location]);
@@ -60,6 +64,16 @@ export const EditExpense = () => {
       amount: exp.unitPrice * exp.quantity
     }
     setExpense(exp2)
+  }
+
+  const handleExpenseDateChange = (e)=>{
+    const updatedExpenseDate = e.target.value + expense.expenseDate.substring(10)
+    console.log("Date %s was choosen. Expense date changed to %s", e.target.value, updatedExpenseDate)
+    setChoosenDate(e.target.value)
+    setExpense({
+      ...expense,
+      expenseDate: updatedExpenseDate
+    })
   }
 
   const onItemNameLeave = (e) => {
@@ -214,10 +228,10 @@ export const EditExpense = () => {
                 id="expenseDate"
                 placeholder="2023-01-01"
                 required={true}
-                value={expense.expenseDate}
-                readOnly={true}
+                value={choosenDate}
+                readOnly={false}
                 type="date"
-                onChange={onDataChange}
+                onChange={handleExpenseDateChange}
                 rightIcon={() => {
                   return (
                     <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
