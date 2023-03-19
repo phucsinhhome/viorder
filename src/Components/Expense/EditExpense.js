@@ -1,32 +1,45 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
 import { getExpense, saveExpense } from "../../db/expense";
-import UpdateButton from "../Button/Button";
-import { TextInput, Label } from 'flowbite-react';
+import { TextInput, Label, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
+import { useParams, Link, useLocation } from "react-router-dom";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
     {
-      "expenseDate": null,
-      "itemName": null,
+      "expenseDate": "",
+      "itemName": "",
       "quantity": 1,
       "unitPrice": 0,
-      "expenserName": null,
-      "expenserId": null,
-      "service": null,
-      "id": null,
+      "expenserName": "",
+      "expenserId": "",
+      "service": "",
+      "id": "",
       "amount": 0
     }
   )
 
   const { expenseId } = useParams()
+  const location = useLocation()
+  const [loc, setLoc] = useState({ pageNumber: 0, pageSize: 10 })
 
   useEffect(() => {
-    console.info("Eding expense %s", expenseId)
-    getExpense(expenseId).then(data => setExpense(data))
-  }, [expenseId]);
+    // const datepickerEl = document?.getElementById("datepickerId")
+    // new Datepicker(datepickerEl, {
+    //   autohide: true
+    // })
+    console.log("Edit expense - Parent location")
+    console.log(location)
+    setLoc({
+      pageNumber: location.state.pageNumber,
+      pageSize: location.state.pageSize
+    })
+    getExpense(expenseId)
+      .then(data => {
+        setExpense(data)
+      })
+  }, [expenseId, location]);
 
 
   const onDataChange = (e) => {
@@ -76,17 +89,18 @@ export const EditExpense = () => {
     console.info("Saving expense")
     console.log(expense)
     saveExpense(expense)
-      .then(resp=>{
-        console.log("Save expense %s successully",expense.id)
+      .then(resp => {
+        console.log("Save expense %s successully", expense.id)
         console.log(resp)
       })
   }
 
+
   return (
-    <div class="bg-slate-50">
-      <div class="py-2 px-2">
-        <UpdateButton title="Save" disable={false} onClick={handleSaveExpense} />
-        <Link to=".." relative="path" >Back</Link>
+    <div>
+      <div class="flex py-2 px-2">
+        <Button disabled={false} onClick={handleSaveExpense} >Save</Button>
+        <Link to=".." state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }} relative="path">Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">
         <div class="w-full px-1 mb-6">
@@ -198,11 +212,11 @@ export const EditExpense = () => {
               </div>
               <TextInput
                 id="expenseDate"
-                placeholder="1"
+                placeholder="2023-01-01"
                 required={true}
                 value={expense.expenseDate}
                 readOnly={true}
-                type="datetime"
+                type="date"
                 onChange={onDataChange}
                 rightIcon={() => {
                   return (
@@ -214,6 +228,6 @@ export const EditExpense = () => {
           </div>
         </div>
       </form>
-    </div >
+    </div>
   );
 }

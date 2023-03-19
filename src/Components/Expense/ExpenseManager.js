@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import UpdateButton from "../Button/Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Table } from "flowbite-react";
 import listLatestExpenses from "../../db/expense";
 
 
-export function ExpenseManager() {
+export const ExpenseManager = () => {
   const [expenses, setExpenses] = useState([
     {
       "expenseDate": null,
@@ -32,9 +32,7 @@ export function ExpenseManager() {
     fetchData(pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber, pagination.pageSize)
   }
 
-  useEffect(() => {
-    fetchData(0, 10)
-  }, []);
+  const location = useLocation()
 
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
@@ -49,6 +47,12 @@ export function ExpenseManager() {
       })
   }
 
+  useEffect(() => {
+    console.log(location)
+    fetchData(location.state.pageNumber, location.state.pageSize)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   return (
     <div>
@@ -99,7 +103,7 @@ export function ExpenseManager() {
                   {exp.expenserName}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={exp.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
               </Table.Row>
             )
