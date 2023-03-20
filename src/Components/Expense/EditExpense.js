@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { getExpense, saveExpense } from "../../db/expense";
+import { deleteExpense, getExpense, saveExpense } from "../../db/expense";
 import { TextInput, Label, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { ConfirmDeleteExpense } from "./ConfirmDeleteExpense";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
@@ -128,11 +129,28 @@ export const EditExpense = () => {
       })
   }
 
+  const navigate = useNavigate();
+  const abortExpenseDeletion = (e) => {
+    console.log("Abort to delete expense")
+  }
+
+  const confirmExpenseDeletion = (e) => {
+    console.log("Confirm to delete expense")
+    deleteExpense(expense)
+      .then(data => {
+        navigate("..", {
+          state: { pageNumber: loc.pageNumber, pageSize: loc.pageSize },
+          relative: "path"
+        })
+      })
+  }
+
 
   return (
     <div>
       <div class="flex py-2 px-2">
         <Button disabled={false} onClick={handleSaveExpense} >Save</Button>
+        <ConfirmDeleteExpense abortDeletion={abortExpenseDeletion} confirmDeletion={confirmExpenseDeletion} />
         <Link to=".." state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }} relative="path">Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">

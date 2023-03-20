@@ -104,6 +104,7 @@ export const ExpenseManager = () => {
                 <Table.Cell>
                   <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
+                
               </Table.Row>
             )
           })}

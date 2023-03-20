@@ -26,3 +26,14 @@ export function saveExpense(expense) {
     })
     .then(response => response.json())
 }
+
+export const deleteExpense = (expense) => {
+  console.info("Delete expense %s", expense.id)
+  return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/api/expense/delete`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(expense)
+    })
+    .then(response => response.json())
+}
