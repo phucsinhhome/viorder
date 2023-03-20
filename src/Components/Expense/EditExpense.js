@@ -4,6 +4,7 @@ import { TextInput, Label, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation } from "react-router-dom";
+import moment from "moment/moment";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
@@ -23,7 +24,7 @@ export const EditExpense = () => {
   const { expenseId } = useParams()
   const location = useLocation()
   const [loc, setLoc] = useState({ pageNumber: 0, pageSize: 10 })
-  const [choosenDate,setChoosenDate]=useState(new Date().toISOString().substring(0,10))
+  const [choosenDate, setChoosenDate] = useState(new Date().toISOString().substring(0, 10))
 
   useEffect(() => {
     // const datepickerEl = document?.getElementById("datepickerId")
@@ -38,9 +39,10 @@ export const EditExpense = () => {
     })
     getExpense(expenseId)
       .then(data => {
-        let dd= new Date(data.expenseDate)
-        console.log("Expense date part")
-        setChoosenDate(dd.toISOString().substring(0,10))
+        console.log(data)
+        let dd = data.expenseDate.substring(0, 10)
+        console.log("Expense date part: " + dd)
+        setChoosenDate(dd)
         setExpense(data)
       })
   }, [expenseId, location]);
@@ -66,7 +68,7 @@ export const EditExpense = () => {
     setExpense(exp2)
   }
 
-  const handleExpenseDateChange = (e)=>{
+  const handleExpenseDateChange = (e) => {
     const updatedExpenseDate = e.target.value + expense.expenseDate.substring(10)
     console.log("Date %s was choosen. Expense date changed to %s", e.target.value, updatedExpenseDate)
     setChoosenDate(e.target.value)
