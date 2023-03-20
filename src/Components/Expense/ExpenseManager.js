@@ -57,8 +57,7 @@ export const ExpenseManager = () => {
   return (
     <div>
       <div class="py-2 px-2">
-        <UpdateButton title="+ Add" disable={false} onClick={() => {
-        }} />
+        <Link to={""+Date.now()} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">New Expense</Link>
       </div>
       <Table hoverable={true}>
         <Table.Head>

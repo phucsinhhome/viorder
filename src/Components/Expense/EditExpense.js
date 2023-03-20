@@ -4,7 +4,6 @@ import { TextInput, Label, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation } from "react-router-dom";
-import moment from "moment/moment";
 
 export const EditExpense = () => {
   const [expense, setExpense] = useState(
@@ -39,13 +38,31 @@ export const EditExpense = () => {
     })
     getExpense(expenseId)
       .then(data => {
-        console.log(data)
-        let dd = data.expenseDate.substring(0, 10)
-        console.log("Expense date part: " + dd)
-        setChoosenDate(dd)
-        setExpense(data)
+        reloadStateOfInitialExpense(data)
+      }).catch((err) => {
+        console.log("Unexpected error happen during fetch expense from remote server")
+        const now = new Date()
+        reloadStateOfInitialExpense({
+          "expenseDate": now.toISOString(),
+          "itemName": "",
+          "quantity": 1,
+          "unitPrice": 5000,
+          "expenserName": "Liễu Lê",
+          "expenserId": "5114683375",
+          "service": "FOOD",
+          "id": expenseId,
+          "amount": 0
+        })
       })
   }, [expenseId, location]);
+
+  const reloadStateOfInitialExpense = (exp) => {
+    console.log(exp)
+    let dd = exp.expenseDate.substring(0, 10)
+    console.log("Expense date part: " + dd)
+    setChoosenDate(dd)
+    setExpense(exp)
+  }
 
 
   const onDataChange = (e) => {
