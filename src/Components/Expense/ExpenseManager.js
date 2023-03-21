@@ -68,16 +68,10 @@ export const ExpenseManager = () => {
             Item Name
           </Table.HeadCell>
           <Table.HeadCell>
-            Unit Price
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Quantity
-          </Table.HeadCell>
-          <Table.HeadCell>
             Amount
           </Table.HeadCell>
           <Table.HeadCell>
-            Expenser
+            Group
           </Table.HeadCell>
           <Table.HeadCell>
             <span className="sr-only">
@@ -96,16 +90,10 @@ export const ExpenseManager = () => {
                   {exp.itemName}
                 </Table.Cell>
                 <Table.Cell>
-                  {exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                </Table.Cell>
-                <Table.Cell>
-                  {exp.quantity}
-                </Table.Cell>
-                <Table.Cell>
                   {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                 </Table.Cell>
                 <Table.Cell>
-                  {exp.expenserName}
+                  {exp.service}
                 </Table.Cell>
                 <Table.Cell>
                   <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
