@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import UpdateButton from "../Button/Button";
 import { Link, useLocation } from "react-router-dom";
 import { Table } from "flowbite-react";
 import listLatestExpenses from "../../db/expense";
@@ -57,10 +56,14 @@ export const ExpenseManager = () => {
   return (
     <div>
       <div class="py-2 px-2">
-        <Link to={""+Date.now()} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">New Expense</Link>
+        <Link to={"" + Date.now()} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">New Expense</Link>
       </div>
       <Table hoverable={true}>
         <Table.Head>
+
+          <Table.HeadCell>
+            Date
+          </Table.HeadCell>
           <Table.HeadCell>
             Item Name
           </Table.HeadCell>
@@ -87,6 +90,9 @@ export const ExpenseManager = () => {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                   {exp.itemName}
                 </Table.Cell>
                 <Table.Cell>
@@ -104,7 +110,7 @@ export const ExpenseManager = () => {
                 <Table.Cell>
                   <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
-                
+
               </Table.Row>
             )
           })}
