@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ListGroup, Button } from 'flowbite-react';
-import { getItemList } from "../../db/invoice";
+import { Modal, Button } from 'flowbite-react';
 
 export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
@@ -11,8 +10,6 @@ export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
   const onClose = () => {
     setShow(false)
   }
-
-  const items = getItemList()
 
   useEffect(() => {
   }, []);
