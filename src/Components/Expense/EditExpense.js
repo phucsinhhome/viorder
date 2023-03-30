@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { deleteExpense, getExpense, saveExpense } from "../../db/expense";
-import { TextInput, Label, Button } from 'flowbite-react';
+import { TextInput, Label } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
@@ -148,10 +148,12 @@ export const EditExpense = () => {
 
   return (
     <div>
-      <div class="flex py-2 px-2">
-        <Button disabled={false} onClick={handleSaveExpense} >Save</Button>
+      <div class="flex py-2 px-2 space-x-4">
+        <span onClick={handleSaveExpense} className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Save</span>
         <ConfirmDeleteExpense abortDeletion={abortExpenseDeletion} confirmDeletion={confirmExpenseDeletion} />
-        <Link to=".." state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }} relative="path">Back</Link>
+        <Link to=".." state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }} relative="path"
+          className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer"
+        >Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">
         <div class="w-full px-1 mb-6">

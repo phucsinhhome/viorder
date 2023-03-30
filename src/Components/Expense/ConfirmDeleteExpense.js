@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Button } from 'flowbite-react';
+import { Modal } from 'flowbite-react';
 
 export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
@@ -26,9 +26,7 @@ export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
   return (
     <div>
-      <Button onClick={onClick}>
-        Delete
-      </Button>
+      <span onClick={onClick} className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Delete</span>
       <Modal
         show={isShown}
         size="md"
@@ -38,10 +36,12 @@ export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
         <Modal.Header />
         <Modal.Body>
           <div className="w-11/12">
-            <div className="font-serif italic">Are you sure ?</div>
-            <div className="flex">
-              <Button onClick={() => handleConfirmation(false)}>Abort</Button>
-              <Button onClick={() => handleConfirmation(true)}>Confirm</Button>
+            <div className="font-serif italic">Are you sure?</div>
+            <div className="flex w-full space-x-4 mt-6">
+              <span onClick={() => handleConfirmation(false)}
+              className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Abort</span>
+              <span onClick={() => handleConfirmation(true)}
+              className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Confirm</span>
             </div>
           </div>
         </Modal.Body>
