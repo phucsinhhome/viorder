@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, ListGroup, Button } from 'flowbite-react';
 import { getItemList } from "../../db/invoice";
 
-export function AddItem({ fncAddItem }) {
+export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
   const [isShown, setShow] = useState(false)
   const onClick = () => {
@@ -17,19 +17,20 @@ export function AddItem({ fncAddItem }) {
   useEffect(() => {
   }, []);
 
-  const handleItemSelection = (e) => {
-    console.log(e)
-    console.info("Selected Item: %s ", e.target.value)
-    let selectedItem = items.find((i) => i.id === e.target.value)
-    console.log(selectedItem)
-    fncAddItem(selectedItem)
+  const handleConfirmation = (e) => {
+    console.info("Expense deletion ", e)
+    if (e) {
+      confirmDeletion()
+    } else {
+      abortDeletion()
+    }
     onClose()
   }
 
   return (
     <div>
       <Button onClick={onClick}>
-        Add Item
+        Delete
       </Button>
       <Modal
         show={isShown}
@@ -40,17 +41,11 @@ export function AddItem({ fncAddItem }) {
         <Modal.Header />
         <Modal.Body>
           <div className="w-11/12">
-            <ListGroup>
-              {
-                items.map((room) => {
-                  return (
-                    <ListGroup.Item key={room.id} onClick={handleItemSelection} value={room.id}>
-                      {room.name + " - " + room.price}
-                    </ListGroup.Item>
-                  )
-                })
-              }
-            </ListGroup>
+            <div className="font-serif italic">Are you sure ?</div>
+            <div className="flex">
+              <Button onClick={() => handleConfirmation(false)}>Abort</Button>
+              <Button onClick={() => handleConfirmation(true)}>Confirm</Button>
+            </div>
           </div>
         </Modal.Body>
       </Modal>

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import UpdateButton from "../Button/Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Table } from "flowbite-react";
 import listLatestExpenses from "../../db/expense";
 
 
-export function ExpenseManager() {
+export const ExpenseManager = () => {
   const [expenses, setExpenses] = useState([
     {
       "expenseDate": null,
@@ -32,9 +31,7 @@ export function ExpenseManager() {
     fetchData(pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber, pagination.pageSize)
   }
 
-  useEffect(() => {
-    fetchData(pagination.pageNumber, pagination.pageSize)
-  }, [pagination]);
+  const location = useLocation()
 
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
@@ -49,29 +46,32 @@ export function ExpenseManager() {
       })
   }
 
+  useEffect(() => {
+    console.log(location)
+    fetchData(location.state.pageNumber, location.state.pageSize)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   return (
     <div>
       <div class="py-2 px-2">
-        <UpdateButton title="+ Add" disable={false} onClick={() => {
-        }} />
+        <Link to={"" + Date.now()} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">New Expense</Link>
       </div>
       <Table hoverable={true}>
         <Table.Head>
+
+          <Table.HeadCell>
+            Date
+          </Table.HeadCell>
           <Table.HeadCell>
             Item Name
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Unit Price
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Quantity
           </Table.HeadCell>
           <Table.HeadCell>
             Amount
           </Table.HeadCell>
           <Table.HeadCell>
-            Expenser
+            Group
           </Table.HeadCell>
           <Table.HeadCell>
             <span className="sr-only">
@@ -84,23 +84,21 @@ export function ExpenseManager() {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                  {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
+                </Table.Cell>
+                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                   {exp.itemName}
-                </Table.Cell>
-                <Table.Cell>
-                  {exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                </Table.Cell>
-                <Table.Cell>
-                  {exp.quantity}
                 </Table.Cell>
                 <Table.Cell>
                   {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                 </Table.Cell>
                 <Table.Cell>
-                  {exp.expenserName}
+                  {exp.service}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={exp.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
+
               </Table.Row>
             )
           })}
