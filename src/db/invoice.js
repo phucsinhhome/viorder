@@ -15,6 +15,19 @@ export const exportInvoice = (invoice) => {
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/export`, opts);
 }
 
+export const updateInvoice = (invoice) => {
+  console.info("Call API to export invoice");
+  const opts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: new Blob([JSON.stringify(invoice)])
+  }
+
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/update`, opts);
+}
+
 const listLatestInvoices = (pageNumber, pageSize) => {
   console.info("Fetching report from backend")
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)

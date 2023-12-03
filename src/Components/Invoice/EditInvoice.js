@@ -1,14 +1,50 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
 import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
-
-import { AddItem } from "./AddItem";
 import { Table } from "flowbite-react";
 import { SelectUser } from "../User/SelectUser";
 import { ExportInvoice } from "./ExportInvoice";
+import * as minio from "minio";
+
+var minioClient = new minio.Client({
+  endPoint: 'phucsinhhcm.hopto.org',
+  port: 9000,
+  useSSL: false,
+  accessKey: 'demo',
+  secretKey: 'demo!123',
+})
+
+const getPresignedLink = (key, cbF) => {
+  minioClient.presignedGetObject('invoices', key, 300, cbF)
+}
+
+const loadFile = (bucket, key) => {
+  // var size = 0
+  // minioClient.getObject(bucket, key, function (err, dataStream) {
+  //   if (err) {
+  //     return console.log(err)
+  //   }
+  //   dataStream.on('data', function (chunk) {
+  //     size += chunk.length
+  //   })
+  //   dataStream.on('end', function () {
+  //     console.log('End. Total size = ' + size)
+  //   })
+  //   dataStream.on('error', function (err) {
+  //     console.log(err)
+  //   })
+  // })
+
+  minioClient.fGetObject(bucket, key, 'C:/apps/abc.pdf', function (err) {
+    if (err) {
+      return console.log(err)
+    }
+    console.log('success')
+  })
+}
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
@@ -30,6 +66,8 @@ export const EditInvoice = () => {
       ]
     }
   )
+
+  const [invoiceUrl, setInvoiceUrl] = useState("")
 
   const { invoiceId } = useParams()
 
@@ -74,11 +112,20 @@ export const EditInvoice = () => {
   const handleSaveInvoice = () => {
     console.info("Saving invoice")
     console.log(invoice)
+    updateInvoice(invoice)
+      .then((res) => {
+        if (res.ok) {
+          console.info("Invoice %s has been saved successfully", invoiceId);
+        } else {
+          console.info("Failed to save invoice %s", invoiceId);
+        }
+        console.info(res)
+      })
   }
 
   const createOrUpdateItem = (item) => {
     let items = []
-    if (item.id == null || item.id == "") {
+    if (item.id === null || item.id === "") {
       let newItemId = invoiceId + (Date.now() % 10000000)
       console.log("Added an item into invoice. Id [%s] was generated", newItemId)
       items = [
@@ -105,6 +152,11 @@ export const EditInvoice = () => {
     setInvoice(inv)
   }
 
+
+  const donwloadInvoice = (invoicePath) => {
+    loadFile('invoices', invoicePath)
+  }
+
   const exportWithMethod = (method) => {
     console.log("Export invoice %s with method [%s]...", invoiceId, method.name)
 
@@ -118,6 +170,18 @@ export const EditInvoice = () => {
         if (res.ok) {
           console.info("Invoice %s has been exported successfully", invoiceId);
           setInvoice(inv);
+          res.json().then((json) => {
+            console.log(json)
+            var withoutBucketPath = json.url.substring(json.url.indexOf('/'));
+            console.info("Download invoice from url [%s]", withoutBucketPath);
+            // donwloadInvoice(withoutBucketPath)
+            getPresignedLink(withoutBucketPath, (err, url) => {
+              if (err) {
+                return console.log(err)
+              }
+              setInvoiceUrl(url)
+            })
+          });
         } else {
           console.info("Failed to export invoice %s", invoiceId);
         }
@@ -125,11 +189,15 @@ export const EditInvoice = () => {
       })
   }
 
+
   return (
     <div class="bg-slate-50">
       <div class="py-2 px-2">
-        <UpdateButton title="Save" disable={false} onClick={handleSaveInvoice} />
-        <Link to=".." relative="path" >Back</Link>
+        <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
+          Save
+        </Link>
+        {/* <UpdateButton title="Save" disable={false} onClick={handleSaveInvoice} /> */}
+        <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">
         <div class="w-full md:w-1/2 px-1 mb-6">
@@ -235,6 +303,7 @@ export const EditInvoice = () => {
               "amount": 0
             }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add"></EditItem>
             <ExportInvoice fncCallback={exportWithMethod} />
+            <Link to={invoiceUrl} className="pl-5 font-thin" hidden={invoiceUrl === ""} >Click To Download</Link>
           </div>
           <Table hoverable={true}>
             <Table.Head>

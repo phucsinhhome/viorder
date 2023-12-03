@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ListGroup, Button } from 'flowbite-react';
+import { Modal, ListGroup } from 'flowbite-react';
 import { getPaymentMethods } from "../../db/invoice";
 import { Link } from "react-router-dom";
 
