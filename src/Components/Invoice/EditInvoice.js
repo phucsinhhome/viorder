@@ -8,8 +8,8 @@ import { SelectUser } from "../User/SelectUser";
 import { ExportInvoice } from "./ExportInvoice";
 import * as minio from "minio";
 
-const minioAccessKey = process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY
-const minioSecretKey = process.env.REACT_APP_FILE_SERVICE_SECRET_KEY
+// const minioAccessKey = process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY
+// const minioSecretKey = process.env.REACT_APP_FILE_SERVICE_SECRET_KEY
 
 var minioClient = new minio.Client({
   endPoint: 'phucsinhhcm.hopto.org',
