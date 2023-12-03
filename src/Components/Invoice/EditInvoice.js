@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
-import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
 import { Table } from "flowbite-react";
 import { SelectUser } from "../User/SelectUser";
@@ -21,7 +20,7 @@ const getPresignedLink = (key, cbF) => {
   minioClient.presignedGetObject('invoices', key, 300, cbF)
 }
 
-const loadFile = (bucket, key) => {
+// const loadFile = (bucket, key) => {
   // var size = 0
   // minioClient.getObject(bucket, key, function (err, dataStream) {
   //   if (err) {
@@ -38,13 +37,13 @@ const loadFile = (bucket, key) => {
   //   })
   // })
 
-  minioClient.fGetObject(bucket, key, 'C:/apps/abc.pdf', function (err) {
-    if (err) {
-      return console.log(err)
-    }
-    console.log('success')
-  })
-}
+//   minioClient.fGetObject(bucket, key, 'C:/apps/abc.pdf', function (err) {
+//     if (err) {
+//       return console.log(err)
+//     }
+//     console.log('success')
+//   })
+// }
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
@@ -150,11 +149,6 @@ export const EditInvoice = () => {
       subTotal: ta
     }
     setInvoice(inv)
-  }
-
-
-  const donwloadInvoice = (invoicePath) => {
-    loadFile('invoices', invoicePath)
   }
 
   const exportWithMethod = (method) => {
