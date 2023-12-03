@@ -2,6 +2,19 @@ const requestOptions = {
   method: 'GET'
 }
 
+export const exportInvoice = (invoice) => {
+  console.info("Call API to export invoice");
+  const opts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: new Blob([JSON.stringify(invoice)])
+  }
+
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/export`, opts);
+}
+
 const listLatestInvoices = (pageNumber, pageSize) => {
   console.info("Fetching report from backend")
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
@@ -15,14 +28,30 @@ export function getInvoice(invoiceId) {
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/${invoiceId}`, requestOptions)
     .then(response => response.json())
 }
+
 export function getPaymentMethods() {
   return [
     {
       id: "cash",
-      name: "Cash"
+      name: "Cash",
+      template: "invoice_without_transfer_fee"
     }, {
       id: "creditCard",
-      name: "Credit Card"
+      name: "Credit Card",
+      template: "invoice_with_transfer_fee"
+    },
+    {
+      id: "momo",
+      name: "MoMo",
+      template: "invoice_without_transfer_fee"
+    }, {
+      id: "paypal",
+      name: "Paypal",
+      template: "invoice_without_transfer_fee"
+    }, {
+      id: "bankTransfer",
+      name: "Bank Transfer",
+      template: "invoice_without_transfer_fee"
     }
   ]
 }

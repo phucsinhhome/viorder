@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
 import UpdateButton from "../Button/Button";
 import { TextInput, Label } from 'flowbite-react';
@@ -37,24 +37,6 @@ export const EditInvoice = () => {
     console.info("Eding invoice %s", invoiceId)
     getInvoice(invoiceId).then(data => setInvoice(data))
   }, [invoiceId]);
-
-  const handleSaveItem = (item) => {
-    console.info("Item %s is updated", item.id)
-    const nItems = invoice.items.map((i) => i.id === item.id ? item : i)
-
-    var total = 0;
-    for (var i in nItems) {
-      total += nItems[i].amount;
-    }
-
-    const inv = {
-      ...invoice,
-      items: nItems,
-      subTotal: total
-    }
-
-    setInvoice(inv)
-  }
 
   const handleDeleteItem = (item) => {
     console.info("Item %s is deleted", item.id)
@@ -94,19 +76,26 @@ export const EditInvoice = () => {
     console.log(invoice)
   }
 
-  const handleAddItem = (addedItem) => {
-    console.log("Added an item into invoice")
-    console.log(addedItem)
-    let items = [
-      ...invoice.items,
-      {
-        id: addedItem.id,
-        itemName: addedItem.name,
-        unitPrice: addedItem.price,
-        quantity: 1,
-        amount: addedItem.price
-      }
-    ]
+  const createOrUpdateItem = (item) => {
+    let items = []
+    if (item.id == null || item.id == "") {
+      let newItemId = invoiceId + (Date.now() % 10000000)
+      console.log("Added an item into invoice. Id [%s] was generated", newItemId)
+      items = [
+        ...invoice.items,
+        {
+          id: newItemId,
+          itemName: item.itemName,
+          unitPrice: item.unitPrice,
+          quantity: item.quantity,
+          amount: item.unitPrice * item.quantity
+        }
+      ]
+    } else {
+      console.log("Update item [%s] ", item.id)
+      items = invoice.items.map((i) => i.id === item.id ? item : i)
+    }
+
     let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
     const inv = {
       ...invoice,
@@ -117,7 +106,23 @@ export const EditInvoice = () => {
   }
 
   const exportWithMethod = (method) => {
-    console.log("Export invoice %s with method %s...", invoiceId, method)
+    console.log("Export invoice %s with method [%s]...", invoiceId, method.name)
+
+    const inv = {
+      ...invoice,
+      paymentMethod: method.id
+    }
+
+    exportInvoice(inv)
+      .then((res) => {
+        if (res.ok) {
+          console.info("Invoice %s has been exported successfully", invoiceId);
+          setInvoice(inv);
+        } else {
+          console.info("Failed to export invoice %s", invoiceId);
+        }
+        console.info(res)
+      })
   }
 
   return (
@@ -221,6 +226,16 @@ export const EditInvoice = () => {
         </div>
         {/** Second Column */}
         <div class="w-full md:w-1/2 px-1 mb-6">
+          <div class="py-2 px-2 flex bg-green-300">
+            <EditItem eItem={{
+              "id": "",
+              "itemName": "",
+              "unitPrice": 0,
+              "quantity": 0,
+              "amount": 0
+            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add"></EditItem>
+            <ExportInvoice fncCallback={exportWithMethod} />
+          </div>
           <Table hoverable={true}>
             <Table.Head>
               <Table.HeadCell>Item Name</Table.HeadCell>
@@ -254,7 +269,7 @@ export const EditInvoice = () => {
                       {item.service}
                     </Table.Cell>
                     <Table.Cell>
-                      {<EditItem eItem={item} onSave={handleSaveItem} onDelete={handleDeleteItem} />}
+                      {<EditItem eItem={item} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Edit" />}
                     </Table.Cell>
                   </Table.Row>
                 )
@@ -262,14 +277,9 @@ export const EditInvoice = () => {
             </Table.Body>
           </Table>
 
-          <div class="py-2 px-2">
-            <AddItem fncAddItem={handleAddItem}></AddItem>
-            <ExportInvoice fncCallback={exportWithMethod} />
-          </div>
+
         </div>
       </form>
-
-
     </div >
   );
 }

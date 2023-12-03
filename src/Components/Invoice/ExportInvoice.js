@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, ListGroup, Button } from 'flowbite-react';
 import { getPaymentMethods } from "../../db/invoice";
+import { Link } from "react-router-dom";
 
 export function ExportInvoice({ fncCallback }) {
 
@@ -28,9 +29,9 @@ export function ExportInvoice({ fncCallback }) {
 
   return (
     <div>
-      <Button onClick={onClick}>
+      <Link onClick={onClick} className="px-1 font-sans font-bold text-amber-800">
         Export
-      </Button>
+      </Link>
       <Modal
         show={isShown}
         size="md"

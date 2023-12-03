@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, ListGroup, Button } from 'flowbite-react';
 import { getItemList } from "../../db/invoice";
+import { Link } from "react-router-dom";
 
 export function AddItem({ fncAddItem }) {
 
@@ -28,9 +29,9 @@ export function AddItem({ fncAddItem }) {
 
   return (
     <div>
-      <Button onClick={onClick}>
+      <Link onClick={onClick} className="px-1 font-sans font-bold text-amber-800">
         Add Item
-      </Button>
+      </Link>
       <Modal
         show={isShown}
         size="md"

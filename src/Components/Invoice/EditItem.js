@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, TextInput, Label, Checkbox, Button } from 'flowbite-react';
 import {classifyServiceByItemName} from "../../Service/ItemClassificationService"
 
-export function EditItem({ eItem, onSave, onDelete }) {
+export function EditItem({ eItem, onSave, onDelete, displayName }) {
   const [item, setItem] = useState(
     {
       "id": "",
@@ -80,7 +80,7 @@ export function EditItem({ eItem, onSave, onDelete }) {
 
   return (
     <div>
-      <span onClick={onClick}>Edit</span>
+      <span onClick={onClick} className="font-bold text-amber-800">{displayName}</span>
       <Modal
         show={isShown}
         size="md"
