@@ -15,6 +15,17 @@ export function getInvoice(invoiceId) {
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/${invoiceId}`, requestOptions)
     .then(response => response.json())
 }
+export function getPaymentMethods() {
+  return [
+    {
+      id: "cash",
+      name: "Cash"
+    }, {
+      id: "creditCard",
+      name: "Credit Card"
+    }
+  ]
+}
 
 export function getItemList() {
   return [

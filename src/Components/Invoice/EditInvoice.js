@@ -8,6 +8,7 @@ import { TextInput, Label } from 'flowbite-react';
 import { AddItem } from "./AddItem";
 import { Table } from "flowbite-react";
 import { SelectUser } from "../User/SelectUser";
+import { ExportInvoice } from "./ExportInvoice";
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
@@ -113,6 +114,10 @@ export const EditInvoice = () => {
       subTotal: ta
     }
     setInvoice(inv)
+  }
+
+  const exportWithMethod = (method) => {
+    console.log("Export invoice %s with method %s...", invoiceId, method)
   }
 
   return (
@@ -259,6 +264,7 @@ export const EditInvoice = () => {
 
           <div class="py-2 px-2">
             <AddItem fncAddItem={handleAddItem}></AddItem>
+            <ExportInvoice fncCallback={exportWithMethod} />
           </div>
         </div>
       </form>
