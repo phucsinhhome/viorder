@@ -35,7 +35,7 @@ export const EditInvoice = () => {
     }
   )
 
-  const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", isHidden: true })
+  const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
 
   const { invoiceId } = useParams()
 
@@ -156,7 +156,7 @@ export const EditInvoice = () => {
 
   return (
     <div class="bg-slate-50">
-      <div class="py-2 px-2">
+      <div class="py-2 px-2 space-x-8">
         <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
           Save
         </Link>
@@ -169,7 +169,7 @@ export const EditInvoice = () => {
               <div className="mb-2 block">
                 <Label
                   htmlFor="guestName"
-                  value="Guest Name"
+                  value="Guest Name:"
                 />
               </div>
               <TextInput
@@ -180,13 +180,29 @@ export const EditInvoice = () => {
                 onChange={onDataChange}
               />
             </div>
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="reservationCode"
+                  value="Code:"
+                />
+              </div>
+              <Label
+                id="reservationCode"
+                placeholder="12345"
+                required={true}
+                value={invoice.reservationCode}
+                readOnly={true}
+                className="outline-none"
+              />
+            </div>
           </div>
           <div class="flex flex-wrap -mx-3 mb-6">
             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="checkInDate"
-                  value="Check In"
+                  value="Check In:"
                 />
               </div>
               <TextInput
@@ -208,7 +224,7 @@ export const EditInvoice = () => {
               <div className="mb-2 block">
                 <Label
                   htmlFor="checkOutDate"
-                  value="Check Out"
+                  value="Check Out:"
                 />
               </div>
               <TextInput
@@ -232,24 +248,57 @@ export const EditInvoice = () => {
               <div className="mb-2 block">
                 <Label
                   htmlFor="issuer"
-                  value="Issuer"
+                  value="Issuer:"
                 />
               </div>
               <SelectUser initialUser={{ id: invoice.issuerId, name: invoice.issuer }}
                 handleUserChange={onIssuerChange} />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+
+          </div>
+          <div class="flex flex-wrap -mx-3 mb-2">
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="totalAmount"
-                  value="Total Amount"
+                  value="Total Amount:"
                 />
               </div>
-              <TextInput
+              <Label
                 id="totalAmount"
                 placeholder="100000"
                 required={true}
-                value={invoice.subTotal}
+                value={invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                readOnly={true}
+              />
+            </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="prepaied"
+                  value="Prepaid:"
+                />
+              </div>
+              <Label
+                id="prepaied"
+                placeholder="false"
+                required={true}
+                value={String(invoice.prepaied).toUpperCase()}
+                readOnly={true}
+              />
+            </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="paymentMethod"
+                  value="Payment Method:"
+                />
+              </div>
+              <Label
+                id="paymentMethod"
+                placeholder="Cash"
+                required={true}
+                value={String(invoice.paymentMethod).toUpperCase()}
                 readOnly={true}
               />
             </div>
@@ -257,16 +306,16 @@ export const EditInvoice = () => {
         </div>
         {/** Second Column */}
         <div class="w-full md:w-1/2 px-1 mb-6">
-          <div class="py-2 px-2 flex bg-green-300">
+          <div class="py-2 px-2 flex bg-green-300 space-x-8">
             <EditItem eItem={{
               "id": "",
               "itemName": "",
               "unitPrice": 0,
               "quantity": 0,
               "amount": 0
-            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item"/>
+            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
             <ExportInvoice fncCallback={exportWithMethod} />
-            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={invoiceUrl.isHidden} >{invoiceUrl.filename}</Link>
+            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={invoiceUrl.hidden} >{invoiceUrl.filename}</Link>
           </div>
           <Table hoverable={true}>
             <Table.Head>
