@@ -14,9 +14,9 @@ import * as minio from "minio";
 var minioClient = new minio.Client({
   endPoint: 'phucsinhhcm.hopto.org',
   port: 9000,
-  useSSL: false,
-  accessKey: 'demo',
-  secretKey: 'demo!123',
+  useSSL: true,
+  accessKey: process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY,
+  secretKey: process.env.REACT_APP_FILE_SERVICE_SECRET_KEY,
 })
 
 const getPresignedLink = (key, cbF) => {
