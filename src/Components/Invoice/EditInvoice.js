@@ -6,67 +6,36 @@ import { TextInput, Label } from 'flowbite-react';
 import { Table } from "flowbite-react";
 import { SelectUser } from "../User/SelectUser";
 import { ExportInvoice } from "./ExportInvoice";
-import * as minio from "minio";
+import { getPresignedLink } from "../../Service/FileService";
 
-var minioClient = new minio.Client({
-  endPoint: process.env.REACT_APP_FILE_SERVICE_ENDPOINT,
-  port: Number(process.env.REACT_APP_FILE_SERVICE_PORT),
-  useSSL: Boolean(process.env.REACT_APP_FILE_SERVICE_SSL_ENABLED),
-  accessKey: process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY,
-  secretKey: process.env.REACT_APP_FILE_SERVICE_SECRET_KEY,
-})
-
-const getPresignedLink = (key, cbF) => {
-  minioClient.presignedGetObject('invoices', key, 300, cbF)
+const getInvDownloadLink = (key, cbF) => {
+  getPresignedLink('invoices', key, 300, cbF)
 }
-
-// const loadFile = (bucket, key) => {
-  // var size = 0
-  // minioClient.getObject(bucket, key, function (err, dataStream) {
-  //   if (err) {
-  //     return console.log(err)
-  //   }
-  //   dataStream.on('data', function (chunk) {
-  //     size += chunk.length
-  //   })
-  //   dataStream.on('end', function () {
-  //     console.log('End. Total size = ' + size)
-  //   })
-  //   dataStream.on('error', function (err) {
-  //     console.log(err)
-  //   })
-  // })
-
-//   minioClient.fGetObject(bucket, key, 'C:/apps/abc.pdf', function (err) {
-//     if (err) {
-//       return console.log(err)
-//     }
-//     console.log('success')
-//   })
-// }
 
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
     {
-      "id": "000000000000000000",
-      "guestName": "",
-      "issuer": "",
-      "issuerId": "",
-      "subTotal": 0,
-      "items": [
+      id: "000000000000000000",
+      guestName: "",
+      issuer: "",
+      issuerId: "",
+      subTotal: 0,
+      checkInDate: new Date(),
+      checkOutDate: new Date(),
+      items: [
         {
-          "id": "",
-          "itemName": "",
-          "unitPrice": 0,
-          "quantity": 0,
-          "amount": 0,
-          "service": "FOOD"
+          id: "00000",
+          itemName: "Apple",
+          unitPrice: 0,
+          quantity: 0,
+          amount: 0,
+          service: "FOOD"
         }
       ]
     }
   )
 
-  const [invoiceUrl, setInvoiceUrl] = useState("")
+  const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", isHidden: true })
 
   const { invoiceId } = useParams()
 
@@ -168,12 +137,13 @@ export const EditInvoice = () => {
             console.log(json)
             var withoutBucketPath = json.url.substring(json.url.indexOf('/'));
             console.info("Download invoice from url [%s]", withoutBucketPath);
-            // donwloadInvoice(withoutBucketPath)
-            getPresignedLink(withoutBucketPath, (err, url) => {
+
+            getInvDownloadLink(withoutBucketPath, (err, url) => {
               if (err) {
                 return console.log(err)
               }
-              setInvoiceUrl(url)
+              var invObject = { filename: json.filename, presignedUrl: url }
+              setInvoiceUrl(invObject)
             })
           });
         } else {
@@ -190,7 +160,6 @@ export const EditInvoice = () => {
         <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
           Save
         </Link>
-        {/* <UpdateButton title="Save" disable={false} onClick={handleSaveInvoice} /> */}
         <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
       </div>
       <form class="flex flex-wrap mx-1">
@@ -230,7 +199,7 @@ export const EditInvoice = () => {
                 onChange={onDataChange}
                 rightIcon={() => {
                   return (
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
                   )
                 }}
               />
@@ -247,11 +216,11 @@ export const EditInvoice = () => {
                 placeholder="1"
                 required={true}
                 value={invoice.checkOutDate}
-                readOnly={false}
+                onChange={onDataChange}
                 type="date"
                 rightIcon={() => {
                   return (
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
                   )
                 }}
               />
@@ -295,9 +264,9 @@ export const EditInvoice = () => {
               "unitPrice": 0,
               "quantity": 0,
               "amount": 0
-            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add"></EditItem>
+            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item"/>
             <ExportInvoice fncCallback={exportWithMethod} />
-            <Link to={invoiceUrl} className="pl-5 font-thin" hidden={invoiceUrl === ""} >Click To Download</Link>
+            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={invoiceUrl.isHidden} >{invoiceUrl.filename}</Link>
           </div>
           <Table hoverable={true}>
             <Table.Head>
@@ -315,7 +284,7 @@ export const EditInvoice = () => {
             <Table.Body className="divide-y">
               {invoice.items.map((item) => {
                 return (
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={item.id}>
                     <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                       {item.itemName}
                     </Table.Cell>
