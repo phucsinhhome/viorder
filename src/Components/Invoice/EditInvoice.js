@@ -8,13 +8,10 @@ import { SelectUser } from "../User/SelectUser";
 import { ExportInvoice } from "./ExportInvoice";
 import * as minio from "minio";
 
-// const minioAccessKey = process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY
-// const minioSecretKey = process.env.REACT_APP_FILE_SERVICE_SECRET_KEY
-
 var minioClient = new minio.Client({
-  endPoint: 'phucsinhhcm.hopto.org',
-  port: 9000,
-  useSSL: true,
+  endPoint: process.env.REACT_APP_FILE_SERVICE_ENDPOINT,
+  port: Number(process.env.REACT_APP_FILE_SERVICE_PORT),
+  useSSL: Boolean(process.env.REACT_APP_FILE_SERVICE_SSL_ENABLED),
   accessKey: process.env.REACT_APP_FILE_SERVICE_ACCESS_KEY,
   secretKey: process.env.REACT_APP_FILE_SERVICE_SECRET_KEY,
 })
