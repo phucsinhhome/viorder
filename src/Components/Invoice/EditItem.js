@@ -46,9 +46,9 @@ export function EditItem({ eItem, onSave, onDelete, displayName }) {
     console.log("Classify the service by service name %s", e.target.value)
     classifyServiceByItemName(e.target.value)
       .then((srv) => {
-        const nexItem = {
+        var nexItem = {
           ...item,
-          service: srv,
+          service: srv
         }
         setItem(nexItem)
       })
@@ -61,10 +61,11 @@ export function EditItem({ eItem, onSave, onDelete, displayName }) {
 
   const saveItem = (e) => {
     setShow(false)
-    setItem({
+    var nextItem = {
       ...item,
-      amount: item.quantity * item.unitPrice
-    })
+      amount: item.quantity*item.unitPrice
+    }
+    setItem(nextItem)
     onSave(item)
   }
 
