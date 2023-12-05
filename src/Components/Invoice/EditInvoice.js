@@ -15,23 +15,17 @@ const getInvDownloadLink = (key, cbF) => {
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
     {
-      id: "000000000000000000",
+      id: "new",
       guestName: "",
       issuer: "",
       issuerId: "",
       subTotal: 0,
-      checkInDate: new Date(),
+      checkInDate: new Date,
       checkOutDate: new Date(),
-      items: [
-        {
-          id: "00000",
-          itemName: "Apple",
-          unitPrice: 0,
-          quantity: 0,
-          amount: 0,
-          service: "FOOD"
-        }
-      ]
+      prepaied: false,
+      paymentMethod: "cash",
+      reservationCode: "NO_LINKED_BOOKING",
+      items: []
     }
   )
 
@@ -40,8 +34,12 @@ export const EditInvoice = () => {
   const { invoiceId } = useParams()
 
   useEffect(() => {
-    console.info("Eding invoice %s", invoiceId)
-    getInvoice(invoiceId).then(data => setInvoice(data))
+    console.info("Editing invoice %s", invoiceId)
+    if (invoiceId !== "new") {
+      getInvoice(invoiceId)
+        .then(data => setInvoice(data))
+    }
+
   }, [invoiceId]);
 
   const handleDeleteItem = (item) => {
@@ -80,10 +78,25 @@ export const EditInvoice = () => {
   const handleSaveInvoice = () => {
     console.info("Saving invoice")
     console.log(invoice)
-    updateInvoice(invoice)
+
+    var inv = {
+      ...invoice
+    }
+
+    if (invoice.id === "new") {
+      var newId = String(Date.now())
+      inv = {
+        ...inv,
+        id: newId
+      }
+      console.info("Generated invoice id %s", newId)
+    }
+
+    updateInvoice(inv)
       .then((res) => {
         if (res.ok) {
           console.info("Invoice %s has been saved successfully", invoiceId);
+          setInvoice(inv);
         } else {
           console.info("Failed to save invoice %s", invoiceId);
         }
@@ -317,11 +330,9 @@ export const EditInvoice = () => {
             <ExportInvoice fncCallback={exportWithMethod} />
             <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={invoiceUrl.hidden} >{invoiceUrl.filename}</Link>
           </div>
-          <Table hoverable={true}>
+          <Table hoverable={true} className="w-full">
             <Table.Head>
               <Table.HeadCell>Item Name</Table.HeadCell>
-              <Table.HeadCell>Unit Price</Table.HeadCell>
-              <Table.HeadCell>Quantity</Table.HeadCell>
               <Table.HeadCell>Amount</Table.HeadCell>
               <Table.HeadCell>Service</Table.HeadCell>
               <Table.HeadCell>
@@ -334,14 +345,8 @@ export const EditInvoice = () => {
               {invoice.items.map((item) => {
                 return (
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={item.id}>
-                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    <Table.Cell>
                       {item.itemName}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.quantity}
                     </Table.Cell>
                     <Table.Cell>
                       {item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}

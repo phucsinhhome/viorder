@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import UpdateButton from "../Button/Button";
 import listLatestInvoices from "../../db/invoice";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
@@ -49,8 +48,7 @@ export function InvoiceManager() {
   return (
     <div>
       <div class="py-2 px-2">
-        <UpdateButton title="+ Add" disable={false} onClick={() => {
-        }} />
+        <Link  to="../invoice/new" relative="route" className="font-bold text-amber-800 pl-4">New Invoice</Link>
       </div>
       <Table hoverable={true}>
         <Table.Head>
@@ -73,7 +71,7 @@ export function InvoiceManager() {
           {invoices.map((inv) => {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white">
                   {inv.guestName}
                 </Table.Cell>
                 <Table.Cell>
