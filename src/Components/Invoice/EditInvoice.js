@@ -20,7 +20,7 @@ export const EditInvoice = () => {
       issuer: "",
       issuerId: "",
       subTotal: 0,
-      checkInDate: new Date,
+      checkInDate: new Date(),
       checkOutDate: new Date(),
       prepaied: false,
       paymentMethod: "cash",
