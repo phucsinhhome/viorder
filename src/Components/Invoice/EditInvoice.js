@@ -168,17 +168,17 @@ export const EditInvoice = () => {
 
 
   return (
-    <div class="bg-slate-50">
-      <div class="py-2 px-2 space-x-8">
+    <div className="bg-slate-50">
+      <div className="py-2 px-2 space-x-8">
         <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
           Save
         </Link>
         <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
       </div>
-      <form class="flex flex-wrap mx-1">
-        <div class="w-full md:w-1/2 px-1 mb-6">
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+      <form className="flex flex-wrap mx-1">
+        <div className="w-full md:w-1/2 px-1 mb-6">
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="guestName"
@@ -193,7 +193,7 @@ export const EditInvoice = () => {
                 onChange={onDataChange}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="reservationCode"
@@ -210,8 +210,8 @@ export const EditInvoice = () => {
               />
             </div>
           </div>
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="checkInDate"
@@ -228,12 +228,12 @@ export const EditInvoice = () => {
                 onChange={onDataChange}
                 rightIcon={() => {
                   return (
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
+                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
                   )
                 }}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="checkOutDate"
@@ -249,15 +249,15 @@ export const EditInvoice = () => {
                 type="date"
                 rightIcon={() => {
                   return (
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
+                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
                   )
                 }}
               />
             </div>
           </div>
 
-          <div class="flex flex-wrap -mx-3 mb-2">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <div className="flex flex-wrap -mx-3 mb-2">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="issuer"
@@ -269,8 +269,8 @@ export const EditInvoice = () => {
             </div>
 
           </div>
-          <div class="flex flex-wrap -mx-3 mb-2">
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+          <div className="flex flex-wrap -mx-3 mb-2">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="totalAmount"
@@ -285,7 +285,7 @@ export const EditInvoice = () => {
                 readOnly={true}
               />
             </div>
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="prepaied"
@@ -300,7 +300,7 @@ export const EditInvoice = () => {
                 readOnly={true}
               />
             </div>
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="paymentMethod"
@@ -318,8 +318,8 @@ export const EditInvoice = () => {
           </div>
         </div>
         {/** Second Column */}
-        <div class="w-full md:w-1/2 px-1 mb-6">
-          <div class="py-2 px-2 flex bg-green-300 space-x-8">
+        <div className="w-full md:w-1/2 px-1 mb-6">
+          <div className="py-2 px-2 flex bg-green-300 space-x-8">
             <EditItem eItem={{
               "id": "",
               "itemName": "",
