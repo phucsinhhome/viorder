@@ -28,13 +28,22 @@ export const updateInvoice = (invoice) => {
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/update`, opts);
 }
 
-const listLatestInvoices = (pageNumber, pageSize) => {
-  console.info("Fetching report from backend")
+export const listLatestInvoices = (pageNumber, pageSize) => {
+  console.info("Fetching invoices from backend")
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
     .then(response => response.json())
 }
 
-export default listLatestInvoices;
+export const listStayingAndComingInvoices = (fromDate, pageNumber, pageSize) => {
+  console.info("Fetching invoices from backend")
+
+  var opts = {
+    method: 'GET'
+  }
+
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/upcoming?fromDate=${fromDate}&page=${pageNumber}&size=${pageSize}`, opts)
+    .then(response => response.json())
+}
 
 export function getInvoice(invoiceId) {
   console.info("Fetching invoice from backend")
