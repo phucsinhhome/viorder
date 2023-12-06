@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
@@ -41,6 +41,8 @@ export const EditInvoice = () => {
     }
 
   }, [invoiceId]);
+
+
 
   const handleDeleteItem = (item) => {
     console.info("Item %s is deleted", item.id)
@@ -132,6 +134,12 @@ export const EditInvoice = () => {
     }
     setInvoice(inv)
   }
+
+  const invoiceLink = useRef(null)
+
+  useEffect(() => {
+    invoiceLink.current.click()
+  }, [invoiceUrl])
 
   const exportWithMethod = (method) => {
     console.log("Export invoice %s with method [%s]...", invoiceId, method.name)
@@ -328,7 +336,7 @@ export const EditInvoice = () => {
               "amount": 0
             }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
             <ExportInvoice fncCallback={exportWithMethod} />
-            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={invoiceUrl.hidden} >{invoiceUrl.filename}</Link>
+            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
           </div>
           <Table hoverable={true} className="w-full">
             <Table.Head>
