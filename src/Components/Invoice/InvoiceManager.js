@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import listLatestInvoices from "../../db/invoice";
+import listLatestInvoices, { listStayingAndComingInvoices } from "../../db/invoice";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
 
@@ -15,12 +15,24 @@ export function InvoiceManager() {
     }
   ])
 
+  const [fromDate, setFromDate] = useState(new Date());
+  const [deltaDays, setDeltaDays] = useState(0)
+
   const [pagination, setPagination] = useState({
     pageNumber: 0,
     pageSize: 10,
     totalElements: 200,
     totalPages: 20
   })
+
+  const filterDay = (numDays) => {
+
+    var newDate = Date.now() + numDays * 24 * 60 * 60 * 1000
+    var newDD = new Date(newDate)
+    console.info("Change filter date to %s", newDD.toISOString())
+    setFromDate(newDD)
+    setDeltaDays(numDays)
+  }
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
@@ -29,26 +41,52 @@ export function InvoiceManager() {
 
   useEffect(() => {
     fetchData(0, 10)
-  }, []);
+  }, [fromDate]);
 
   const fetchData = (pageNumber, pageSize) => {
-    listLatestInvoices(pageNumber, pageSize)
+
+    var fd = fromDate.toISOString().split('T')[0]
+    console.info("Loading invoices from date %s...", fd)
+
+    listStayingAndComingInvoices(fd, pageNumber, pageSize)
       .then(data => {
         setInvoices(data.content)
-        setPagination({
+        var page = {
           pageNumber: data.number,
           pageSize: data.size,
           totalElements: data.totalElements,
           totalPages: data.totalPages
-        })
+        }
+        setPagination(page)
       })
+  }
+  const filterOpts = [
+    {
+      days: 0,
+      label: 'Today'
+    },
+    {
+      days: -1,
+      label: 'Yesterday'
+    }, {
+      days: -5,
+      label: 'Last 5 days'
+    }]
+  const filterClass = (days) => {
+    var classNamePattern = "font-bold text-amber-800 rounded px-2 py-1"
+    return classNamePattern + " " + (deltaDays === days ? "bg-slate-400" : "bg-slate-200");
   }
 
 
   return (
     <div>
-      <div class="py-2 px-2">
-        <Link  to="../invoice/new" relative="route" className="font-bold text-amber-800 pl-4">New Invoice</Link>
+      <div class="py-2 px-2 space-x-4 flex flex-wrap space-y-2">
+        <Link to="../invoice/new" relative="route" className="font-bold text-amber-800 pl-4 py-1">New Invoice</Link>
+        <div className="space-x-4">
+          {filterOpts.map((opt) => {
+            return (<Link onClick={() => filterDay(opt.days)} relative="route" className={filterClass(opt.days)}>{opt.label}</Link>)
+          })}
+        </div>
       </div>
       <Table hoverable={true}>
         <Table.Head>
