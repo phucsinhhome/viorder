@@ -66,8 +66,7 @@ export const ExpenseManager = () => {
         <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
       </div>
       <Table hoverable={true}>
-        <Table.Head>
-
+        <Table.Head >
           <Table.HeadCell>
             Date
           </Table.HeadCell>
@@ -89,11 +88,11 @@ export const ExpenseManager = () => {
         <Table.Body className="divide-y">
           {expenses.map((exp) => {
             return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
-                <Table.Cell className="font-medium text-gray-900 dark:text-white">
+              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 " key={exp.id}>
+                <Table.Cell >
                   {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
                 </Table.Cell>
-                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white">
+                <Table.Cell>
                   {exp.itemName}
                 </Table.Cell>
                 <Table.Cell>
@@ -105,7 +104,6 @@ export const ExpenseManager = () => {
                 <Table.Cell>
                   <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
-
               </Table.Row>
             )
           })}
