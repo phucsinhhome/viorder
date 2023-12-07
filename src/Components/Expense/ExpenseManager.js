@@ -67,19 +67,19 @@ export const ExpenseManager = () => {
       </div>
       <Table hoverable={true}>
         <Table.Head>
-          <Table.HeadCell>
+          <Table.HeadCell >
             Date
           </Table.HeadCell>
-          <Table.HeadCell className="px-0">
+          <Table.HeadCell>
             Item Name
           </Table.HeadCell>
-          <Table.HeadCell className="px-0">
+          <Table.HeadCell >
             Amount
           </Table.HeadCell>
-          <Table.HeadCell className="px-0">
+          <Table.HeadCell >
             Group
           </Table.HeadCell>
-          <Table.HeadCell className="px-0">
+          <Table.HeadCell >
             <span className="sr-only">
               Edit
             </span>
@@ -89,7 +89,7 @@ export const ExpenseManager = () => {
           {expenses.map((exp) => {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
-                <Table.Cell className="px-1 mx-0">
+                <Table.Cell >
                   {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
                 </Table.Cell>
                 <Table.Cell>
