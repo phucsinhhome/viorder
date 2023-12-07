@@ -27,10 +27,6 @@ export const EditExpense = () => {
   const [choosenDate, setChoosenDate] = useState(new Date().toISOString().substring(0, 10))
 
   useEffect(() => {
-    // const datepickerEl = document?.getElementById("datepickerId")
-    // new Datepicker(datepickerEl, {
-    //   autohide: true
-    // })
     console.log("Edit expense - Parent location")
     console.log(location)
     setLoc({
@@ -148,17 +144,19 @@ export const EditExpense = () => {
 
   return (
     <div>
-      <div class="flex py-2 px-2 space-x-4">
-        <span onClick={handleSaveExpense} className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Save</span>
+      <div className="flex py-2 px-2 space-x-4">
+        <Link onClick={handleSaveExpense} className="px-1 font-sans font-bold text-amber-800">
+          Save
+        </Link>
         <ConfirmDeleteExpense abortDeletion={abortExpenseDeletion} confirmDeletion={confirmExpenseDeletion} />
         <Link to=".." state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }} relative="path"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer"
+          className="px-1 font-sans font-bold text-amber-800"
         >Back</Link>
       </div>
-      <form class="flex flex-wrap mx-1">
-        <div class="w-full px-1 mb-6">
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full px-3 mb-6 md:mb-0">
+      <form className="flex flex-wrap mx-1">
+        <div className="w-full px-1 mb-6">
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="itemName"
@@ -174,9 +172,29 @@ export const EditExpense = () => {
                 onBlur={onItemNameLeave}
               />
             </div>
-          </div>
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="expenseDate"
+                  value="Expense Date"
+                />
+              </div>
+              <TextInput
+                id="expenseDate"
+                placeholder="2023-01-01"
+                required={true}
+                value={choosenDate}
+                readOnly={false}
+                type="date"
+                onChange={handleExpenseDateChange}
+                rightIcon={() => {
+                  return (
+                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
+                  )
+                }}
+              />
+            </div>
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="unitPrice"
@@ -189,11 +207,11 @@ export const EditExpense = () => {
                 required={true}
                 value={expense.unitPrice}
                 readOnly={false}
-                type="number"
+                type="currency"
                 onChange={onAmountChange}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
                   htmlFor="quantity"
@@ -212,30 +230,35 @@ export const EditExpense = () => {
             </div>
           </div>
 
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="amount"
-                  value="Amount"
-                />
-              </div>
-              <TextInput
+          <div className="flex-wrap -mx-3 mb-6 space-y-2">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0 flex flex-nowrap space-x-1">
+              <Label
+                htmlFor="amount"
+                value="Amount:"
+              />
+              <Label
                 id="amount"
                 placeholder="0"
                 required={true}
-                value={expense.amount}
+                value={expense.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                 readOnly={true}
               />
             </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="service"
-                  value="Service"
-                />
-              </div>
-              <TextInput
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0 flex flex-nowrap space-x-1">
+              <Label
+                htmlFor="expenserName"
+                value="Expenser:"
+              />
+              <Label value={expense.expenserName}></Label>
+              <SelectUser initialUser={{ id: expense.expenserId, name: expense.expenserName }}
+                handleUserChange={onExpenserChange} />
+            </div>
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0 space-x-1">
+              <Label
+                htmlFor="service"
+                value="Service:"
+              />
+              <Label
                 id="service"
                 placeholder="FOOD"
                 required={true}
@@ -244,40 +267,6 @@ export const EditExpense = () => {
               />
             </div>
 
-          </div>
-          <div class="flex flex-wrap -mx-3 mb-6">
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="expenserName"
-                  value="Expenser"
-                />
-              </div>
-              <SelectUser initialUser={{ id: expense.expenserId, name: expense.expenserName }}
-                handleUserChange={onExpenserChange} />
-            </div>
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="expenseDate"
-                  value="Expense Date"
-                />
-              </div>
-              <TextInput
-                id="expenseDate"
-                placeholder="2023-01-01"
-                required={true}
-                value={choosenDate}
-                readOnly={false}
-                type="date"
-                onChange={handleExpenseDateChange}
-                rightIcon={() => {
-                  return (
-                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
-                  )
-                }}
-              />
-            </div>
           </div>
         </div>
       </form>
