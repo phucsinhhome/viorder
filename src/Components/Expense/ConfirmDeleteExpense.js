@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal } from 'flowbite-react';
+import { Link } from "react-router-dom";
 
 export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
@@ -26,7 +27,9 @@ export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
 
   return (
     <div>
-      <span onClick={onClick} className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Delete</span>
+      <Link onClick={onClick} className="px-1 font-sans font-bold text-amber-800">
+        Delete
+      </Link>
       <Modal
         show={isShown}
         size="md"
@@ -39,9 +42,9 @@ export function ConfirmDeleteExpense({ abortDeletion, confirmDeletion }) {
             <div className="font-serif italic">Are you sure?</div>
             <div className="flex w-full space-x-4 mt-6">
               <span onClick={() => handleConfirmation(false)}
-              className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Abort</span>
+                className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Abort</span>
               <span onClick={() => handleConfirmation(true)}
-              className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Confirm</span>
+                className="font-medium text-blue-600 hover:underline dark:text-blue-500 cursor-pointer">Confirm</span>
             </div>
           </div>
         </Modal.Body>

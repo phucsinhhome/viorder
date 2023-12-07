@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
-import { TextInput, Label } from 'flowbite-react';
+import { TextInput, Label, Datepicker } from 'flowbite-react';
 import { Table } from "flowbite-react";
 import { SelectUser } from "../User/SelectUser";
 import { ExportInvoice } from "./ExportInvoice";
@@ -37,12 +37,13 @@ export const EditInvoice = () => {
     console.info("Editing invoice %s", invoiceId)
     if (invoiceId !== "new") {
       getInvoice(invoiceId)
-        .then(data => setInvoice(data))
+        .then(data => {
+          setInvoice(data)
+          
+        })
     }
 
   }, [invoiceId]);
-
-
 
   const handleDeleteItem = (item) => {
     console.info("Item %s is deleted", item.id)
@@ -65,6 +66,15 @@ export const EditInvoice = () => {
     }
     setInvoice(inv)
   }
+
+  const onCheckInDateChanged = (fieldName, value) => {
+    const inv = {
+      ...invoice,
+      [fieldName]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+    }
+    setInvoice(inv)
+  }
+
 
   const onIssuerChange = (member) => {
     console.log("Selected issuer: %s", member.id)
@@ -226,19 +236,10 @@ export const EditInvoice = () => {
                   value="Check In:"
                 />
               </div>
-              <TextInput
+              <Datepicker value={invoice.checkInDate}
+                onSelectedDateChanged={(date) => onCheckInDateChanged('checkInDate', date)}
                 id="checkInDate"
-                placeholder="1"
-                required={true}
-                value={invoice.checkInDate}
-                readOnly={false}
-                type="date"
-                onChange={onDataChange}
-                rightIcon={() => {
-                  return (
-                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
-                  )
-                }}
+                defaultChecked={true}
               />
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -248,18 +249,10 @@ export const EditInvoice = () => {
                   value="Check Out:"
                 />
               </div>
-              <TextInput
+              <Datepicker value={invoice.checkOutDate}
+                onSelectedDateChanged={(date) => onCheckInDateChanged('checkOutDate', date)}
                 id="checkOutDate"
-                placeholder="1"
-                required={true}
-                value={invoice.checkOutDate}
-                onChange={onDataChange}
-                type="date"
-                rightIcon={() => {
-                  return (
-                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
-                  )
-                }}
+                defaultChecked={true}
               />
             </div>
           </div>
