@@ -66,20 +66,20 @@ export const ExpenseManager = () => {
         <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
       </div>
       <Table hoverable={true}>
-        <Table.Head >
+        <Table.Head>
           <Table.HeadCell>
             Date
           </Table.HeadCell>
-          <Table.HeadCell>
+          <Table.HeadCell className="px-0">
             Item Name
           </Table.HeadCell>
-          <Table.HeadCell>
+          <Table.HeadCell className="px-0">
             Amount
           </Table.HeadCell>
-          <Table.HeadCell>
+          <Table.HeadCell className="px-0">
             Group
           </Table.HeadCell>
-          <Table.HeadCell>
+          <Table.HeadCell className="px-0">
             <span className="sr-only">
               Edit
             </span>
@@ -88,12 +88,12 @@ export const ExpenseManager = () => {
         <Table.Body className="divide-y">
           {expenses.map((exp) => {
             return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 " key={exp.id}>
-                <Table.Cell >
+              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
+                <Table.Cell className="px-1 mx-0">
                   {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
                 </Table.Cell>
                 <Table.Cell>
-                  {exp.itemName}
+                  <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">{exp.itemName}</Link>
                 </Table.Cell>
                 <Table.Cell>
                   {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
