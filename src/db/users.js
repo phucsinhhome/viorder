@@ -10,5 +10,9 @@ export function getUsers() {
     {
         id: "6159537383",
         name: "Hương Thanh"
+    },
+    {
+        id: "6456500785",
+        name: "Kha Trần"
     }]
 }

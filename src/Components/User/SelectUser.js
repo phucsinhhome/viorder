@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Modal, ListGroup, TextInput } from 'flowbite-react';
+import { Modal, ListGroup } from 'flowbite-react';
 import { getUsers } from "../../db/users";
+import {HiUserCircle} from 'react-icons/hi'
 
 export const SelectUser = ({ initialUser, handleUserChange }) => {
 
@@ -32,14 +33,7 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
 
   return (
     <div>
-      <TextInput
-        id="issuer"
-        placeholder="Liễu Lê"
-        required={true}
-        value={user.name}
-        readOnly={true}
-        onClick={onClick}
-      />
+      <HiUserCircle className="mr-3 h-6 w-6" onClick={onClick}/>
       <Modal
         show={isShown}
         size="md"
@@ -52,7 +46,7 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
 
             <ListGroup>
               {
-                members.map((mem) => {
+                members.filter((m) => m.id !== user.id).map((mem) => {
                   return (
                     <ListGroup.Item key={mem.id} onClick={handleItemSelection} value={mem.id}>
                       {mem.name}
