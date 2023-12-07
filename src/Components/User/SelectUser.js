@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, ListGroup, TextInput } from 'flowbite-react';
+import { Modal, ListGroup } from 'flowbite-react';
 import { getUsers } from "../../db/users";
 
 export const SelectUser = ({ initialUser, handleUserChange }) => {
@@ -45,7 +45,7 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
 
             <ListGroup>
               {
-                members.map((mem) => {
+                members.filter((m) => m.id !== user.id).map((mem) => {
                   return (
                     <ListGroup.Item key={mem.id} onClick={handleItemSelection} value={mem.id}>
                       {mem.name}
