@@ -89,8 +89,6 @@ export const EditExpense = () => {
     setExpense(exp2)
   }
 
-  const formatter = new Intl.DateTimeFormat('default', { day: "numeric", month: "numeric", year: "numeric" })
-
   const handleExpenseDateChange = (e) => {
     console.log(e)
     var choosenDate = new Date(e)
@@ -200,20 +198,6 @@ export const EditExpense = () => {
                   value="Expense Date"
                 />
               </div>
-              {/* <TextInput
-                id="expenseDate"
-                placeholder="2023-01-01"
-                required={true}
-                value={choosenDate}
-                readOnly={false}
-                type="date"
-                sty
-                onChange={handleExpenseDateChange}
-                rightIcon={() => {
-                  return (
-                    <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"></path></svg>
-                  )
-                }} /> */}
               <Datepicker autoHide={true} value={choosenDate} onSelectedDateChanged={handleExpenseDateChange}></Datepicker>
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
