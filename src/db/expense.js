@@ -11,20 +11,20 @@ const listLatestExpenses = (pageNumber, pageSize) => {
 export default listLatestExpenses;
 
 export function getExpense(expenseId) {
-  console.info("Fetching expense from backend")
+  console.info("Fetching expense [%s] from backend with", expenseId)
   return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/${expenseId}`, requestOptions)
     .then(response => response.json())
 }
 
 export function saveExpense(expense) {
-  console.info("Save expense %s", expense.id)
-  return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/update`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(expense)
-    })
-    .then(response => response.json())
+  console.info("Saving expense %s...", expense.id)
+  var opts = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(expense)
+  }
+
+  return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/update`, opts)
 }
 
 export const deleteExpense = (expense) => {
