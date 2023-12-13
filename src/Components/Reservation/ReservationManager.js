@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
-import { listStayingAndComingInvoices } from "../../db/invoice";
+import { listLatestReservations } from "../../db/reservation";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
 
 
 export function ReservationManager() {
-  const [invoices, setInvoices] = useState([
+  const [reservations, setReservations] = useState([
     {
-      "id": "000000000000000000",
+      "code": "000000000000000000",
       "guestName": "",
-      "issuer": "",
-      "issuerId": "",
-      "subTotal": 0
+      "country": "",
+      "channel": "",
+      "numOfGuest": 0,
+      isCanceled: false,
+      checkInDate: "",
+      checkOutDate: "",
+      rooms: [],
+      guestIds: [],
+      guestPhotos: []
     }
   ])
 
@@ -32,24 +38,27 @@ export function ReservationManager() {
     console.info("Change filter date to %s", newDD.toISOString())
     setFromDate(newDD)
     setDeltaDays(numDays)
-    fetchInvoices(newDD, pagination.pageNumber, pagination.pageSize)
+    fetchReservations(newDD, pagination.pageNumber, pagination.pageSize)
   }
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
     var pSize = pagination.pageSize
-    fetchInvoices(fromDate, pNum, pSize)
+    fetchReservations(fromDate, pNum, pSize)
   }
 
-  const fetchInvoices = (fromDate, pageNumber, pageSize) => {
+  const fetchReservations = (fromDate, pageNumber, pageSize) => {
+
+    var toDate = new Date(new Date(fromDate).getTime() + 5 * 86400000) // 5 days ahead of fromDate
 
     var fd = fromDate.toISOString().split('T')[0]
-    console.info("Loading invoices from date %s...", fd)
+    var td = toDate.toISOString().split('T')[0]
+    console.info("Loading reservations from date [%s] to [%s]...", fd, td)
 
-    listStayingAndComingInvoices(fd, pageNumber, pageSize)
+    listLatestReservations(fd, td, pageNumber, pageSize)
       .then(data => {
-        setInvoices(data.content)
+        setReservations(data.content)
         var page = {
           pageNumber: data.number,
           pageSize: data.size,
@@ -61,7 +70,7 @@ export function ReservationManager() {
   }
 
   useEffect(() => {
-    fetchInvoices(new Date(), 0, 10);
+    fetchReservations(new Date(), 0, 10);
   }, []);
 
   const filterOpts = [
@@ -92,7 +101,7 @@ export function ReservationManager() {
   return (
     <div>
       <div className="py-2 px-2 space-x-4 flex flex-wrap space-y-2">
-        
+
         <div className="space-x-4">
           {filterOpts.map((opt) => {
             return (<Link key={opt.days} onClick={() => filterDay(opt.days)} relative="route" className={filterClass(opt.days)}>{opt.label}</Link>)
@@ -117,20 +126,17 @@ export function ReservationManager() {
           </Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {invoices.map((inv) => {
+          {reservations.map((res) => {
             return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={inv.id}>
+              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={res.code}>
                 <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white">
-                  {inv.guestName}
+                  {res.guestName}
                 </Table.Cell>
                 <Table.Cell>
-                  {inv.issuer}
+                  {res.checkInDate}
                 </Table.Cell>
                 <Table.Cell>
-                  {inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                </Table.Cell>
-                <Table.Cell>
-                  <Link to={inv.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  <Link to={res.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
               </Table.Row>
             )

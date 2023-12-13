@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
 import { ExpenseManager } from "./Components/Expense/ExpenseManager";
 import { EditExpense } from "./Components/Expense/EditExpense";
 import { ReservationManager } from "./Components/Reservation/ReservationManager";
+import { EditReservation } from "./Components/Reservation/EditReservation";
 
 const tele = window.Telegram.WebApp;
 
@@ -32,6 +33,7 @@ function App() {
         <Route path="expenses" element={<ExpenseManager />} />
         <Route path="expenses/:expenseId" element={<EditExpense />} />
         <Route path="reservation" element={<ReservationManager />} />
+        <Route path="reservation/:reservationId" element={<EditReservation />} />
       </Routes>
 
     </Router>
