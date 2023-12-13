@@ -26,7 +26,8 @@ export function ProfitReport() {
   })
 
   useEffect(() => {
-    getProfitReportThisMonth().then(data => setReport(data))
+    getProfitReportThisMonth()
+      .then(data => setReport(data))
   }, []);
 
 
