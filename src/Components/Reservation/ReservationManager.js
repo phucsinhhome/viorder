@@ -12,7 +12,7 @@ export function ReservationManager() {
       "country": "",
       "channel": "",
       "numOfGuest": 0,
-      isCanceled: false,
+      canceled: false,
       checkInDate: "",
       checkOutDate: "",
       rooms: [],
@@ -50,7 +50,7 @@ export function ReservationManager() {
 
   const fetchReservations = (fromDate, pageNumber, pageSize) => {
 
-    var toDate = new Date(new Date(fromDate).getTime() + 5 * 86400000) // 5 days ahead of fromDate
+    var toDate = new Date(new Date(fromDate).getTime() + 20 * 86400000) // 5 days ahead of fromDate
 
     var fd = fromDate.toISOString().split('T')[0]
     var td = toDate.toISOString().split('T')[0]
@@ -114,10 +114,10 @@ export function ReservationManager() {
             Guest Name
           </Table.HeadCell>
           <Table.HeadCell>
-            Issuer
+            Check In
           </Table.HeadCell>
           <Table.HeadCell>
-            Grand Amount
+            Status
           </Table.HeadCell>
           <Table.HeadCell>
             <span className="sr-only">
@@ -134,6 +134,9 @@ export function ReservationManager() {
                 </Table.Cell>
                 <Table.Cell>
                   {res.checkInDate}
+                </Table.Cell>
+                <Table.Cell>
+                  {res.canceled===true?"CAN":""}
                 </Table.Cell>
                 <Table.Cell>
                   <Link to={res.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>

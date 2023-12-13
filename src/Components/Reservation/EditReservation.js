@@ -1,15 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getReservation, updateReservation } from "../../db/reservation";
-import { EditItem } from "./EditItem";
 import { Table, TextInput, Label, Datepicker } from 'flowbite-react';
 import { SelectUser } from "../User/SelectUser";
-import { ExportReservation } from "./ExportReservation";
-import { getPresignedLink } from "../../Service/FileService";
-
-const getInvDownloadLink = (key, cbF) => {
-  getPresignedLink('reservations', key, 300, cbF)
-}
 
 export const EditReservation = () => {
   const [reservation, setReservation] = useState(
@@ -43,20 +36,6 @@ export const EditReservation = () => {
     }
 
   }, [reservationId]);
-
-  const handleDeleteItem = (item) => {
-    console.info("Item %s is deleted", item.id)
-    const nItems = reservation.items.filter((it) => it.id !== item.id)
-    let ta = nItems.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
-    const inv = {
-      ...reservation,
-      items: nItems,
-      subTotal: ta
-    }
-
-    setReservation(inv)
-  }
-
 
   const onDataChange = (e) => {
     const inv = {
@@ -115,74 +94,11 @@ export const EditReservation = () => {
       })
   }
 
-  const createOrUpdateItem = (item) => {
-    let items = []
-    if (item.id === null || item.id === "") {
-      let newItemId = reservationId + (Date.now() % 10000000)
-      console.log("Added an item into reservation. Id [%s] was generated", newItemId)
-      items = [
-        ...reservation.items,
-        {
-          id: newItemId,
-          itemName: item.itemName,
-          unitPrice: item.unitPrice,
-          quantity: item.quantity,
-          amount: item.unitPrice * item.quantity
-        }
-      ]
-    } else {
-      console.log("Update item [%s] ", item.id)
-      items = reservation.items.map((i) => i.id === item.id ? item : i)
-    }
-
-    let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
-    const inv = {
-      ...reservation,
-      items: items,
-      subTotal: ta
-    }
-    setReservation(inv)
-  }
-
   const reservationLink = useRef(null)
 
   useEffect(() => {
     reservationLink.current.click()
   }, [reservationUrl])
-
-  const exportWithMethod = (method) => {
-    console.log("Export reservation %s with method [%s]...", reservationId, method.name)
-
-    const inv = {
-      ...reservation,
-      paymentMethod: method.id
-    }
-
-    exportReservation(inv)
-      .then((res) => {
-        if (res.ok) {
-          console.info("Reservation %s has been exported successfully", reservationId);
-          setReservation(inv);
-          res.json().then((json) => {
-            console.log(json)
-            var withoutBucketPath = json.url.substring(json.url.indexOf('/'));
-            console.info("Download reservation from url [%s]", withoutBucketPath);
-
-            getInvDownloadLink(withoutBucketPath, (err, url) => {
-              if (err) {
-                return console.log(err)
-              }
-              var invObject = { filename: json.filename, presignedUrl: url }
-              setReservationUrl(invObject)
-            })
-          });
-        } else {
-          console.info("Failed to export reservation %s", reservationId);
-        }
-        console.info(res)
-      })
-  }
-
 
   return (
     <div className="bg-slate-50">
@@ -320,14 +236,6 @@ export const EditReservation = () => {
         {/** Second Column */}
         <div className="w-full md:w-1/2 px-1 mb-6">
           <div className="py-2 px-2 flex bg-green-300 space-x-8">
-            <EditItem eItem={{
-              "id": "",
-              "itemName": "",
-              "unitPrice": 0,
-              "quantity": 0,
-              "amount": 0
-            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
-            <ExportReservation fncCallback={exportWithMethod} />
             <Link to={reservationUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={reservationLink} >{reservationUrl.filename}</Link>
           </div>
           <Table hoverable={true} className="w-full">
@@ -335,11 +243,6 @@ export const EditReservation = () => {
               <Table.HeadCell>Item Name</Table.HeadCell>
               <Table.HeadCell>Amount</Table.HeadCell>
               <Table.HeadCell>Service</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">
-                  Edit
-                </span>
-              </Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {reservation.items.map((item) => {
@@ -353,9 +256,6 @@ export const EditReservation = () => {
                     </Table.Cell>
                     <Table.Cell>
                       {item.service}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {<EditItem eItem={item} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Edit" />}
                     </Table.Cell>
                   </Table.Row>
                 )
