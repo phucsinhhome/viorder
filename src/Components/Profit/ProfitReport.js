@@ -25,10 +25,35 @@ export function ProfitReport() {
     ]
   })
 
+  const beginOfMonth = () => {
+    var today = new Date()
+    today.setDate(2)
+    today.setHours(0)
+    today.setMinutes(0)
+    today.setSeconds(0)
+
+    return today
+  }
+
+  const endOfToday = () => {
+    var today = new Date()
+    today.setHours(23)
+    today.setMinutes(59)
+    today.setSeconds(59)
+
+    return today
+  }
+
+  const [period, setPeriod] = useState({ fromDate: beginOfMonth(), toDate: endOfToday() })
+
   useEffect(() => {
-    getProfitReportThisMonth()
+
+    var fD = period.fromDate.toISOString().split('T')[0]
+    var tD = period.toDate.toISOString().split('T')[0]
+
+    getProfitReportThisMonth(fD, tD)
       .then(data => setReport(data))
-  }, []);
+  }, [period]);
 
 
 
