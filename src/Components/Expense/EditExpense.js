@@ -6,20 +6,23 @@ import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { ConfirmDeleteExpense } from "./ConfirmDeleteExpense";
 
+const intialExpense = () => {
+  var today = new Date()
+  return ({
+    "expenseDate": today.toISOString(),
+    "itemName": "",
+    "quantity": 1,
+    "unitPrice": 5000,
+    "expenserName": "Liễu Lê",
+    "expenserId": "5114683375",
+    "service": "FOOD",
+    "id": null,
+    "amount": 5000
+  })
+}
+
 export const EditExpense = () => {
-  const [expense, setExpense] = useState(
-    {
-      "expenseDate": "",
-      "itemName": "",
-      "quantity": 1,
-      "unitPrice": 0,
-      "expenserName": "",
-      "expenserId": "",
-      "service": "",
-      "id": "",
-      "amount": 0
-    }
-  )
+  const [expense, setExpense] = useState(intialExpense())
 
   const { expenseId } = useParams()
   const location = useLocation()
@@ -40,23 +43,18 @@ export const EditExpense = () => {
   }, [location])
 
   useEffect(() => {
+    console.info("Expense change to %s", expenseId)
+    if (expenseId === "new") {
+      console.info("Create new expense...")
+      reloadStateOfInitialExpense(intialExpense())
+      return;
+    }
     getExpense(expenseId)
       .then(data => {
         reloadStateOfInitialExpense(data)
       }).catch((err) => {
         console.log("Unexpected error happen during fetch expense from remote server")
-        const now = new Date()
-        reloadStateOfInitialExpense({
-          "expenseDate": now.toISOString(),
-          "itemName": "",
-          "quantity": 1,
-          "unitPrice": 5000,
-          "expenserName": "Liễu Lê",
-          "expenserId": "5114683375",
-          "service": "FOOD",
-          "id": expenseId,
-          "amount": 5000
-        })
+        reloadStateOfInitialExpense(intialExpense)
       })
   }, [expenseId]);
 
@@ -136,12 +134,25 @@ export const EditExpense = () => {
   }
 
   const handleSaveExpense = () => {
+    var exp = {
+      ...expense
+    }
+    if (expense.id === null || expense.id === "" || expense.id === "new") {
+      let newExpId = '' + (Date.now() % 10000000)
+      exp.id = newExpId
+      console.log("Adding new expense. Id [%s] was generated", exp.id)
+    }
     console.info("Saving expense")
     console.log(expense)
-    saveExpense(expense)
-      .then(resp => {
-        console.log("Save expense %s successully", expense.id)
-        console.log(resp)
+    saveExpense(exp)
+      .then((resp) => {
+        if (resp.ok) {
+          console.log("Save expense %s successully", exp.id)
+          console.log(resp)
+        } else {
+          console.log("Failed to save expense %s", exp.id)
+          console.error(resp)
+        }
       })
   }
 
@@ -198,7 +209,10 @@ export const EditExpense = () => {
                   value="Expense Date"
                 />
               </div>
-              <Datepicker autoHide={true} value={choosenDate} onSelectedDateChanged={handleExpenseDateChange}></Datepicker>
+              <Datepicker
+                autoHide={true}
+                value={choosenDate}
+                onSelectedDateChanged={handleExpenseDateChange} />
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
