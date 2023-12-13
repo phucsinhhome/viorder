@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getReservation, updateReservation } from "../../db/reservation";
-import { Table, TextInput, Label, Datepicker } from 'flowbite-react';
-import { SelectUser } from "../User/SelectUser";
+import { getReservation } from "../../db/reservation";
+import { Table, TextInput, Label } from 'flowbite-react';
 
 export const EditReservation = () => {
   const [reservation, setReservation] = useState(
@@ -21,7 +20,7 @@ export const EditReservation = () => {
     }
   )
 
-  const [reservationUrl, setReservationUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
+  const [reservationUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
 
   const { reservationId } = useParams()
 
@@ -43,55 +42,6 @@ export const EditReservation = () => {
       [e.target.id]: e.target.value
     }
     setReservation(inv)
-  }
-
-  const onCheckInDateChanged = (fieldName, value) => {
-    const inv = {
-      ...reservation,
-      [fieldName]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
-    }
-    setReservation(inv)
-  }
-
-
-  const onIssuerChange = (member) => {
-    console.log("Selected issuer: %s", member.id)
-    const inv = {
-      ...reservation,
-      issuerId: member.id,
-      issuer: member.name
-    }
-
-    setReservation(inv)
-  }
-
-  const handleSaveReservation = () => {
-    console.info("Saving reservation")
-    console.log(reservation)
-
-    var inv = {
-      ...reservation
-    }
-
-    if (reservation.id === "new") {
-      var newId = String(Date.now())
-      inv = {
-        ...inv,
-        id: newId
-      }
-      console.info("Generated reservation id %s", newId)
-    }
-
-    updateReservation(inv)
-      .then((res) => {
-        if (res.ok) {
-          console.info("Reservation %s has been saved successfully", reservationId);
-          setReservation(inv);
-        } else {
-          console.info("Failed to save reservation %s", reservationId);
-        }
-        console.info(res)
-      })
   }
 
   const reservationLink = useRef(null)

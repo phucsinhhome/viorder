@@ -139,7 +139,7 @@ export function ReservationManager() {
                   {res.canceled === true ? "CAN" : ""}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={res.code} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  <Link to={res.code} className="font-medium text-blue-600 hover:underline dark:text-blue-500">View</Link>
                 </Table.Cell>
               </Table.Row>
             )
