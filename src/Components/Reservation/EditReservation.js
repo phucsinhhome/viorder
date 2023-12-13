@@ -7,17 +7,17 @@ import { SelectUser } from "../User/SelectUser";
 export const EditReservation = () => {
   const [reservation, setReservation] = useState(
     {
-      id: "new",
-      guestName: "",
-      issuer: "",
-      issuerId: "",
-      subTotal: 0,
-      checkInDate: new Date(),
-      checkOutDate: new Date(),
-      prepaied: false,
-      paymentMethod: "cash",
-      reservationCode: "NO_LINKED_BOOKING",
-      items: []
+      "code": "new",
+      "guestName": "",
+      "country": "",
+      "channel": "",
+      "numOfGuest": 0,
+      canceled: false,
+      checkInDate: "",
+      checkOutDate: "",
+      rooms: [],
+      guestIds: [],
+      guestPhotos: []
     }
   )
 
@@ -31,7 +31,7 @@ export const EditReservation = () => {
       getReservation(reservationId)
         .then(data => {
           setReservation(data)
-          
+
         })
     }
 
@@ -103,9 +103,6 @@ export const EditReservation = () => {
   return (
     <div className="bg-slate-50">
       <div className="py-2 px-2 space-x-8">
-        <Link onClick={handleSaveReservation} className="px-1 font-sans font-bold text-amber-800">
-          Save
-        </Link>
         <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
       </div>
       <form className="flex flex-wrap mx-1">
@@ -124,6 +121,7 @@ export const EditReservation = () => {
                 required={true}
                 value={reservation.guestName}
                 onChange={onDataChange}
+                readOnly={true}
               />
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -137,7 +135,7 @@ export const EditReservation = () => {
                 id="reservationCode"
                 placeholder="12345"
                 required={true}
-                value={reservation.reservationCode}
+                value={reservation.code}
                 readOnly={true}
                 className="outline-none"
               />
@@ -151,10 +149,12 @@ export const EditReservation = () => {
                   value="Check In:"
                 />
               </div>
-              <Datepicker value={reservation.checkInDate}
-                onSelectedDateChanged={(date) => onCheckInDateChanged('checkInDate', date)}
+              <TextInput
                 id="checkInDate"
-                defaultChecked={true}
+                placeholder="YYYY-MM-DD"
+                required={false}
+                value={reservation.checkInDate}
+                readOnly={true}
               />
             </div>
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -164,10 +164,12 @@ export const EditReservation = () => {
                   value="Check Out:"
                 />
               </div>
-              <Datepicker value={reservation.checkOutDate}
-                onSelectedDateChanged={(date) => onCheckInDateChanged('checkOutDate', date)}
+              <TextInput
                 id="checkOutDate"
-                defaultChecked={true}
+                placeholder="YYYY-MM-DD"
+                required={false}
+                value={reservation.checkOutDate}
+                readOnly={true}
               />
             </div>
           </div>
@@ -176,58 +178,31 @@ export const EditReservation = () => {
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
-                  htmlFor="issuer"
-                  value="Issuer:"
+                  htmlFor="channel"
+                  value="Channel:"
                 />
               </div>
-              <SelectUser initialUser={{ id: reservation.issuerId, name: reservation.issuer }}
-                handleUserChange={onIssuerChange} />
+              <TextInput
+                id="channel"
+                placeholder="Booking"
+                required={false}
+                value={reservation.channel}
+                readOnly={true}
+              />
             </div>
 
-          </div>
-          <div className="flex flex-wrap -mx-3 mb-2">
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
-                  htmlFor="totalAmount"
-                  value="Total Amount:"
+                  htmlFor="canceled"
+                  value="Status:"
                 />
               </div>
-              <Label
-                id="totalAmount"
-                placeholder="100000"
-                required={true}
-                value={reservation.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                readOnly={true}
-              />
-            </div>
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="prepaied"
-                  value="Prepaid:"
-                />
-              </div>
-              <Label
-                id="prepaied"
-                placeholder="false"
-                required={true}
-                value={String(reservation.prepaied).toUpperCase()}
-                readOnly={true}
-              />
-            </div>
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="paymentMethod"
-                  value="Payment Method:"
-                />
-              </div>
-              <Label
-                id="paymentMethod"
-                placeholder="Cash"
-                required={true}
-                value={String(reservation.paymentMethod).toUpperCase()}
+              <TextInput
+                id="canceled"
+                placeholder=""
+                required={false}
+                value={reservation.canceled === true ? "CANCELED" : "OK"}
                 readOnly={true}
               />
             </div>
@@ -240,22 +215,18 @@ export const EditReservation = () => {
           </div>
           <Table hoverable={true} className="w-full">
             <Table.Head>
-              <Table.HeadCell>Item Name</Table.HeadCell>
+              <Table.HeadCell>Name</Table.HeadCell>
               <Table.HeadCell>Amount</Table.HeadCell>
-              <Table.HeadCell>Service</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {reservation.items.map((item) => {
+              {reservation.rooms.map((room) => {
                 return (
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={item.id}>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={room.id}>
                     <Table.Cell>
-                      {item.itemName}
+                      {room.internalRoomName}
                     </Table.Cell>
                     <Table.Cell>
-                      {item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.service}
+                      {room.totalPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                     </Table.Cell>
                   </Table.Row>
                 )

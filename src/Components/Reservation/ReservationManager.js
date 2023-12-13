@@ -50,7 +50,7 @@ export function ReservationManager() {
 
   const fetchReservations = (fromDate, pageNumber, pageSize) => {
 
-    var toDate = new Date(new Date(fromDate).getTime() + 20 * 86400000) // 5 days ahead of fromDate
+    var toDate = new Date(new Date(fromDate).getTime() + 20 * 86400000) // 20 days ahead of fromDate
 
     var fd = fromDate.toISOString().split('T')[0]
     var td = toDate.toISOString().split('T')[0]
@@ -136,10 +136,10 @@ export function ReservationManager() {
                   {res.checkInDate}
                 </Table.Cell>
                 <Table.Cell>
-                  {res.canceled===true?"CAN":""}
+                  {res.canceled === true ? "CAN" : ""}
                 </Table.Cell>
                 <Table.Cell>
-                  <Link to={res.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  <Link to={res.code} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                 </Table.Cell>
               </Table.Row>
             )
