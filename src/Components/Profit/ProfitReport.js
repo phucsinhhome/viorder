@@ -77,45 +77,6 @@ export function ProfitReport() {
       }
     })
 
-  // const timeFilters = [
-  //   {
-  //     name: "Last Month",
-  //     range: () => {
-  //       return ({
-  //         fromDate: adjustMonths(period.range.fromDate, -1),
-  //         toDate: endOf(lastDateOf(adjustMonths(period.range.toDate, -1)))
-  //       })
-  //     }
-  //   },
-  //   {
-  //     name: "Today",
-  //     range: () => {
-  //       return ({
-  //         fromDate: beginOfMonth(new Date()),
-  //         toDate: endOf(new Date())
-  //       })
-  //     }
-  //   },
-  //   {
-  //     name: "End of Month",
-  //     range: () => {
-  //       return ({
-  //         fromDate: beginOfMonth(new Date()),
-  //         toDate: endOf(lastDateOf(new Date()))
-  //       })
-  //     }
-  //   },
-  //   {
-  //     name: "Next Month",
-  //     range: () => {
-  //       return ({
-  //         fromDate: adjustMonths(period.range.fromDate, 1),
-  //         toDate: endOf(adjustMonths(period.range.toDate, 1))
-  //       })
-  //     }
-  //   }
-  // ]
-
   const timeFilters = [
     {
       name: "Last Month",
@@ -166,7 +127,13 @@ export function ProfitReport() {
       .then(data => setReport(data))
   }
 
-  useEffect(() => fetchReport(), [reportType, period]);
+  useEffect(() => {
+    var fD = period.range.fromDate.toISOString().split('T')[0]
+    var tD = period.range.toDate.toISOString().split('T')[0]
+
+    getProfitReportThisMonth(fD, tD, reportType.key)
+      .then(data => setReport(data))
+  }, [reportType, period]);
 
   const filterClass = (reportKey, currentKey) => {
     var classNamePattern = "font-bold text-amber-800 rounded px-2 py-1"
