@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import UpdateButton from "../Button/Button";
 import { getProfitReportThisMonth } from "../../db/profit";
+import { Link } from "react-router-dom";
 
 const reports = [
   {
@@ -71,19 +71,25 @@ export function ProfitReport() {
       .then(data => setReport(data))
   }, [period, reportType.key]);
 
-
+  const filterClass = (reportKey) => {
+    var classNamePattern = "font-bold text-amber-800 rounded px-2 py-1"
+    return classNamePattern + " " + (reportType.key === reportKey ? "bg-slate-400" : "bg-slate-200");
+  }
 
   return (
     <div class="bg-slate-50">
-      <div class="py-2 px-2">
-        <UpdateButton title="Update" disable={false} onClick={() => {
-          getProfitReportThisMonth().then(data => setReport(data))
-        }} />
+      <div class="flex flex-wrap py-2 px-2 space-x-4 space-y-2 ">
+        <Link onClick={() => getProfitReportThisMonth().then(data => setReport(data))} className="font-bold text-amber-800">Update</Link>
+        <div className="space-x-2">
+          {reports.map((rp) => {
+            return (<Link key={rp.key} onClick={() => setReportType(rp)} relative="route" className={filterClass(rp.key)}>{rp.name}</Link>)
+          })}
+        </div>
       </div>
 
-      <table class="table-auto border-separate text-xl border-spacing-0 font-sans px-2 w-11/12" >
+      <table class="table-auto border-separate border-spacing-0 font-sans px-2 w-11/12" >
         <thead class="bg-slate-200">
-          <tr class="text-xl font-semibold">
+          <tr class="">
             <th class="" />
             <th class="px-2 pl-4 text-right text-green-900">Revenue</th>
             <th class="px-2 text-center text-green-900">Expense</th>
@@ -99,7 +105,7 @@ export function ProfitReport() {
             <td class="px-2 text-right font-mono">{report.overall.profit.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
           </tr>
 
-          <td class="font-bold italic text-sm">SERVICES</td><td /><td />
+          <td class="font-bold italic text-sm">{String(reportType.name).toUpperCase()}</td><td /><td />
           {report.breakdown.map((item) => {
             return (
               <tr class="text-sm">
@@ -110,18 +116,6 @@ export function ProfitReport() {
               </tr>
             )
           })}
-
-          {/* <td class="font-bold italic text-sm">MEMBERS</td><td /><td />
-          {report.peoples.map((peop) => {
-            return (
-              <tr class="text-sm">
-                <td class="text-center">{peop.displayName}</td>
-                <td class="px-2 text-right font-mono">{peop.incomeAmount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                <td class="px-2 text-right font-mono">{peop.expenseAmount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                <td class="px-2 text-right font-mono">{peop.profitAmount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-              </tr>
-            )
-          })} */}
         </tbody>
       </table>
     </div >
