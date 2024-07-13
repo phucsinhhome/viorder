@@ -186,13 +186,15 @@ export const EditExpense = () => {
         console.info(data);
         let jsonD = JSON.parse(data)
 
-        let pr = parseInt(jsonD.price);
-        let qty = parseInt(jsonD.quantity);
+        let eE= jsonD.expenses[0]
+
+        let pr = parseInt(eE.price);
+        let qty = parseInt(eE.quantity);
         let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
         console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
         var exp = {
           ...expense,
-          itemName: jsonD.item,
+          itemName: eE.item,
           quantity: qty,
           unitPrice: uP,
           amount: pr
