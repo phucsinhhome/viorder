@@ -5,6 +5,7 @@ import { classifyServiceByItemName } from "../../Service/ItemClassificationServi
 import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { ConfirmDeleteExpense } from "./ConfirmDeleteExpense";
+import run from "../../Service/ExpenseExtractionService";
 
 const intialExpense = () => {
   var today = new Date()
@@ -28,6 +29,7 @@ export const EditExpense = () => {
   const location = useLocation()
   const [loc, setLoc] = useState({ pageNumber: 0, pageSize: 10 })
   const [choosenDate, setChoosenDate] = useState(new Date().toISOString().substring(0, 10))
+  const [expenseMessage, setExpenseMessage] = useState("")
 
   useEffect(() => {
     console.log("Edit expense - Parent location")
@@ -172,6 +174,33 @@ export const EditExpense = () => {
       })
   }
 
+  const expMsgChange = (e) => {
+    setExpenseMessage(e.target.value)
+  }
+
+  const extractExpense = () => {
+    console.info("Extracting expense from message " + expenseMessage)
+    run(expenseMessage)
+      .then(data => {
+        console.info("Complete extracting expense message");
+        console.info(data);
+        let jsonD = JSON.parse(data)
+
+        let pr = parseInt(jsonD.price);
+        let qty = parseInt(jsonD.quantity);
+        let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
+        console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
+        var exp = {
+          ...expense,
+          itemName: jsonD.item,
+          quantity: qty,
+          unitPrice: uP,
+          amount: pr
+        }
+        setExpense(exp)
+      })
+  }
+
   return (
     <div>
       <div className="flex py-2 px-2 space-x-4">
@@ -184,20 +213,23 @@ export const EditExpense = () => {
         >Back</Link>
       </div>
       <div>
-        
-<form>
-    <div class="grid gap-6 mb-6 md:grid-cols-2">
-        <div>
-            <label for="expense_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your expense message</label>
-            <input type="text" id="expense_message" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5kg sugar 450k" required />
-        
-        </div>
-        <div>
-            <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white invisible">G</label>
-            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Generate</button>
-        </div>
-    </div>
-</form>
+
+        <form>
+          <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <div>
+              <label for="expense_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your expense message</label>
+              <input type="text" value={expenseMessage} onChange={expMsgChange} id="expense_message" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5kg sugar 450k" required >
+                {/* {expenseMessage} */}
+              </input>
+            </div>
+            <div>
+              <label for="generate_exp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white invisible">G</label>
+              <Link onClick={extractExpense} className=" py-2 px-1 font-sans font-bold text-amber-800">
+                Generate
+              </Link>
+            </div>
+          </div>
+        </form>
 
       </div>
       <form className="flex flex-wrap mx-1">
