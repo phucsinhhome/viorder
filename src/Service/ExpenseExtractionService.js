@@ -42,7 +42,7 @@ async function run(expenseMessage) {
                 {
                     role: "user",
                     parts: [
-                        { text: "As a accountant, I need you to analyze the chat message and extract daily expense with following data fields: \nitem name\nquantity could be kilogram, gram, number\nprice in VND.\nThese are some examples\n\"5kg sugar 560k\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"560 sugar for 5kg\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"sugar 5kg 560\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"sugar 5g 560\" means \"item: Sugar, quantity: 5, unit: g, price: 560000\"\n\"5 buckets 230\" means \"item: Bucket, quantity: 5,  unit: count,price: 230000\"\nPlease try to extract expense for in message: I bought 3g sugar with 460k today" },
+                        { text: "As a accountant, I need you to analyze the chat message and extract daily expense with following data fields: \nitem name\nquantity could be kilogram, gram, number\nprice in VND.\nThese are some examples\n\"5kg sugar 560k\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"560 sugar for 5kg\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"sugar 5kg 560\" means \"item: Sugar, quantity: 5, unit: kg, price: 560000\"\n\"sugar 5g 560\" means \"item: Sugar, quantity: 5, unit: g, price: 560000\"\n\"5 buckets 230\" means \"item: Bucket, quantity: 5,  unit: count,price: 230000\"\nPlease try to extract expense in message and format the item name with sentence case" },
                     ],
                 },
                 {
