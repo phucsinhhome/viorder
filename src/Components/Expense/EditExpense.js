@@ -186,7 +186,7 @@ export const EditExpense = () => {
         console.info(data);
         let jsonD = JSON.parse(data)
 
-        let eE= jsonD.expenses[0]
+        let eE = jsonD.expenses[0]
 
         let pr = parseInt(eE.price);
         let qty = parseInt(eE.quantity);
@@ -214,24 +214,41 @@ export const EditExpense = () => {
           className="px-1 font-sans font-bold text-amber-800"
         >Back</Link>
       </div>
-      <div>
 
-        <form>
-          <div class="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
-              <label for="expense_message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your expense message</label>
-              <input type="text" value={expenseMessage} onChange={expMsgChange} id="expense_message" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5kg sugar 450k" required />
+      <form className="flex flex-wrap mx-1">
+        <div className="w-full px-1 mb-6">
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="expense_message"
+                  value="Message contains the expense"
+                />
+              </div>
+              <TextInput
+                id="expense_message"
+                placeholder="5kg sugar 450k"
+                required={true}
+                value={expenseMessage}
+                onChange={expMsgChange}
+              />
+
             </div>
-            <div>
-              <label for="generate_exp" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white invisible">G</label>
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block invisible">
+                <Label
+                  htmlFor="itemName"
+                  value="Item Name"
+                />
+              </div>
               <Link onClick={extractExpense} className=" py-2 px-1 font-sans font-bold text-amber-800">
                 Generate
               </Link>
             </div>
           </div>
-        </form>
+        </div>
+      </form>
 
-      </div>
       <form className="flex flex-wrap mx-1">
         <div className="w-full px-1 mb-6">
           <div className="flex flex-wrap -mx-3 mb-6">
