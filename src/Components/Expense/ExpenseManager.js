@@ -6,7 +6,7 @@ import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-
+import { currentUser } from "../../App";
 
 const intialExpense = () => {
   var today = new Date()
@@ -15,8 +15,8 @@ const intialExpense = () => {
     "itemName": "",
     "quantity": 1,
     "unitPrice": 5000,
-    "expenserName": "Min",
-    "expenserId": "1351151927",
+    "expenserName": currentUser.first_name + " " + currentUser.last_name,
+    "expenserId": currentUser.id,
     "service": "FOOD",
     "id": null,
     "amount": 5000
@@ -72,6 +72,7 @@ export const ExpenseManager = () => {
           totalElements: data.totalElements,
           totalPages: data.totalPages
         })
+        inputRef.current.focus()
       })
   }
 
@@ -166,6 +167,7 @@ export const ExpenseManager = () => {
           if (resp.ok) {
             console.log("Save expense %s successully", exp.id)
             console.log(resp)
+            setExpenseMessage("")
             fetchData(0, DEFAULT_PAGE_SIZE)
           } else {
             console.log("Failed to save expense %s", exp.id)
@@ -320,13 +322,16 @@ export const ExpenseManager = () => {
                     </div>
                   </Table.Cell>
                   <Table.Cell>
-                    {/* <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link> */}
-                    <span
+                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24" fill="none" viewBox="0 0 24 24"
                       onClick={() => handleDeleteExpense(exp)}
-                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                      className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                    >Del
-                    </span>
+                      >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg>
+
                   </Table.Cell>
                 </Table.Row>
               )

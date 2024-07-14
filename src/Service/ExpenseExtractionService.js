@@ -33,7 +33,6 @@ var chatSession = null
 async function run(expenseMessage) {
 
   if (chatSession == null) {
-    console.warn("API Key" + apiKey)
     chatSession = model.startChat({
       generationConfig,
       // safetySettings: Adjust safety settings
