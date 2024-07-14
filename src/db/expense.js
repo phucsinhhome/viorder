@@ -2,6 +2,10 @@ const requestOptions = {
   method: 'GET'
 }
 
+export const newExpId = () => {
+  return '' + (Date.now() % 10000000)
+}
+
 const listLatestExpenses = (pageNumber, pageSize) => {
   console.info("Fetching recent expenses")
   return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
