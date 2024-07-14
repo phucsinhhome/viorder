@@ -75,12 +75,7 @@ export const ExpenseManager = () => {
             <Table.HeadCell className="sm:px-1">
               Item Name
             </Table.HeadCell>
-            <Table.HeadCell >
-              Amount
-            </Table.HeadCell>
-            <Table.HeadCell >
-              Group
-            </Table.HeadCell>
+
             <Table.HeadCell>
               <span className="sr-only">
                 Edit
@@ -90,25 +85,27 @@ export const ExpenseManager = () => {
           <Table.Body className="divide-y">
             {expenses.map((exp) => {
               return (
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-lg" key={exp.id}>
                   <Table.Cell className="sm:px-1">
                     <Moment format="DD.MM">{new Date(exp.expenseDate)}</Moment>
-                    {/* {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"} */}
                   </Table.Cell>
                   <Table.Cell className="sm:px-1">
-                    <Link
-                      to={exp.id}
-                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                      className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                    >
-                      {exp.itemName}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {exp.service}
+                    <div className="grid grid-cols-1">
+                      <Link
+                        to={exp.id}
+                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                        className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        {exp.itemName}
+                      </Link>
+                      <div className="flex flex-row text-sm space-x-1">
+                        <div className="w-24">
+                          <span>{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </div>
+
+                        <span className="font font-mono font-black">{exp.service}</span>
+                      </div>
+                    </div>
                   </Table.Cell>
                   <Table.Cell className="sm:invisible">
                     <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
