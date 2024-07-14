@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { deleteExpense, getExpense, saveExpense } from "../../db/expense";
+import { deleteExpense, getExpense, newExpId, saveExpense } from "../../db/expense";
 import { TextInput, Label, Datepicker } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { ConfirmDeleteExpense } from "./ConfirmDeleteExpense";
+import run from "../../Service/ExpenseExtractionService";
 
 const intialExpense = () => {
   var today = new Date()
@@ -28,6 +29,7 @@ export const EditExpense = () => {
   const location = useLocation()
   const [loc, setLoc] = useState({ pageNumber: 0, pageSize: 10 })
   const [choosenDate, setChoosenDate] = useState(new Date().toISOString().substring(0, 10))
+  const [expenseMessage, setExpenseMessage] = useState("")
 
   useEffect(() => {
     console.log("Edit expense - Parent location")
@@ -138,7 +140,6 @@ export const EditExpense = () => {
       ...expense
     }
     if (expense.id === null || expense.id === "" || expense.id === "new") {
-      let newExpId = '' + (Date.now() % 10000000)
       exp.id = newExpId
       console.log("Adding new expense. Id [%s] was generated", exp.id)
     }
@@ -172,6 +173,35 @@ export const EditExpense = () => {
       })
   }
 
+  const expMsgChange = (e) => {
+    setExpenseMessage(e.target.value)
+  }
+
+  const extractExpense = () => {
+    console.info("Extracting expense from message " + expenseMessage)
+    run(expenseMessage)
+      .then(data => {
+        console.info("Complete extracting expense message");
+        console.info(data);
+        let jsonD = JSON.parse(data)
+
+        let eE = jsonD.expenses[0]
+
+        let pr = parseInt(eE.price);
+        let qty = parseInt(eE.quantity);
+        let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
+        console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
+        var exp = {
+          ...expense,
+          itemName: eE.item,
+          quantity: qty,
+          unitPrice: uP,
+          amount: pr
+        }
+        setExpense(exp)
+      })
+  }
+
   return (
     <div>
       <div className="flex py-2 px-2 space-x-4">
@@ -183,6 +213,41 @@ export const EditExpense = () => {
           className="px-1 font-sans font-bold text-amber-800"
         >Back</Link>
       </div>
+
+      <form className="flex flex-wrap mx-1">
+        <div className="w-full px-1 mb-6">
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block">
+                <Label
+                  htmlFor="expense_message"
+                  value="Message contains the expense"
+                />
+              </div>
+              <TextInput
+                id="expense_message"
+                placeholder="5kg sugar 450k"
+                required={true}
+                value={expenseMessage}
+                onChange={expMsgChange}
+              />
+
+            </div>
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <div className="mb-2 block invisible">
+                <Label
+                  htmlFor="itemName"
+                  value="Item Name"
+                />
+              </div>
+              <Link onClick={extractExpense} className=" py-2 px-1 font-sans font-bold text-amber-800">
+                Generate
+              </Link>
+            </div>
+          </div>
+        </div>
+      </form>
+
       <form className="flex flex-wrap mx-1">
         <div className="w-full px-1 mb-6">
           <div className="flex flex-wrap -mx-3 mb-6">
