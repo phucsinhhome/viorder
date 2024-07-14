@@ -22,7 +22,7 @@ export const ExpenseManager = () => {
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 10,
+    pageSize: 7,
     totalElements: 200,
     totalPages: 20
   })
@@ -62,7 +62,7 @@ export const ExpenseManager = () => {
   }
 
   return (
-    <div>
+    <div className="h-screen">
       <div className="py-2 px-2">
         <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
       </div>
@@ -107,7 +107,7 @@ export const ExpenseManager = () => {
                       </div>
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="sm:invisible">
+                  <Table.Cell>
                     <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
                   </Table.Cell>
                 </Table.Row>
