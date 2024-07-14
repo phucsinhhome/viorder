@@ -23,7 +23,7 @@ function App() {
       <div className="my-2 mx-2">
         <Link to="profit" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Profit</Link>
         <Link to="invoice" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Invoice</Link>
-        <Link to="expenses" state={{ pageNumber: 0, pageSize: 7 }} className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Expense</Link>
+        <Link to="expenses" state={{ pageNumber: 0, pageSize: 5 }} className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Expense</Link>
         <Link to="reservation" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Reservation</Link>
       </div>
       <Routes>

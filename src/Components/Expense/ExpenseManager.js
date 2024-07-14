@@ -1,11 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Table } from "flowbite-react";
+import { Table, TextInput, Label, Spinner } from "flowbite-react";
 import listLatestExpenses from "../../db/expense";
 import Moment from "react-moment";
+import run from "../../Service/ExpenseExtractionService";
 
+const intialExpense = () => {
+  var today = new Date()
+  return ({
+    "expenseDate": today.toISOString(),
+    "itemName": "",
+    "quantity": 1,
+    "unitPrice": 5000,
+    "expenserName": "Liễu Lê",
+    "expenserId": "5114683375",
+    "service": "FOOD",
+    "id": null,
+    "amount": 5000
+  })
+}
 
 export const ExpenseManager = () => {
+
   const [expenses, setExpenses] = useState([
     {
       "expenseDate": null,
@@ -20,12 +36,19 @@ export const ExpenseManager = () => {
     }
   ])
 
+  const [expense, setExpense] = useState(intialExpense())
+  const [gen, setGen] = useState(undefined);
+
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 7,
+    pageSize: 5,
     totalElements: 200,
     totalPages: 20
   })
+
+  const [expenseMessage, setExpenseMessage] = useState("")
+
+  const inputRef = useRef(null)
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
@@ -49,6 +72,7 @@ export const ExpenseManager = () => {
 
   useEffect(() => {
     console.log(location)
+    inputRef.current.focus()
     fetchData(location.state.pageNumber, location.state.pageSize)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,10 +85,116 @@ export const ExpenseManager = () => {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
+  const expMsgChange = (e) => {
+    setExpenseMessage(e.target.value)
+  }
+
+  const extractExpense = () => {
+    console.info("Extracting expense from message " + expenseMessage)
+    setGen(true)
+    run(expenseMessage)
+      .then(data => {
+        try {
+          console.info("Complete extracting expense message");
+          console.info(data);
+          let jsonD = JSON.parse(data)
+
+          let eE = jsonD.expenses[0]
+
+          let pr = parseInt(eE.price);
+          let qty = parseInt(eE.quantity);
+          let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
+          console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
+          var exp = {
+            ...expense,
+            itemName: eE.item,
+            quantity: qty,
+            unitPrice: uP,
+            amount: pr
+          }
+          setExpense(exp)
+        }
+        catch (e) {
+          console.error(e)
+        }
+        setGen(false)
+        inputRef.current.focus()
+      })
+  }
+
   return (
     <div className="h-screen">
       <div className="py-2 px-2">
         <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
+      </div>
+      <div>
+        <form className="flex flex-wrap mx-1">
+          <div className="w-full px-1 mb-0">
+            <div className="flex flex-wrap -mx-3">
+              <div className="w-full md:w-1/2 px-3 md:mb-0">
+                <Label
+                  htmlFor="expense_message"
+                  value="Message contains the expense"
+                />
+              </div>
+              <div className="flex flex-row w-full px-3 md:mb-0 space-x-2">
+                <TextInput
+                  id="expense_message"
+                  placeholder="5kg sugar 450k"
+                  required={true}
+                  value={expenseMessage}
+                  onChange={expMsgChange}
+                  className="w-full"
+                  ref={inputRef}
+                />
+                <div className="flex flex-col justify-center w-8">
+                  <svg
+                    class="w-7 h-7 text-blue-800 dark:text-white"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 22 20"
+                    hidden={gen === true}
+                    onClick={extractExpense}
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 16.5A2.493 2.493 0 0 1 6.51 18H6.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .921-3.182 2.477 2.477 0 0 1 1.875-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 11 3.5m0 13v-13m0 13a2.492 2.492 0 0 0 4.49 1.5h.01a2.467 2.467 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.479 2.479 0 0 0-1.875-3.344A2.5 2.5 0 0 0 13.5 1 2.5 2.5 0 0 0 11 3.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M19 8.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"
+                    />
+                  </svg>
+                  <Spinner
+                    aria-label="Default status example"
+                    hidden={gen !== true}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div
+          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-25"
+        >
+          <span
+            className="text-brown-600 font-bold"
+            hidden={gen === undefined || gen === true}
+          >Gen:
+          </span>
+          <span
+            className="font italic"
+            hidden={gen === undefined || gen === true}
+          >{expense.itemName + ", " + expense.amount + ", " + expense.service}
+          </span>
+          <Link
+            to={expense.id}
+            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+            className="text-brown-600 dark:text-white-500 font-bold"
+            hidden={gen === undefined || gen === true}
+          >
+            Edit
+          </Link>
+        </div>
       </div>
       <div className="overflow-x-auto">
         <Table hoverable={true}>
