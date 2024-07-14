@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Table } from "flowbite-react";
 import listLatestExpenses from "../../db/expense";
+import Moment from "react-moment";
 
 
 export const ExpenseManager = () => {
@@ -65,50 +66,59 @@ export const ExpenseManager = () => {
       <div className="py-2 px-2">
         <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
       </div>
-      <Table hoverable={true}>
-        <Table.Head>
-          <Table.HeadCell >
-            Date
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Item Name
-          </Table.HeadCell>
-          <Table.HeadCell >
-            Amount
-          </Table.HeadCell>
-          <Table.HeadCell >
-            Group
-          </Table.HeadCell>
-          <Table.HeadCell >
-            <span className="sr-only">
-              Edit
-            </span>
-          </Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {expenses.map((exp) => {
-            return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
-                <Table.Cell >
-                  {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"}
-                </Table.Cell>
-                <Table.Cell>
-                  <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">{exp.itemName}</Link>
-                </Table.Cell>
-                <Table.Cell>
-                  {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                </Table.Cell>
-                <Table.Cell>
-                  {exp.service}
-                </Table.Cell>
-                <Table.Cell>
-                  <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
-                </Table.Cell>
-              </Table.Row>
-            )
-          })}
-        </Table.Body>
-      </Table>
+      <div className="overflow-x-auto">
+        <Table hoverable={true}>
+          <Table.Head>
+            <Table.HeadCell className="sm:px-1">
+              Date
+            </Table.HeadCell>
+            <Table.HeadCell className="sm:px-1">
+              Item Name
+            </Table.HeadCell>
+            <Table.HeadCell >
+              Amount
+            </Table.HeadCell>
+            <Table.HeadCell >
+              Group
+            </Table.HeadCell>
+            <Table.HeadCell>
+              <span className="sr-only">
+                Edit
+              </span>
+            </Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y">
+            {expenses.map((exp) => {
+              return (
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={exp.id}>
+                  <Table.Cell className="sm:px-1">
+                    <Moment format="DD.MM">{new Date(exp.expenseDate)}</Moment>
+                    {/* {exp.expenseDate != null ? new Date(exp.expenseDate).toLocaleDateString() : "NA"} */}
+                  </Table.Cell>
+                  <Table.Cell className="sm:px-1">
+                    <Link
+                      to={exp.id}
+                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                      className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    >
+                      {exp.itemName}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {exp.service}
+                  </Table.Cell>
+                  <Table.Cell className="sm:invisible">
+                    <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </div>
       <nav className="flex items-center justify-between pt-4" aria-label="Table navigation">
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span>
         <ul className="inline-flex items-center -space-x-px">
