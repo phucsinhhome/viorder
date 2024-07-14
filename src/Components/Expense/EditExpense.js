@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { deleteExpense, getExpense, saveExpense } from "../../db/expense";
+import { deleteExpense, getExpense, newExpId, saveExpense } from "../../db/expense";
 import { TextInput, Label, Datepicker } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { SelectUser } from "../User/SelectUser";
@@ -140,7 +140,6 @@ export const EditExpense = () => {
       ...expense
     }
     if (expense.id === null || expense.id === "" || expense.id === "new") {
-      let newExpId = '' + (Date.now() % 10000000)
       exp.id = newExpId
       console.log("Adding new expense. Id [%s] was generated", exp.id)
     }

@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Table, TextInput, Label, Spinner } from "flowbite-react";
-import listLatestExpenses from "../../db/expense";
+import listLatestExpenses, { deleteExpense, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
+import { saveExpense } from "../../db/expense";
+
 
 const intialExpense = () => {
   var today = new Date()
@@ -19,6 +21,7 @@ const intialExpense = () => {
     "amount": 5000
   })
 }
+const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
 export const ExpenseManager = () => {
 
@@ -37,16 +40,17 @@ export const ExpenseManager = () => {
   ])
 
   const [expense, setExpense] = useState(intialExpense())
-  const [gen, setGen] = useState(undefined);
+  const [genState, setGenState] = useState(undefined); // GENERATING -> GENERATED -> SAVING -> SAVED || GENERATION_ERROR
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 5,
+    pageSize: DEFAULT_PAGE_SIZE,
     totalElements: 200,
     totalPages: 20
   })
 
   const [expenseMessage, setExpenseMessage] = useState("")
+  const [genError, setGenError] = useState("")
 
   const inputRef = useRef(null)
 
@@ -91,7 +95,13 @@ export const ExpenseManager = () => {
 
   const extractExpense = () => {
     console.info("Extracting expense from message " + expenseMessage)
-    setGen(true)
+    if(expenseMessage.length<5){
+      setGenState("GENERATION_ERROR")
+      setGenError("Message must be longer than 5 characters")
+      inputRef.current.focus()
+      return
+    }
+    setGenState("GENERATING")
     run(expenseMessage)
       .then(data => {
         try {
@@ -107,18 +117,67 @@ export const ExpenseManager = () => {
           console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
           var exp = {
             ...expense,
+            id: null,
             itemName: eE.item,
             quantity: qty,
             unitPrice: uP,
             amount: pr
           }
           setExpense(exp)
+          setGenState("GENERATED")
         }
         catch (e) {
           console.error(e)
+          setGenState("GENERATION_ERROR")
+          setGenError("Cannot generate expense")
         }
-        setGen(false)
-        inputRef.current.focus()
+        finally {
+          inputRef.current.focus()
+        }
+      })
+  }
+
+  const hanldleSaveExpense = () => {
+    setGenState("SAVING")
+    try {
+      let exp = {
+        ...expense
+      }
+      if (expense.id === null || expense.id === "" || expense.id === "new") {
+        exp.id = newExpId()
+        setExpense(exp)
+        console.log("Adding new expense. Id [%s] was generated", exp.id)
+      }
+      console.info("Saving expense")
+      console.log(exp)
+      saveExpense(exp)
+        .then((resp) => {
+          if (resp.ok) {
+            console.log("Save expense %s successully", exp.id)
+            console.log(resp)
+            fetchData(0, DEFAULT_PAGE_SIZE)
+          } else {
+            console.log("Failed to save expense %s", exp.id)
+            console.error(resp)
+          }
+        })
+    }
+    catch (e) {
+      console.error(e)
+    }
+    finally {
+      setGenState("SAVED")
+    }
+  }
+
+  const handleDeleteExpense = (e) => {
+    console.warn("Deleting expense [%s]..." + e.id)
+    deleteExpense(e)
+      .then((rsp) => {
+        if (rsp !== null) {
+          console.log("Delete expense %s successully", e.id)
+          fetchData(location.state.pageNumber, location.state.pageSize)
+        }
       })
   }
 
@@ -149,24 +208,24 @@ export const ExpenseManager = () => {
                 />
                 <div className="flex flex-col justify-center w-8">
                   <svg
-                    class="w-7 h-7 text-blue-800 dark:text-white"
+                    className="w-7 h-7 text-blue-800 dark:text-white"
                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 22 20"
-                    hidden={gen === true}
+                    hidden={genState === "GENERATING"}
                     onClick={extractExpense}
                   >
                     <path
                       stroke="currentColor"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeWidth="2"
                       d="M11 16.5A2.493 2.493 0 0 1 6.51 18H6.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .921-3.182 2.477 2.477 0 0 1 1.875-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 11 3.5m0 13v-13m0 13a2.492 2.492 0 0 0 4.49 1.5h.01a2.467 2.467 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.479 2.479 0 0 0-1.875-3.344A2.5 2.5 0 0 0 13.5 1 2.5 2.5 0 0 0 11 3.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M19 8.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"
                     />
                   </svg>
                   <Spinner
                     aria-label="Default status example"
-                    hidden={gen !== true}
+                    hidden={genState !== "GENERATING"}
                   />
                 </div>
               </div>
@@ -174,26 +233,38 @@ export const ExpenseManager = () => {
           </div>
         </form>
         <div
-          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-25"
+          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80"
         >
           <span
             className="text-brown-600 font-bold"
-            hidden={gen === undefined || gen === true}
+            hidden={genState === undefined || genState === "GENERATING"}
           >Gen:
           </span>
           <span
             className="font italic"
-            hidden={gen === undefined || gen === true}
-          >{expense.itemName + ", " + expense.amount + ", " + expense.service}
+            hidden={genState === undefined || genState === "GENERATING" || genState === "GENERATION_ERROR"}
+          >{expense.quantity + ", " + expense.itemName + ", " + expense.amount + ", " + expense.service}
           </span>
-          <Link
-            to={expense.id}
+          <span
+            className="font italic text-red-700"
+            hidden={genState !== "GENERATION_ERROR"}
+          >{genError}
+          </span>
+          <span
+            onClick={hanldleSaveExpense}
             state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
             className="text-brown-600 dark:text-white-500 font-bold"
-            hidden={gen === undefined || gen === true}
+            hidden={genState !== "GENERATED"}
           >
-            Edit
-          </Link>
+            Save
+          </span>
+          <span
+            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+            className="text-green-600-600 dark:text-white-500 font-bold"
+            hidden={genState !== "SAVED"}
+          >
+            Saved
+          </span>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -238,7 +309,13 @@ export const ExpenseManager = () => {
                     </div>
                   </Table.Cell>
                   <Table.Cell>
-                    <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
+                    {/* <Link to={exp.id} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link> */}
+                    <span
+                      onClick={() => handleDeleteExpense(exp)}
+                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                      className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    >Del
+                    </span>
                   </Table.Cell>
                 </Table.Row>
               )
