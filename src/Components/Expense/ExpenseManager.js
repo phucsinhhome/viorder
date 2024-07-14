@@ -5,6 +5,7 @@ import listLatestExpenses, { deleteExpense, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
+import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 
 
 const intialExpense = () => {
@@ -14,8 +15,8 @@ const intialExpense = () => {
     "itemName": "",
     "quantity": 1,
     "unitPrice": 5000,
-    "expenserName": "Liễu Lê",
-    "expenserId": "5114683375",
+    "expenserName": "Min",
+    "expenserId": "1351151927",
     "service": "FOOD",
     "id": null,
     "amount": 5000
@@ -95,7 +96,7 @@ export const ExpenseManager = () => {
 
   const extractExpense = () => {
     console.info("Extracting expense from message " + expenseMessage)
-    if(expenseMessage.length<5){
+    if (expenseMessage.length < 5) {
       setGenState("GENERATION_ERROR")
       setGenError("Message must be longer than 5 characters")
       inputRef.current.focus()
@@ -123,7 +124,17 @@ export const ExpenseManager = () => {
             unitPrice: uP,
             amount: pr
           }
-          setExpense(exp)
+
+          console.info("Classify the service...")
+          classifyServiceByItemName(exp.itemName)
+            .then(serv => {
+              let exp1 = {
+                ...exp,
+                service: serv
+              }
+              setExpense(exp1)
+            })
+
           setGenState("GENERATED")
         }
         catch (e) {
