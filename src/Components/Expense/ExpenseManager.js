@@ -62,10 +62,12 @@ export const ExpenseManager = () => {
 
   const location = useLocation()
 
+
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
       .then(data => {
-        setExpenses(data.content)
+        let sortedItems = data.content.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
+        setExpenses(sortedItems)
         setPagination({
           pageNumber: data.number,
           pageSize: data.size,
@@ -142,7 +144,7 @@ export const ExpenseManager = () => {
           setGenError("Cannot generate expense")
         }
         finally {
-          inputRef.current.focus()
+          // inputRef.current.focus()
         }
       })
   }
@@ -193,18 +195,24 @@ export const ExpenseManager = () => {
   }
 
   return (
-    <div className="h-screen">
+    <div>
       <div className="py-2 px-2">
-        <Link to={"new"} state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }} className="font-bold text-amber-800 pl-4">New Expense</Link>
+        <Link
+          to={"new"}
+          state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+          className="font-bold text-amber-800 pl-4"
+        >New Expense
+        </Link>
       </div>
       <div>
         <form className="flex flex-wrap mx-1">
           <div className="w-full px-1 mb-0">
             <div className="flex flex-wrap -mx-3">
-              <div className="w-full md:w-1/2 px-3 md:mb-0">
+              <div className="w-full md:w-1/2 px-3 md:mb-0 dark:text-white">
                 <Label
                   htmlFor="expense_message"
                   value="Message contains the expense"
+                  className="font dark:text-white"
                 />
               </div>
               <div className="flex flex-row w-full px-3 md:mb-0 space-x-2">
@@ -244,7 +252,7 @@ export const ExpenseManager = () => {
           </div>
         </form>
         <div
-          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80"
+          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80 font dark:text-white"
         >
           <span
             className="text-brown-600 font-bold"
@@ -278,7 +286,7 @@ export const ExpenseManager = () => {
           </span>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="table-container overflow-scroll">
         <Table hoverable={true}>
           <Table.Head>
             <Table.HeadCell className="sm:px-1">
@@ -294,7 +302,7 @@ export const ExpenseManager = () => {
               </span>
             </Table.HeadCell>
           </Table.Head>
-          <Table.Body className="divide-y">
+          <Table.Body className="divide-y" >
             {expenses.map((exp) => {
               return (
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-lg" key={exp.id}>

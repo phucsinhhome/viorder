@@ -26,9 +26,9 @@ export default function App() {
 
 
   return (
-    <div>
+    <div className="h-screen">
       <Router>
-        <div className="my-2 mx-2">
+        <div className="my-2 mx-2 w-full">
           <Link to="profit" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Profit</Link>
           <Link to="invoice" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Invoice</Link>
           <Link to="expenses" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }} className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Expense</Link>
