@@ -1,3 +1,4 @@
+export const SERVICE_NAMES = ["STAY","FOOD","TOUR"]
 const requestOptions = {
     method: 'GET'
 }
