@@ -5,7 +5,7 @@ import listLatestExpenses, { deleteExpense, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
-import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
+import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
 import { currentUser } from "../../App";
 
 const intialExpense = () => {
@@ -123,19 +123,17 @@ export const ExpenseManager = () => {
             itemName: eE.item,
             quantity: qty,
             unitPrice: uP,
-            amount: pr
+            amount: pr,
+            service: eE.service
           }
-
-          console.info("Classify the service...")
-          classifyServiceByItemName(exp.itemName)
-            .then(serv => {
-              let exp1 = {
-                ...exp,
-                service: serv
-              }
-              setExpense(exp1)
-            })
-
+          if (eE.service === undefined || eE.service === null || !SERVICE_NAMES.includes(eE.service)) {
+            console.info("Re-classify the service...")
+            classifyServiceByItemName(exp.itemName)
+              .then(serv => {
+                exp.service = serv
+              })
+          }
+          setExpense(exp);
           setGenState("GENERATED")
         }
         catch (e) {
@@ -328,7 +326,7 @@ export const ExpenseManager = () => {
                       width="24"
                       height="24" fill="none" viewBox="0 0 24 24"
                       onClick={() => handleDeleteExpense(exp)}
-                      >
+                    >
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg>
 
