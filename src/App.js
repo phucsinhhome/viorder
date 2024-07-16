@@ -22,11 +22,12 @@ export default function App() {
 
   useEffect(() => {
     tele.ready();
+    tele.expand();
   }, []);
 
 
   return (
-    <div className="h-screen">
+    <div className="flex flex-col h-[100dvh] min-h-0">
       <Router>
         <div className="my-2 mx-2 w-full">
           <Link to="profit" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Profit</Link>

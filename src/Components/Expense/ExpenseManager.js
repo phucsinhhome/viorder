@@ -195,7 +195,7 @@ export const ExpenseManager = () => {
   }
 
   return (
-    <div>
+    <div className="h-full">
       <div className="py-2 px-2">
         <Link
           to={"new"}
@@ -286,7 +286,7 @@ export const ExpenseManager = () => {
           </span>
         </div>
       </div>
-      <div className="table-container overflow-scroll">
+      <div className="h-2/3 max-h-fit overflow-scroll">
         <Table hoverable={true}>
           <Table.Head>
             <Table.HeadCell className="sm:px-1">
