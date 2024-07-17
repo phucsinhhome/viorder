@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
 import { env } from "process";
 import Moment from "react-moment";
+import { DEFAULT_PAGE_SIZE } from "../../App";
 
 
 export function InvoiceManager() {
@@ -22,7 +23,7 @@ export function InvoiceManager() {
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZE,
     totalElements: 200,
     totalPages: 20
   })
@@ -63,7 +64,7 @@ export function InvoiceManager() {
   }
 
   useEffect(() => {
-    fetchInvoices(new Date(), 0, 10);
+    fetchInvoices(new Date(), 0, DEFAULT_PAGE_SIZE);
   }, []);
 
   const filterOpts = [
@@ -145,7 +146,7 @@ export function InvoiceManager() {
                         <div className="w-24">
                           <span>{inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                         </div>
-                        <span className="font font-mono font-black">{inv.prepaied?"TT":"TS"}</span>
+                        <span className="font font-mono font-black w-8">{inv.prepaied?"TT":"TS"}</span>
                         <span className="font font-mono font-black">{inv.issuer}</span>
                       </div>
                     </div>
