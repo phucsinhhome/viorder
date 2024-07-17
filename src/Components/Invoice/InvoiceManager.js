@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { listStayingAndComingInvoices } from "../../db/invoice";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
+import { env } from "process";
+import Moment from "react-moment";
 
 
 export function InvoiceManager() {
@@ -88,6 +90,10 @@ export function InvoiceManager() {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
+  const handleDeleteInvoice = (inv)=>{
+    console.warn("Delete invoice {}...", inv.id)
+  }
+
 
   return (
     <div>
@@ -101,18 +107,18 @@ export function InvoiceManager() {
       </div>
       <Table hoverable={true}>
         <Table.Head>
-          <Table.HeadCell>
-            Guest Name
+          <Table.HeadCell className="pr-1">
+            ChOut
           </Table.HeadCell>
-          <Table.HeadCell>
-            Issuer
+          <Table.HeadCell className="px-1">
+            Details
           </Table.HeadCell>
-          <Table.HeadCell>
-            Grand Amount
-          </Table.HeadCell>
+          {/* <Table.HeadCell>
+            Delete
+          </Table.HeadCell> */}
           <Table.HeadCell>
             <span className="sr-only">
-              Edit
+              Delete
             </span>
           </Table.HeadCell>
         </Table.Head>
@@ -120,18 +126,47 @@ export function InvoiceManager() {
           {invoices.map((inv) => {
             return (
               <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={inv.id}>
-                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white">
-                  {inv.guestName}
+                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
+                <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                 </Table.Cell>
-                <Table.Cell>
-                  {inv.issuer}
-                </Table.Cell>
-                <Table.Cell>
-                  {inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                </Table.Cell>
-                <Table.Cell>
+                
+
+
+                <Table.Cell className="sm:px-1 px-1">
+                    <div className="grid grid-cols-1">
+                      <Link
+                        to={env.id}
+                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                        className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        {inv.guestName}
+                      </Link>
+                      <div className="flex flex-row text-sm space-x-1">
+                        <div className="w-24">
+                          <span>{inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </div>
+                        <span className="font font-mono font-black">{inv.prepaied?"TT":"TS"}</span>
+                        <span className="font font-mono font-black">{inv.issuer}</span>
+                      </div>
+                    </div>
+                  </Table.Cell>
+                
+                
+                  <Table.Cell>
+                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24" fill="none" viewBox="0 0 24 24"
+                      onClick={() => handleDeleteInvoice(inv)}
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg>
+
+                  </Table.Cell>
+                {/* <Table.Cell>
                   <Link to={inv.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
-                </Table.Cell>
+                </Table.Cell> */}
               </Table.Row>
             )
           })}

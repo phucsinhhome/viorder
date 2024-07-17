@@ -27,7 +27,7 @@ export default function App() {
 
 
   return (
-    <div className="flex flex-col relative h-[100dvh] min-h-0">
+    <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 mx-2 w-full flex flex-row  space-x-2">
           <Link to="profit" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Profit</Link>
@@ -46,8 +46,8 @@ export default function App() {
         </Routes>
       </Router>
       <div className="absolute top-0 right-0 flex flex-col mt-10">
-        <span className=" font text-sm italic">{currentUser.first_name + " " + currentUser.last_name}</span>
-        <span className=" font text-sm italic">{currentUser.id}</span>
+        <span className=" font text-sm italic text-gray-800 dark:text-white">{currentUser.first_name + " " + currentUser.last_name}</span>
+        <span className=" font text-sm italic text-gray-900 dark:text-white">{currentUser.id}</span>
       </div>
     </div>
   );
