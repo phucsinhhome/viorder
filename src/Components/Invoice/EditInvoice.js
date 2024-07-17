@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
-import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
+import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { getUsers } from "../../db/users";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -33,6 +34,10 @@ export const EditInvoice = () => {
   const { invoiceId } = useParams()
   const [openDelItemModal, setOpenDelItemModal] = useState(false)
   const [deletingItem, setDeletingItem] = useState(null)
+
+  const [openUsersModal, setOpenUsersModal] = useState(false)
+  const [selectedIssuer, setSelectedIssuer] = useState(null)
+  const users = getUsers()
 
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
@@ -211,6 +216,28 @@ export const EditInvoice = () => {
 
   }
 
+  const selectIssuer = () => {
+    setOpenUsersModal(true)
+    setSelectedIssuer({ issuerId: invoice.issuerId, issuer: invoice.issuer })
+  }
+  const cancelSelectIssuer = () => {
+    setOpenUsersModal(false)
+    setSelectedIssuer(null)
+  }
+  const confirmSelectIssuer = () => {
+    try {
+      if (selectedIssuer === undefined || selectedIssuer === null) {
+        return;
+      }
+      console.warn("Select item {}...", selectedIssuer.issuerId)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setOpenUsersModal(false)
+      setSelectedIssuer(null)
+    }
+  }
+
 
   return (
     <div className="h-full">
@@ -245,6 +272,7 @@ export const EditInvoice = () => {
                   value={"Iss: " + invoice.issuer}
                   readOnly={false}
                   className="outline-none font-mono italic"
+                  onClick={selectIssuer}
                 />
               </div>
               <TextInput
@@ -386,6 +414,33 @@ export const EditInvoice = () => {
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={confirmDeletion}>Remove</Button>
           <Button color="gray" onClick={cancelDeletion}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={openUsersModal} onClose={cancelSelectIssuer}>
+        <Modal.Header>Users</Modal.Header>
+        <Modal.Body>
+          <div className="justify-center">
+            <fieldset className="flex max-w-md flex-col gap-4">
+              <legend className="mb-4">Choose the issuer</legend>
+              {
+                users.map(user => {
+                  return (
+                    <div className="flex items-center gap-2">
+                      <Radio id={user.id} name="users" value={user.name} defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId} />
+                      <Label htmlFor="united-state">{user.name}</Label>
+                    </div>
+                  )
+                })
+              }
+            </fieldset>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmSelectIssuer}>OK</Button>
+          <Button color="gray" onClick={cancelSelectIssuer}>
             Cancel
           </Button>
         </Modal.Footer>
