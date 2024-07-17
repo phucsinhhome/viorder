@@ -122,7 +122,7 @@ export function InvoiceManager() {
 
 
   return (
-    <div>
+    <div className="h-full">
       <div className="py-2 px-2 space-x-4 flex flex-wrap space-y-2">
         <Link to="../invoice/new" relative="route" className="font-bold text-amber-800 pl-4 py-1">New Invoice</Link>
         <div className="space-x-4">
@@ -131,73 +131,69 @@ export function InvoiceManager() {
           })}
         </div>
       </div>
-      <Table hoverable={true}>
-        <Table.Head>
-          <Table.HeadCell className="pr-1">
-            ChOut
-          </Table.HeadCell>
-          <Table.HeadCell className="px-1">
-            Details
-          </Table.HeadCell>
-          {/* <Table.HeadCell>
-            Delete
-          </Table.HeadCell> */}
-          <Table.HeadCell>
-            <span className="sr-only">
-              Delete
-            </span>
-          </Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {invoices.map((inv) => {
-            return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={inv.id}>
-                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
-                  <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
-                </Table.Cell>
+      <div className="h-3/5 max-h-fit overflow-hidden">
+        <Table hoverable={true}>
+          <Table.Head>
+            <Table.HeadCell className="pr-1">
+              ChOut
+            </Table.HeadCell>
+            <Table.HeadCell className="px-1">
+              Details
+            </Table.HeadCell>
+            <Table.HeadCell>
+              <span className="sr-only">
+                Delete
+              </span>
+            </Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y">
+            {invoices.map((inv) => {
+              return (
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={inv.id}>
+                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
+                    <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
+                  </Table.Cell>
 
 
 
-                <Table.Cell className="sm:px-1 px-1">
-                  <div className="grid grid-cols-1">
-                    <Link
-                      to={inv.id}
-                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                      className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                    >
-                      {inv.guestName}
-                    </Link>
-                    <div className="flex flex-row text-sm space-x-1">
-                      <div className="w-24">
-                        <span>{inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                  <Table.Cell className="sm:px-1 px-1">
+                    <div className="grid grid-cols-1">
+                      <Link
+                        to={inv.id}
+                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                        className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        {inv.guestName}
+                      </Link>
+                      <div className="flex flex-row text-sm space-x-1">
+                        <div className="w-24">
+                          <span>{inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </div>
+                        <span className="font font-mono font-black w-8">{inv.prepaied ? "TT" : "TS"}</span>
+                        <span className="font font-mono font-black">{inv.issuer}</span>
                       </div>
-                      <span className="font font-mono font-black w-8">{inv.prepaied ? "TT" : "TS"}</span>
-                      <span className="font font-mono font-black">{inv.issuer}</span>
                     </div>
-                  </div>
-                </Table.Cell>
+                  </Table.Cell>
 
 
-                <Table.Cell>
-                  <svg class="w-6 h-6 text-red-800 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24" fill="none" viewBox="0 0 24 24"
-                    onClick={() => handleDeleteInvoice(inv)}
-                  >
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                  </svg>
+                  <Table.Cell>
+                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24" fill="none" viewBox="0 0 24 24"
+                      onClick={() => handleDeleteInvoice(inv)}
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg>
 
-                </Table.Cell>
-                {/* <Table.Cell>
-                  <Link to={inv.id} className="font-medium text-blue-600 hover:underline dark:text-blue-500">Edit</Link>
-                </Table.Cell> */}
-              </Table.Row>
-            )
-          })}
-        </Table.Body>
-      </Table>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </div>
       <nav className="flex items-center justify-between pt-4" aria-label="Table navigation">
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span>
         <ul className="inline-flex items-center -space-x-px">
@@ -222,8 +218,7 @@ export function InvoiceManager() {
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
           <div className="text-center">
-          <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
-            
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
               {deletingInv !== null && deletingInv !== undefined ? "Delete invoice of " + deletingInv.guestName + " ?" : "You need to choose the invoice to delete"}
             </p>
