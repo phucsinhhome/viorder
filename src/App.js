@@ -13,9 +13,9 @@ const tele = window.Telegram.WebApp;
 const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
 export const currentUser = tele.initDataUnsafe.user || {
-    id:"1351151927",
-    first_name: "Minh",
-    last_name: "Tran"
+  id: "1351151927",
+  first_name: "Minh",
+  last_name: "Tran"
 }
 
 export default function App() {
@@ -27,7 +27,7 @@ export default function App() {
 
 
   return (
-    <div className="flex flex-col h-[100dvh] min-h-0">
+    <div className="flex flex-col relative h-[100dvh] min-h-0">
       <Router>
         <div className="mt-2 mx-2 w-full flex flex-row  space-x-2">
           <Link to="profit" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Profit</Link>
@@ -45,8 +45,9 @@ export default function App() {
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
       </Router>
-      <div className="relative w-full h-[100dvh]">
-        <span className="absolute top-0 right-0 font text-sm italic pt-10">{currentUser.first_name + " " + currentUser.last_name + " - " + currentUser.id}</span>
+      <div className="absolute top-0 right-0 flex flex-col mt-10">
+        <span className=" font text-sm italic">{currentUser.first_name + " " + currentUser.last_name}</span>
+        <span className=" font text-sm italic">{currentUser.id}</span>
       </div>
     </div>
   );
