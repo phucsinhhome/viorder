@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
-import { Table, TextInput, Label, Datepicker } from 'flowbite-react';
-import { SelectUser } from "../User/SelectUser";
+import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -31,6 +31,8 @@ export const EditInvoice = () => {
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
 
   const { invoiceId } = useParams()
+  const [openDelItemModal, setOpenDelItemModal] = useState(false)
+  const [deletingItem, setDeletingItem] = useState(null)
 
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
@@ -185,6 +187,28 @@ export const EditInvoice = () => {
 
   const handleDeleteInvoiceItem = (item) => {
 
+    setDeletingItem(item);
+    setOpenDelItemModal(true)
+  }
+
+  const cancelDeletion = () => {
+    setOpenDelItemModal(false)
+    setDeletingItem(null)
+  }
+
+  const confirmDeletion = () => {
+    try {
+      if (deletingItem === undefined || deletingItem === null) {
+        return;
+      }
+      console.warn("Delete item {}...", deletingItem.id)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setOpenDelItemModal(false)
+      setDeletingItem(null)
+    }
+
   }
 
 
@@ -203,7 +227,7 @@ export const EditInvoice = () => {
               <div className="flex justify-between w-full space-x-4 mb-1">
                 <Label
                   htmlFor="guestName"
-                  value="Guest"
+                  value="Guest:"
                 />
                 <Label
                   id="reservationCode"
@@ -211,14 +235,14 @@ export const EditInvoice = () => {
                   required={true}
                   value={invoice.reservationCode}
                   readOnly={true}
-                  className="outline-none font-mono italic text-gray-400"
+                  className="outline-none font-mono text-[10px] italic text-gray-400"
                 />
 
                 <Label
                   id="issuerId"
                   placeholder="Min"
                   required={true}
-                  value={invoice.issuer}
+                  value={"Iss: " + invoice.issuer}
                   readOnly={false}
                   className="outline-none font-mono italic"
                 />
@@ -261,19 +285,6 @@ export const EditInvoice = () => {
             </div>
           </div>
 
-          {/* <div className="flex flex-wrap -mx-3 mb-2">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="issuer"
-                  value="Issuer:"
-                />
-              </div>
-              <SelectUser initialUser={{ id: invoice.issuerId, name: invoice.issuer }}
-                handleUserChange={onIssuerChange} />
-            </div>
-
-          </div> */}
           <div className="flex flex-wrap -mx-3 mb-1">
             <div className="w-full flex justify-between px-3 mb-1 md:mb-0">
               <Label
@@ -289,13 +300,14 @@ export const EditInvoice = () => {
                 required={true}
                 value={invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
                 readOnly={true}
+                className="font-mono font-bold text-red-900"
               />
             </div>
           </div>
         </div>
       </form>
       {/** Second Column */}
-      <div className="w-full md:w-1/2 px-1 mb-6">
+      <div className="w-full md:w-1/2 px-1 mb-1">
         <div className="py-2 px-2 flex bg-gray-300 space-x-8">
           <EditItem eItem={{
             "id": "",
@@ -309,14 +321,14 @@ export const EditInvoice = () => {
         </div>
       </div>
 
-      <div className="h-full max-h-fit overflow-scroll">
+      <div className="h-2/3 max-h-fit overflow-scroll">
         <Table hoverable>
-          <Table.Head>
-            <Table.HeadCell className="sm:px-1">
+          <Table.Head className="my-1">
+            <Table.HeadCell className="sm:px-1 py-2">
               Item Name
             </Table.HeadCell>
 
-            <Table.HeadCell>
+            <Table.HeadCell className="py-2">
               <span className="sr-only">
                 Delete
               </span>
@@ -334,10 +346,8 @@ export const EditInvoice = () => {
                         {exp.itemName}
                       </div>
                       <div className="flex flex-row text-[10px] space-x-1">
-                        <div className="w-24">
-                          <span>{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
-                        </div>
-
+                        <span className="w-6">{"x" + exp.quantity}</span>
+                        <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                         <span className="font font-mono font-black">{exp.service}</span>
                       </div>
                     </div>
@@ -347,8 +357,8 @@ export const EditInvoice = () => {
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
-                      height="24" 
-                      fill="none" 
+                      height="24"
+                      fill="none"
                       viewBox="0 0 24 24"
                       onClick={() => handleDeleteInvoiceItem(exp)}
                     >
@@ -363,41 +373,23 @@ export const EditInvoice = () => {
         </Table>
       </div>
 
-      {/* <Table hoverable={true} className="w-full">
-            <Table.Head>
-              <Table.HeadCell>Item Name</Table.HeadCell>
-              <Table.HeadCell>Amount</Table.HeadCell>
-              <Table.HeadCell>Service</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">
-                  Edit
-                </span>
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y">
-              {invoice.items.map((item) => {
-                return (
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={item.id}>
-                    <Table.Cell>
-                      {item.itemName}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.service}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {<EditItem eItem={item} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Edit" />}
-                    </Table.Cell>
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          </Table> */}
-
-
-
+      <Modal show={openDelItemModal} onClose={cancelDeletion}>
+        <Modal.Header>Confirm</Modal.Header>
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              {deletingItem !== null && deletingItem !== undefined ? "Remove item" + deletingItem.itemName + " ?" : "No item selected"}
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmDeletion}>Remove</Button>
+          <Button color="gray" onClick={cancelDeletion}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
     </div >
   );
