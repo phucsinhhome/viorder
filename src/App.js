@@ -29,11 +29,11 @@ export default function App() {
   return (
     <div className="flex flex-col h-[100dvh] min-h-0">
       <Router>
-        <div className="my-2 mx-2 w-full">
-          <Link to="profit" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Profit</Link>
-          <Link to="invoice" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Invoice</Link>
-          <Link to="expenses" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }} className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Expense</Link>
-          <Link to="reservation" className="px-3 py-2 bg-gray-200 text-amber-900 text-sm font-sans ">Reservation</Link>
+        <div className="mt-2 mx-2 w-full flex flex-row  space-x-2">
+          <Link to="profit" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Profit</Link>
+          <Link to="invoice" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Invoice</Link>
+          <Link to="expenses" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
+          <Link to="reservation" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Reservation</Link>
         </div>
         <Routes>
           <Route path="profit" element={<ProfitReport />} />
@@ -44,10 +44,9 @@ export default function App() {
           <Route path="reservation" element={<ReservationManager />} />
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
-
       </Router>
-      <div className="w-full">
-        <span className="w-full font text-sm line">{currentUser.first_name + " " + currentUser.last_name + " - Id: " + currentUser.id}</span>
+      <div className="relative w-full h-[100dvh]">
+        <span className="absolute top-0 right-0 font text-sm italic pt-10">{currentUser.first_name + " " + currentUser.last_name + " - " + currentUser.id}</span>
       </div>
     </div>
   );
