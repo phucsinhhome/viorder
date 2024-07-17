@@ -38,7 +38,7 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
-          
+
         })
     }
 
@@ -183,9 +183,13 @@ export const EditInvoice = () => {
       })
   }
 
+  const handleDeleteInvoiceItem = (item) => {
+
+  }
+
 
   return (
-    <div className="bg-slate-50">
+    <div className="h-full">
       <div className="py-2 px-2 space-x-8">
         <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
           Save
@@ -193,13 +197,30 @@ export const EditInvoice = () => {
         <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
       </div>
       <form className="flex flex-wrap mx-1">
-        <div className="w-full md:w-1/2 px-1 mb-6">
-          <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
+        <div className="w-full md:w-1/2 px-1 mb-1">
+          <div className="flex flex-wrap -mx-3 mb-1">
+            <div className="w-full md:w-1/2 px-3 mb-1 md:mb-0">
+              <div className="flex justify-between w-full space-x-4 mb-1">
                 <Label
                   htmlFor="guestName"
-                  value="Guest Name:"
+                  value="Guest"
+                />
+                <Label
+                  id="reservationCode"
+                  placeholder="12345"
+                  required={true}
+                  value={invoice.reservationCode}
+                  readOnly={true}
+                  className="outline-none font-mono italic text-gray-400"
+                />
+
+                <Label
+                  id="issuerId"
+                  placeholder="Min"
+                  required={true}
+                  value={invoice.issuer}
+                  readOnly={false}
+                  className="outline-none font-mono italic"
                 />
               </div>
               <TextInput
@@ -210,26 +231,10 @@ export const EditInvoice = () => {
                 onChange={onDataChange}
               />
             </div>
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="reservationCode"
-                  value="Code:"
-                />
-              </div>
-              <Label
-                id="reservationCode"
-                placeholder="12345"
-                required={true}
-                value={invoice.reservationCode}
-                readOnly={true}
-                className="outline-none"
-              />
-            </div>
           </div>
-          <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
+          <div className="flex flex-wrap -mx-3 mb-1">
+            <div className="w-1/2 px-3 mb-1 md:mb-0">
+              <div className="mb-1 block">
                 <Label
                   htmlFor="checkInDate"
                   value="Check In:"
@@ -241,8 +246,8 @@ export const EditInvoice = () => {
                 defaultChecked={true}
               />
             </div>
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
+            <div className="w-1/2 px-3 mb-1 md:mb-0">
+              <div className="mb-1 block">
                 <Label
                   htmlFor="checkOutDate"
                   value="Check Out:"
@@ -256,7 +261,7 @@ export const EditInvoice = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap -mx-3 mb-2">
+          {/* <div className="flex flex-wrap -mx-3 mb-2">
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <div className="mb-2 block">
                 <Label
@@ -268,15 +273,16 @@ export const EditInvoice = () => {
                 handleUserChange={onIssuerChange} />
             </div>
 
-          </div>
-          <div className="flex flex-wrap -mx-3 mb-2">
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="totalAmount"
-                  value="Total Amount:"
-                />
-              </div>
+          </div> */}
+          <div className="flex flex-wrap -mx-3 mb-1">
+            <div className="w-full flex justify-between px-3 mb-1 md:mb-0">
+              <Label
+                id="paymentMethod"
+                placeholder="Cash"
+                required={true}
+                value={String(invoice.paymentMethod).toUpperCase()}
+                readOnly={true}
+              />
               <Label
                 id="totalAmount"
                 placeholder="100000"
@@ -285,52 +291,79 @@ export const EditInvoice = () => {
                 readOnly={true}
               />
             </div>
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="prepaied"
-                  value="Prepaid:"
-                />
-              </div>
-              <Label
-                id="prepaied"
-                placeholder="false"
-                required={true}
-                value={String(invoice.prepaied).toUpperCase()}
-                readOnly={true}
-              />
-            </div>
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <div className="mb-2 block">
-                <Label
-                  htmlFor="paymentMethod"
-                  value="Payment Method:"
-                />
-              </div>
-              <Label
-                id="paymentMethod"
-                placeholder="Cash"
-                required={true}
-                value={String(invoice.paymentMethod).toUpperCase()}
-                readOnly={true}
-              />
-            </div>
           </div>
         </div>
-        {/** Second Column */}
-        <div className="w-full md:w-1/2 px-1 mb-6">
-          <div className="py-2 px-2 flex bg-green-300 space-x-8">
-            <EditItem eItem={{
-              "id": "",
-              "itemName": "",
-              "unitPrice": 0,
-              "quantity": 0,
-              "amount": 0
-            }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
-            <ExportInvoice fncCallback={exportWithMethod} />
-            <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
-          </div>
-          <Table hoverable={true} className="w-full">
+      </form>
+      {/** Second Column */}
+      <div className="w-full md:w-1/2 px-1 mb-6">
+        <div className="py-2 px-2 flex bg-gray-300 space-x-8">
+          <EditItem eItem={{
+            "id": "",
+            "itemName": "",
+            "unitPrice": 0,
+            "quantity": 0,
+            "amount": 0
+          }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
+          <ExportInvoice fncCallback={exportWithMethod} />
+          <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
+        </div>
+      </div>
+
+      <div className="h-full max-h-fit overflow-scroll">
+        <Table hoverable>
+          <Table.Head>
+            <Table.HeadCell className="sm:px-1">
+              Item Name
+            </Table.HeadCell>
+
+            <Table.HeadCell>
+              <span className="sr-only">
+                Delete
+              </span>
+            </Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y" >
+            {invoice.items.map((exp) => {
+              return (
+                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
+                  <Table.Cell className="sm:px-1 py-1">
+                    <div className="grid grid-cols-1 py-0 my-0">
+                      <div
+                        className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        {exp.itemName}
+                      </div>
+                      <div className="flex flex-row text-[10px] space-x-1">
+                        <div className="w-24">
+                          <span>{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </div>
+
+                        <span className="font font-mono font-black">{exp.service}</span>
+                      </div>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="py-1">
+                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24" 
+                      fill="none" 
+                      viewBox="0 0 24 24"
+                      onClick={() => handleDeleteInvoiceItem(exp)}
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg>
+
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </div>
+
+      {/* <Table hoverable={true} className="w-full">
             <Table.Head>
               <Table.HeadCell>Item Name</Table.HeadCell>
               <Table.HeadCell>Amount</Table.HeadCell>
@@ -361,11 +394,11 @@ export const EditInvoice = () => {
                 )
               })}
             </Table.Body>
-          </Table>
+          </Table> */}
 
 
-        </div>
-      </form>
+
+
     </div >
   );
 }
