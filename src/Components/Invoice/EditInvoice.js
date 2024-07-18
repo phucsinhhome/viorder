@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, getPaymentMethods, updateInvoice } from "../../db/invoice";
 import { EditItem } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { HiOutlineExclamationCircle, HiUserCircle } from "react-icons/hi";
 import { getUsers } from "../../db/users";
 
 const getInvDownloadLink = (key, cbF) => {
@@ -39,6 +39,10 @@ export const EditInvoice = () => {
   const [selectedIssuer, setSelectedIssuer] = useState(null)
   const users = getUsers()
 
+  const [openPaymentModal, setOpenPaymentModal] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
+  const paymentMethods = getPaymentMethods()
+
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
     if (invoiceId !== "new") {
@@ -50,20 +54,6 @@ export const EditInvoice = () => {
     }
 
   }, [invoiceId]);
-
-  const handleDeleteItem = (item) => {
-    console.info("Item %s is deleted", item.id)
-    const nItems = invoice.items.filter((it) => it.id !== item.id)
-    let ta = nItems.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
-    const inv = {
-      ...invoice,
-      items: nItems,
-      subTotal: ta
-    }
-
-    setInvoice(inv)
-  }
-
 
   const onDataChange = (e) => {
     const inv = {
@@ -78,18 +68,6 @@ export const EditInvoice = () => {
       ...invoice,
       [fieldName]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
     }
-    setInvoice(inv)
-  }
-
-
-  const onIssuerChange = (member) => {
-    console.log("Selected issuer: %s", member.id)
-    const inv = {
-      ...invoice,
-      issuerId: member.id,
-      issuer: member.name
-    }
-
     setInvoice(inv)
   }
 
@@ -190,23 +168,36 @@ export const EditInvoice = () => {
       })
   }
 
-  const handleDeleteInvoiceItem = (item) => {
+  //============ ITEM DELETION ====================//
+  const askForDelItemConfirmation = (item) => {
 
     setDeletingItem(item);
     setOpenDelItemModal(true)
   }
 
-  const cancelDeletion = () => {
+  const cancelDelItem = () => {
     setOpenDelItemModal(false)
     setDeletingItem(null)
   }
 
-  const confirmDeletion = () => {
+  const confirmDelItem = () => {
     try {
       if (deletingItem === undefined || deletingItem === null) {
         return;
       }
       console.warn("Delete item {}...", deletingItem.id)
+
+      let item = deletingItem
+      console.info("Item %s is deleted", item.id)
+      const nItems = invoice.items.filter((it) => it.id !== item.id)
+      let ta = nItems.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
+      let inv = {
+        ...invoice,
+        items: nItems,
+        subTotal: ta
+      }
+
+      setInvoice(inv)
     } catch (e) {
       console.error(e)
     } finally {
@@ -216,6 +207,7 @@ export const EditInvoice = () => {
 
   }
 
+  //============ ISSUER CHANGE ====================//
   const selectIssuer = () => {
     setOpenUsersModal(true)
     setSelectedIssuer({ issuerId: invoice.issuerId, issuer: invoice.issuer })
@@ -226,10 +218,16 @@ export const EditInvoice = () => {
   }
   const confirmSelectIssuer = () => {
     try {
-      if (selectedIssuer === undefined || selectedIssuer === null) {
+      if (selectedIssuer === undefined || selectedIssuer === null || selectIssuer.issuerId === invoice.issuerId) {
         return;
       }
-      console.warn("Select item {}...", selectedIssuer.issuerId)
+      console.warn("Change the issuer to {}...", selectedIssuer.issuerId)
+      let nInv = {
+        ...invoice,
+        issuerId: selectedIssuer.issuerId,
+        issuer: selectedIssuer.issuer
+      }
+      setInvoice(nInv)
     } catch (e) {
       console.error(e)
     } finally {
@@ -237,7 +235,46 @@ export const EditInvoice = () => {
       setSelectedIssuer(null)
     }
   }
+  const issuerChange = (e) => {
+    let is = e.currentTarget
+    console.info("Selected user", is.value)
+    setSelectedIssuer({ issuerId: is.id, issuer: is.value })
+  }
 
+  //============ PAYMENT METHOD CHANGE ====================//
+  const selectPaymentMethod = () => {
+    let pM = paymentMethods.find((p) => p.id === invoice.paymentMethod)
+    setSelectedPaymentMethod(pM)
+    setOpenPaymentModal(true)
+  }
+  const cancelSelectPaymentMethod = () => {
+    setOpenPaymentModal(false)
+    setSelectedPaymentMethod(null)
+  }
+  const confirmSelectPaymentMethod = () => {
+    try {
+      if (selectedPaymentMethod === undefined || selectedPaymentMethod === null || selectedPaymentMethod.id === invoice.paymentMethod) {
+        return;
+      }
+      console.warn("Change the payment method to {}...", selectedPaymentMethod.id)
+      let nInv = {
+        ...invoice,
+        paymentMethod: selectedPaymentMethod.id
+      }
+      setInvoice(nInv)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setOpenPaymentModal(false)
+      setSelectedPaymentMethod(null)
+    }
+  }
+  const paymentMethodChange = (e) => {
+    let is = e.currentTarget
+    let pM = paymentMethods.find((p) => p.id === is.id)
+    console.info("Selected payment method", is.value)
+    setSelectedPaymentMethod(pM)
+  }
 
   return (
     <div className="h-full">
@@ -265,15 +302,17 @@ export const EditInvoice = () => {
                   className="outline-none font-mono text-[10px] italic text-gray-400"
                 />
 
-                <Label
-                  id="issuerId"
-                  placeholder="Min"
-                  required={true}
-                  value={"Iss: " + invoice.issuer}
-                  readOnly={false}
-                  className="outline-none font-mono italic"
-                  onClick={selectIssuer}
-                />
+                <div className="flex flex-row" onClick={selectIssuer}>
+                  <HiUserCircle className="mx-1 h-5 w-5" />
+                  <Label
+                    id="issuerId"
+                    placeholder="Min"
+                    required={true}
+                    value={invoice.issuer}
+                    readOnly={false}
+                    className="outline-none font-mono italic"
+                  />
+                </div>
               </div>
               <TextInput
                 id="guestName"
@@ -321,6 +360,7 @@ export const EditInvoice = () => {
                 required={true}
                 value={String(invoice.paymentMethod).toUpperCase()}
                 readOnly={true}
+                onClick={selectPaymentMethod}
               />
               <Label
                 id="totalAmount"
@@ -337,13 +377,17 @@ export const EditInvoice = () => {
       {/** Second Column */}
       <div className="w-full md:w-1/2 px-1 mb-1">
         <div className="py-2 px-2 flex bg-gray-300 space-x-8">
-          <EditItem eItem={{
-            "id": "",
-            "itemName": "",
-            "unitPrice": 0,
-            "quantity": 0,
-            "amount": 0
-          }} onSave={createOrUpdateItem} onDelete={handleDeleteItem} displayName="Add Item" />
+          <EditItem
+            eItem={{
+              "id": "",
+              "itemName": "",
+              "unitPrice": 0,
+              "quantity": 0,
+              "amount": 0
+            }}
+            onSave={createOrUpdateItem}
+            displayName="Add Item"
+          />
           <ExportInvoice fncCallback={exportWithMethod} />
           <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
         </div>
@@ -388,7 +432,7 @@ export const EditInvoice = () => {
                       height="24"
                       fill="none"
                       viewBox="0 0 24 24"
-                      onClick={() => handleDeleteInvoiceItem(exp)}
+                      onClick={() => askForDelItemConfirmation(exp)}
                     >
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg>
@@ -401,7 +445,7 @@ export const EditInvoice = () => {
         </Table>
       </div>
 
-      <Modal show={openDelItemModal} onClose={cancelDeletion}>
+      <Modal show={openDelItemModal} onClose={cancelDelItem}>
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
           <div className="text-center">
@@ -412,8 +456,8 @@ export const EditInvoice = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmDeletion}>Remove</Button>
-          <Button color="gray" onClick={cancelDeletion}>
+          <Button onClick={confirmDelItem}>Remove</Button>
+          <Button color="gray" onClick={cancelDelItem}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -429,7 +473,13 @@ export const EditInvoice = () => {
                 users.map(user => {
                   return (
                     <div className="flex items-center gap-2">
-                      <Radio id={user.id} name="users" value={user.name} defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId} />
+                      <Radio
+                        id={user.id}
+                        name="users"
+                        value={user.name}
+                        defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId}
+                        onChange={issuerChange}
+                      />
                       <Label htmlFor="united-state">{user.name}</Label>
                     </div>
                   )
@@ -441,6 +491,39 @@ export const EditInvoice = () => {
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={confirmSelectIssuer}>OK</Button>
           <Button color="gray" onClick={cancelSelectIssuer}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={openPaymentModal} onClose={cancelSelectPaymentMethod}>
+        <Modal.Header>Payment</Modal.Header>
+        <Modal.Body>
+          <div className="justify-center">
+            <fieldset className="flex max-w-md flex-col gap-4">
+              <legend className="mb-4">Choose payment method</legend>
+              {
+                paymentMethods.map(pM => {
+                  return (
+                    <div className="flex items-center gap-2">
+                      <Radio
+                        id={pM.id}
+                        name="paymentMethods"
+                        value={pM.name}
+                        defaultChecked={selectedPaymentMethod === null ? false : pM.id === selectedPaymentMethod.id}
+                        onChange={paymentMethodChange}
+                      />
+                      <Label htmlFor="united-state">{pM.name}</Label>
+                    </div>
+                  )
+                })
+              }
+            </fieldset>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmSelectPaymentMethod}>OK</Button>
+          <Button color="gray" onClick={cancelSelectPaymentMethod}>
             Cancel
           </Button>
         </Modal.Footer>
