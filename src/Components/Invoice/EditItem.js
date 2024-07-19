@@ -96,15 +96,15 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
         <Modal.Body>
           <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div>
-              <div className="mb-2 block">
+              {/* <div className="mb-2 block">
                 <Label
                   htmlFor="itemName"
                   value="Item Name"
                 />
-              </div>
+              </div> */}
               <TextInput
                 id="itemName"
-                placeholder="Bungalow"
+                placeholder="Item name"
                 required={true}
                 value={item.itemName}
                 onChange={onValueChange}
