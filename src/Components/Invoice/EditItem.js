@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Modal, TextInput, Label, Checkbox, Button } from 'flowbite-react';
-import {classifyServiceByItemName} from "../../Service/ItemClassificationService"
+import { classifyServiceByItemName } from "../../Service/ItemClassificationService"
+import { HiOutlinePlus } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
-export function EditItem({ eItem, onSave, onDelete, displayName }) {
+export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
   const [item, setItem] = useState(
     {
       "id": "",
@@ -63,7 +65,7 @@ export function EditItem({ eItem, onSave, onDelete, displayName }) {
     setShow(false)
     var nextItem = {
       ...item,
-      amount: item.quantity*item.unitPrice
+      amount: item.quantity * item.unitPrice
     }
     setItem(nextItem)
     onSave(item)
@@ -81,7 +83,9 @@ export function EditItem({ eItem, onSave, onDelete, displayName }) {
 
   return (
     <div>
-      <span onClick={onClick} className="font-bold text-amber-800">{displayName}</span>
+      <Link onClick={onClick} className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1">
+        {displayName}
+      </Link>
       <Modal
         show={isShown}
         size="md"

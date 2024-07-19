@@ -375,22 +375,20 @@ export const EditInvoice = () => {
         </div>
       </form>
       {/** Second Column */}
-      <div className="w-full md:w-1/2 px-1 mb-1">
-        <div className="py-2 px-2 flex bg-gray-300 space-x-8">
-          <EditItem
-            eItem={{
-              "id": "",
-              "itemName": "",
-              "unitPrice": 0,
-              "quantity": 0,
-              "amount": 0
-            }}
-            onSave={createOrUpdateItem}
-            displayName="Add Item"
-          />
-          <ExportInvoice fncCallback={exportWithMethod} />
-          <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
-        </div>
+      <div className="flex flex-row w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
+        <EditItem
+          eItem={{
+            "id": "",
+            "itemName": "",
+            "unitPrice": 0,
+            "quantity": 0,
+            "amount": 0
+          }}
+          onSave={createOrUpdateItem}
+          displayName="Add Item"
+        />
+        <ExportInvoice fncCallback={exportWithMethod} />
+        <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
       </div>
 
       <div className="h-2/3 max-h-fit overflow-scroll">
