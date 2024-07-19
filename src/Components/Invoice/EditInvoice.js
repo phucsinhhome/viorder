@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, getPaymentMethods, updateInvoice } from "../../db/invoice";
-import { EditItem } from "./EditItem";
+import { defaultEmptyItem, EditItem } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
@@ -377,13 +377,7 @@ export const EditInvoice = () => {
       {/** Second Column */}
       <div className="flex flex-row w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
         <EditItem
-          eItem={{
-            "id": "",
-            "itemName": "",
-            "unitPrice": 0,
-            "quantity": 0,
-            "amount": 0
-          }}
+          eItem={defaultEmptyItem}
           onSave={createOrUpdateItem}
           displayName="Add Item"
         />

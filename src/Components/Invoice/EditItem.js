@@ -1,25 +1,32 @@
 import { useState, useEffect } from "react";
 import { Modal, TextInput, Label, Checkbox, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService"
-import { HiOutlinePlus } from "react-icons/hi";
+import { HiOutlineCash, HiOutlinePlus } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
-export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
-  const [item, setItem] = useState(
-    {
-      "id": "",
-      "itemName": "",
-      "unitPrice": 0,
-      "quantity": 0,
-      "amount": 0
-    }
-  )
 
+export const defaultEmptyItem = {
+  "id": "",
+  "itemName": "",
+  "unitPrice": 0,
+  "quantity": 0,
+  "amount": 0
+}
+
+export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
+  const [item, setItem] = useState(defaultEmptyItem)
   const [rememberUnitPrice, setRememberUnitPrice] = useState(true)
+  const [unitPrice, setUnitPrice] = useState({ amount: 0, formattedAmount: '' })
 
 
   useEffect(() => {
     setItem(eItem)
+    if (eItem.unitPrice === 0) {
+      setUnitPrice({ amount: 0, formattedAmount: '' })
+      return
+    }
+    let uP = formatMoneyAmount(String(eItem.unitPrice))
+    setUnitPrice(uP)
   }, [eItem]);
 
   const [isShown, setShow] = useState(false)
@@ -80,6 +87,20 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
     onDelete(item)
   }
 
+  // Function to format the input value as money amount
+  const formatMoneyAmount = (value) => {
+    const numStr = value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+    const [integerPart, decimalPart] = numStr.split('.');
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const formattedValue = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+    return { amount: Number(numStr), formattedAmount: formattedValue };
+  };
+
+  const handleUnitPriceChange = (e) => {
+    let v = e.target.value
+    let am = formatMoneyAmount(v)
+    setUnitPrice(am)
+  }
 
   return (
     <div>
@@ -96,12 +117,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
         <Modal.Body>
           <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div>
-              {/* <div className="mb-2 block">
-                <Label
-                  htmlFor="itemName"
-                  value="Item Name"
-                />
-              </div> */}
               <TextInput
                 id="itemName"
                 placeholder="Item name"
@@ -111,22 +126,23 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
                 onBlur={onItemNameBlur}
               />
             </div>
-            <div>
-              <div className="mb-2 block">
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
                 <Label
                   htmlFor="unitPrice"
                   value="Unit Price"
                 />
               </div>
-
               <TextInput
                 id="unitPrice"
-                placeholder="100000"
-                type="number"
+                placeholder="Enter amount here"
+                type="currency"
                 step={5000}
                 required={true}
-                value={item.unitPrice}
-                onChange={onValueChange}
+                value={unitPrice.formattedAmount}
+                onChange={handleUnitPriceChange}
+                rightIcon={HiOutlineCash}
+                className="w-full"
               />
             </div>
             <div>
