@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Modal, TextInput, Label, Checkbox, Button } from 'flowbite-react';
+import { Modal, TextInput, Label, Button } from 'flowbite-react';
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService"
-import { HiMinus, HiOutlineCash, HiOutlinePlus, HiPlay, HiPlus } from "react-icons/hi";
+import { HiOutlineCash } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
 
@@ -14,9 +14,8 @@ export const defaultEmptyItem = {
   "service": ""
 }
 
-export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
+export const EditItem = ({ eItem, onSave, displayName, className }) => {
   const [item, setItem] = useState(defaultEmptyItem)
-  const [rememberUnitPrice, setRememberUnitPrice] = useState(true)
   const [unitPrice, setUnitPrice] = useState({ amount: 0, formattedAmount: '' })
   const [quantity, setQuantity] = useState(0)
   const [servicedItem, setServicedItem] = useState({ itemName: '', service: '' })
@@ -42,18 +41,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
     setShow(false)
   }
 
-  // const handleItemNameChange = (e) => {
-  //   const nexItem = {
-  //     ...item,
-  //     [e.target.id]: e.target.value,
-  //   }
-  //   const nexxItem = {
-  //     ...nexItem,
-  //     amount: nexItem.quantity * nexItem.unitPrice
-  //   }
-  //   setItem(nexxItem)
-  // }
-
   const onItemNameBlur = (e) => {
 
     let nItemName = e.target.value
@@ -73,11 +60,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
         }
         setServicedItem(nexItem)
       })
-  }
-
-  const onRemberForLaterUseChange = (e) => {
-    console.info("Remember changed to %s", e.target.checked)
-    setRememberUnitPrice(e.target.checked)
   }
 
   const saveItem = (e) => {
@@ -127,7 +109,7 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
 
   return (
     <div>
-      <Link onClick={onClick} className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1">
+      <Link onClick={onClick} className={className}>
         {displayName}
       </Link>
       <Modal
@@ -145,7 +127,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
                 placeholder="Item name"
                 required={true}
                 value={item.itemName}
-                // onChange={handleItemNameChange}
                 onBlur={onItemNameBlur}
               />
             </div>
@@ -216,14 +197,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
                   value="Amount"
                 />
               </div>
-              {/* <TextInput
-                id="amount"
-                placeholder="1"
-                required={true}
-                value={item.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                readOnly={true}
-                className="w-full"
-              /> */}
               <span className="w-full">{(unitPrice.amount * quantity).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
 
             </div>
@@ -234,13 +207,6 @@ export const EditItem = ({ eItem, onSave, onDelete, displayName }) => {
                   value="Service"
                 />
               </div>
-              {/* <TextInput
-                id="service"
-                placeholder="FOOD"
-                required={true}
-                value={item.service}
-                readOnly={true}
-              /> */}
               <span className="w-full">{item.service}</span>
             </div>
             <div className="w-full flex justify-center">

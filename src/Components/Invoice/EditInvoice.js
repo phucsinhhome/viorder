@@ -380,6 +380,7 @@ export const EditInvoice = () => {
           eItem={defaultEmptyItem}
           onSave={createOrUpdateItem}
           displayName="Add Item"
+          className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
         />
         <ExportInvoice fncCallback={exportWithMethod} />
         <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
@@ -404,11 +405,12 @@ export const EditInvoice = () => {
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
                   <Table.Cell className="sm:px-1 py-1">
                     <div className="grid grid-cols-1 py-0 my-0">
-                      <div
+                      <EditItem
+                        eItem={exp}
+                        onSave={createOrUpdateItem}
+                        displayName={exp.itemName}
                         className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
-                      >
-                        {exp.itemName}
-                      </div>
+                      />
                       <div className="flex flex-row text-[10px] space-x-1">
                         <span className="w-6">{"x" + exp.quantity}</span>
                         <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
