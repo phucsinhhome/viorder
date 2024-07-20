@@ -14,6 +14,14 @@ export const defaultEmptyItem = {
   "service": ""
 }
 
+export const formatMoneyAmount = (value) => {
+  const numStr = value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
+  const [integerPart, decimalPart] = numStr.split('.');
+  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const formattedValue = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+  return { amount: Number(numStr), formattedAmount: formattedValue };
+};
+
 export const EditItem = ({ eItem, onSave, displayName, className }) => {
   const [item, setItem] = useState(defaultEmptyItem)
   const [unitPrice, setUnitPrice] = useState({ amount: 0, formattedAmount: '' })
@@ -92,18 +100,11 @@ export const EditItem = ({ eItem, onSave, displayName, className }) => {
   }
 
   const cancelEditItem = (e) => {
-    setItem(defaultEmptyItem)
+    // resetState()
     setShow(false)
   }
 
   // ============= UNIT PRICE =================//
-  const formatMoneyAmount = (value) => {
-    const numStr = value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters
-    const [integerPart, decimalPart] = numStr.split('.');
-    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    const formattedValue = decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
-    return { amount: Number(numStr), formattedAmount: formattedValue };
-  };
 
   const handleUnitPriceChange = (e) => {
     let v = e.target.value

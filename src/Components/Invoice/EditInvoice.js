@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, getPaymentMethods, updateInvoice } from "../../db/invoice";
-import { defaultEmptyItem, EditItem } from "./EditItem";
+import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
-import { HiOutlineExclamationCircle, HiUserCircle } from "react-icons/hi";
+import { HiOutlineCash, HiOutlineExclamationCircle, HiUserCircle } from "react-icons/hi";
 import { getUsers } from "../../db/users";
+import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -42,6 +43,10 @@ export const EditInvoice = () => {
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
   const paymentMethods = getPaymentMethods()
+
+  const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
+  const [editingItem, setEditingItem] = useState(defaultEmptyItem)
+
 
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
@@ -100,7 +105,8 @@ export const EditInvoice = () => {
       })
   }
 
-  const createOrUpdateItem = (item) => {
+  const createOrUpdateItem = () => {
+    let item = editingItem
     let items = []
     if (item.id === null || item.id === "") {
       let newItemId = invoiceId + (Date.now() % 10000000)
@@ -276,6 +282,69 @@ export const EditInvoice = () => {
     setSelectedPaymentMethod(pM)
   }
 
+  //================= EDIT ITEM ===================//
+  const editItem = (item) => {
+    let uP = formatMoneyAmount(String(item.unitPrice))
+    let eI = {
+      ...item,
+      formattedUnitPrice: uP.formattedAmount
+    }
+    setEditingItem(eI)
+    setOpenEditingItemModal(true)
+  }
+
+  const cancelEditingItem = () => {
+    setEditingItem(defaultEmptyItem)
+    setOpenEditingItemModal(false)
+  }
+
+  //================= ITEM NAME ===================//
+  const changeItemName = (e) => {
+    let iName = e.target.value
+    let eI = {
+      ...editingItem,
+      itemName: iName
+    }
+    setEditingItem(eI)
+  }
+
+  const blurItemName = () => {
+    let nItemName = editingItem.itemName
+    if (nItemName === null || nItemName === undefined || nItemName === "") {
+      return;
+    }
+    console.log("Classify the service by service name %s", nItemName)
+    classifyServiceByItemName(nItemName)
+      .then((srv) => {
+        var nexItem = {
+          ...editingItem,
+          service: srv
+        }
+        setEditingItem(nexItem)
+      })
+  }
+
+  //================= UNIT PRICE ===================//
+  const changeUnitPrice = (e) => {
+    let v = e.target.value
+    let uP = formatMoneyAmount(v)
+    let eI = {
+      ...editingItem,
+      formattedUnitPrice: uP.formattedAmount
+    }
+    setEditingItem(eI)
+  }
+
+  //================= QUANTITY ===================//
+  const changeQuantity = (delta) => {
+    let nQ = editItem.quantity + delta
+    let eI = {
+      ...editingItem,
+      quantity: nQ
+    }
+    setEditingItem(eI)
+  }
+
   return (
     <div className="h-full">
       <div className="py-2 px-2 space-x-8">
@@ -376,12 +445,18 @@ export const EditInvoice = () => {
       </form>
       {/** Second Column */}
       <div className="flex flex-row w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
-        <EditItem
+        {/* <EditItem
           eItem={defaultEmptyItem}
           onSave={createOrUpdateItem}
           displayName="Add Item"
           className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
-        />
+        /> */}
+        <div
+          className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
+          onClick={() => editItem(defaultEmptyItem)}
+        >
+          Add Item
+        </div>
         <ExportInvoice fncCallback={exportWithMethod} />
         <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
       </div>
@@ -405,12 +480,18 @@ export const EditInvoice = () => {
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
                   <Table.Cell className="sm:px-1 py-1">
                     <div className="grid grid-cols-1 py-0 my-0">
-                      <EditItem
+                      {/* <EditItem
                         eItem={exp}
                         onSave={createOrUpdateItem}
                         displayName={exp.itemName}
                         className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
-                      />
+                      /> */}
+                      <div
+                        className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
+                        onClick={() => editItem(exp)}
+                      >
+                        {exp.itemName}
+                      </div>
                       <div className="flex flex-row text-[10px] space-x-1">
                         <span className="w-6">{"x" + exp.quantity}</span>
                         <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
@@ -521,6 +602,116 @@ export const EditInvoice = () => {
             Cancel
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={openEditingItemModal}
+        size="md"
+        popup={true}
+        onClose={cancelEditingItem}
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+            <div>
+              <TextInput
+                id="itemName"
+                placeholder="Item name"
+                required={true}
+                value={editingItem.itemName}
+                onChange={changeItemName}
+                onBlur={blurItemName}
+              />
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="unitPrice"
+                  value="Unit Price"
+                />
+              </div>
+              <TextInput
+                id="unitPrice"
+                placeholder="Enter amount here"
+                type="currency"
+                step={5000}
+                required={true}
+                value={editingItem.formattedUnitPrice}
+                onChange={changeUnitPrice}
+                rightIcon={HiOutlineCash}
+                className="w-full"
+              />
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="quantity"
+                  value="Quantity"
+                />
+              </div>
+              <div class="relative flex items-center w-full">
+                <button
+                  type="button"
+                  id="decrement-button"
+                  data-input-counter-decrement="quantity-input"
+                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  onClick={() => changeQuantity(-1)}
+                >
+                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                  </svg>
+                </button>
+                <input
+                  type="text"
+                  id="quantity-input"
+                  data-input-counter aria-describedby="helper-text-explanation"
+                  class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="999"
+                  required
+                  value={editItem.quantity}
+                />
+                <button
+                  type="button"
+                  id="increment-button"
+                  data-input-counter-increment="quantity-input"
+                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  onClick={() => changeQuantity(1)}
+                >
+                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="amount"
+                  value="Amount"
+                />
+              </div>
+              <span className="w-full">{(editingItem.unitPrice * editingItem.quantity).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="service"
+                  value="Service"
+                />
+              </div>
+              <span className="w-full">{editingItem.service}</span>
+            </div>
+            <div className="w-full flex justify-center">
+              <Button onClick={createOrUpdateItem} className="mx-2">
+                Save
+              </Button>
+              <Button onClick={cancelEditingItem} className="mx-2">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
       </Modal>
 
     </div >
