@@ -41,9 +41,18 @@ export const EditItem = ({ eItem, onSave, displayName, className }) => {
     setShow(false)
   }
 
-  const onItemNameBlur = (e) => {
+  const changeItemName = (e) => {
+    let nServiceName = e.target.value
+    let sN = {
+      ...servicedItem,
+      itemName: nServiceName
+    }
+    setServicedItem(sN)
+  }
 
-    let nItemName = e.target.value
+  const onItemNameBlur = () => {
+
+    let nItemName = servicedItem.itemName
     if (nItemName === null || nItemName === undefined || nItemName === "") {
       return;
     }
@@ -126,7 +135,8 @@ export const EditItem = ({ eItem, onSave, displayName, className }) => {
                 id="itemName"
                 placeholder="Item name"
                 required={true}
-                value={item.itemName}
+                value={servicedItem.itemName}
+                onChange={changeItemName}
                 onBlur={onItemNameBlur}
               />
             </div>
@@ -207,7 +217,7 @@ export const EditItem = ({ eItem, onSave, displayName, className }) => {
                   value="Service"
                 />
               </div>
-              <span className="w-full">{item.service}</span>
+              <span className="w-full">{servicedItem.service}</span>
             </div>
             <div className="w-full flex justify-center">
               <Button onClick={saveItem} className="mx-2">

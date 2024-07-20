@@ -352,7 +352,7 @@ export const EditInvoice = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap -mx-3 mb-1">
+          <div className="flex flex-wrap -mx-3 mb-3">
             <div className="w-full flex justify-between px-3 mb-1 md:mb-0">
               <Label
                 id="paymentMethod"
