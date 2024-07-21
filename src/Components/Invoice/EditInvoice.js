@@ -106,33 +106,40 @@ export const EditInvoice = () => {
   }
 
   const createOrUpdateItem = () => {
-    let item = editingItem
-    let items = []
-    if (item.id === null || item.id === "") {
-      let newItemId = invoiceId + (Date.now() % 10000000)
-      console.log("Added an item into invoice. Id [%s] was generated", newItemId)
-      items = [
-        ...invoice.items,
-        {
-          id: newItemId,
-          itemName: item.itemName,
-          unitPrice: item.unitPrice,
-          quantity: item.quantity,
-          amount: item.unitPrice * item.quantity
-        }
-      ]
-    } else {
-      console.log("Update item [%s] ", item.id)
-      items = invoice.items.map((i) => i.id === item.id ? item : i)
-    }
+    try {
+      let item = editingItem
+      let items = []
+      if (item.id === null || item.id === "") {
+        let newItemId = invoiceId + (Date.now() % 10000000)
+        console.log("Added an item into invoice. Id [%s] was generated", newItemId)
+        items = [
+          ...invoice.items,
+          {
+            id: newItemId,
+            itemName: item.itemName,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            amount: item.unitPrice * item.quantity
+          }
+        ]
+      } else {
+        console.log("Update item [%s] ", item.id)
+        items = invoice.items.map((i) => i.id === item.id ? item : i)
+      }
 
-    let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
-    const inv = {
-      ...invoice,
-      items: items,
-      subTotal: ta
+      let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
+      const inv = {
+        ...invoice,
+        items: items,
+        subTotal: ta
+      }
+      setInvoice(inv)
+    } catch (e) {
+      console.error(e)
     }
-    setInvoice(inv)
+    finally {
+      setOpenEditingItemModal(false)
+    }
   }
 
   const invoiceLink = useRef(null)
@@ -330,6 +337,8 @@ export const EditInvoice = () => {
     let uP = formatMoneyAmount(v)
     let eI = {
       ...editingItem,
+      amount: uP.amount * editingItem.quantity,
+      unitPrice: uP.amount,
       formattedUnitPrice: uP.formattedAmount
     }
     setEditingItem(eI)
@@ -337,10 +346,11 @@ export const EditInvoice = () => {
 
   //================= QUANTITY ===================//
   const changeQuantity = (delta) => {
-    let nQ = editItem.quantity + delta
+    let nQ = editingItem.quantity + delta
     let eI = {
       ...editingItem,
-      quantity: nQ
+      quantity: nQ,
+      amount: editingItem.unitPrice * nQ
     }
     setEditingItem(eI)
   }
@@ -668,7 +678,7 @@ export const EditInvoice = () => {
                   class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="999"
                   required
-                  value={editItem.quantity}
+                  value={editingItem.quantity}
                 />
                 <button
                   type="button"
@@ -690,7 +700,7 @@ export const EditInvoice = () => {
                   value="Amount"
                 />
               </div>
-              <span className="w-full">{(editingItem.unitPrice * editingItem.quantity).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+              <span className="w-full">{editingItem.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
 
             </div>
             <div className="flex flex-row w-full align-middle">
