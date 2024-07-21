@@ -29,7 +29,7 @@ export function ExportInvoice({ fncCallback }) {
 
   return (
     <div>
-      <Link onClick={onClick} className="px-1 font-sans font-bold text-amber-800">
+      <Link onClick={onClick} className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1">
         Export
       </Link>
       <Modal

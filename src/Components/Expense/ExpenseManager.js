@@ -252,7 +252,7 @@ export const ExpenseManager = () => {
           </div>
         </form>
         <div
-          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80 font dark:text-white"
+          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80 font text-gray-600 dark:text-white"
         >
           <span
             className="text-brown-600 font-bold"
@@ -298,7 +298,7 @@ export const ExpenseManager = () => {
 
             <Table.HeadCell>
               <span className="sr-only">
-                Edit
+                Delete
               </span>
             </Table.HeadCell>
           </Table.Head>
