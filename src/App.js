@@ -10,7 +10,7 @@ import { ReservationManager } from "./Components/Reservation/ReservationManager"
 import { EditReservation } from "./Components/Reservation/EditReservation";
 
 const tele = window.Telegram.WebApp;
-const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
+export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
 export const currentUser = tele.initDataUnsafe.user || {
   id: "1351151927",
@@ -27,11 +27,11 @@ export default function App() {
 
 
   return (
-    <div className="flex flex-col relative h-[100dvh] min-h-0">
+    <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 mx-2 w-full flex flex-row  space-x-2">
           <Link to="profit" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Profit</Link>
-          <Link to="invoice" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Invoice</Link>
+          <Link to="invoice" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
           <Link to="expenses" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
           <Link to="reservation" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Reservation</Link>
         </div>
@@ -46,8 +46,8 @@ export default function App() {
         </Routes>
       </Router>
       <div className="absolute top-0 right-0 flex flex-col mt-10">
-        <span className=" font text-sm italic">{currentUser.first_name + " " + currentUser.last_name}</span>
-        <span className=" font text-sm italic">{currentUser.id}</span>
+        <span className=" font text-[10px] font-bold italic text-gray-800 dark:text-white">{currentUser.first_name + " " + currentUser.last_name}</span>
+        <span className=" font text-[8px] italic text-gray-900 dark:text-white">{currentUser.id}</span>
       </div>
     </div>
   );
