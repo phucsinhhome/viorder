@@ -107,7 +107,14 @@ export const EditInvoice = () => {
 
   const createOrUpdateItem = () => {
     try {
-      let item = editingItem
+      let item = {
+        id: editingItem.id,
+        itemName: editingItem.itemName,
+        service: editingItem.service,
+        unitPrice: editingItem.unitPrice,
+        quantity: editingItem.quantity,
+        amount: editingItem.amount
+      }
       let items = []
       if (item.id === null || item.id === "") {
         let newItemId = invoiceId + (Date.now() % 10000000)
