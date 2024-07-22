@@ -36,6 +36,9 @@ export const EditInvoice = () => {
   const [openGuestNameModal, setOpenGuestNameModal] = useState(false)
   const [editingGuestName, setEditingGuestName] = useState(null)
 
+  const [openEditDateModal, setOpenEditDateModal] = useState(false)
+  const [editingDate, setEditingDate] = useState({ dateField: null, value: new Date() })
+
   const [openDelItemModal, setOpenDelItemModal] = useState(false)
   const [deletingItem, setDeletingItem] = useState(null)
 
@@ -71,10 +74,10 @@ export const EditInvoice = () => {
     setInvoice(inv)
   }
 
-  const onCheckInDateChanged = (fieldName, value) => {
+  const changeEditingDate = (value) => {
     const inv = {
       ...invoice,
-      [fieldName]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+      [editingDate.dateField]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
     }
     setInvoice(inv)
   }
@@ -247,6 +250,32 @@ export const EditInvoice = () => {
     }
     setInvoice(nInv)
     setOpenGuestNameModal(false)
+  }
+  //============ CHECK IN-OUT ====================//
+  const editDate = (e) => {
+    let dId = e.target.id
+    setEditingDate({ dateField: dId, value: invoice[dId] })
+    setOpenEditDateModal(true)
+  }
+
+  const confirmEditDate = () => {
+    try {
+      let nInv = {
+        ...invoice,
+        [editingDate.dateField]: editDate.value
+      }
+      setInvoice(nInv)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setEditingDate({ dateField: null, value: new Date() })
+      setOpenEditDateModal(false)
+    }
+  }
+
+  const cancelEditDate = () => {
+    setEditingDate({ dateField: null, value: new Date() })
+    setOpenEditDateModal(false)
   }
 
   //============ ISSUER CHANGE ====================//
@@ -434,38 +463,50 @@ export const EditInvoice = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                   onClick={editGuestName}
-                  >
+                >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
             </div>
           </div>
           <div className="flex flex-wrap -mx-3 mb-1">
-            <div className="w-1/2 px-3 mb-1 md:mb-0">
-              <div className="mb-1 block">
-                <Label
-                  htmlFor="checkInDate"
-                  value="Check In:"
-                />
-              </div>
-              <Datepicker value={invoice.checkInDate}
-                onSelectedDateChanged={(date) => onCheckInDateChanged('checkInDate', date)}
+            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row">
+              <Label
+                value={String(invoice.checkInDate)}
+                className="pr-2"
+              />
+              <svg
+                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
                 id="checkInDate"
-                defaultChecked={true}
-              />
+                onClick={editDate}
+              >
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+              </svg>
             </div>
-            <div className="w-1/2 px-3 mb-1 md:mb-0">
-              <div className="mb-1 block">
-                <Label
-                  htmlFor="checkOutDate"
-                  value="Check Out:"
-                />
-              </div>
-              <Datepicker value={invoice.checkOutDate}
-                onSelectedDateChanged={(date) => onCheckInDateChanged('checkOutDate', date)}
-                id="checkOutDate"
-                defaultChecked={true}
+            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row">
+              <Label
+                value={String(invoice.checkOutDate)}
+                className="pr-2"
               />
+              <svg
+                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+                id="checkOutDate"
+                onClick={editDate}
+              >
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+              </svg>
             </div>
           </div>
 
@@ -584,6 +625,28 @@ export const EditInvoice = () => {
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={confirmEditGuestName}>Done</Button>
           <Button color="gray" onClick={cancelEditGuestName}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={openEditDateModal} onClose={cancelEditDate}>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              <Datepicker
+                value={editingDate.value}
+                onSelectedDateChanged={(date) => changeEditingDate(date)}
+                id="checkInDate"
+                defaultChecked={true}
+              />
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmEditDate}>Done</Button>
+          <Button color="gray" onClick={cancelEditDate}>
             Cancel
           </Button>
         </Modal.Footer>
