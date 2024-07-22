@@ -61,8 +61,6 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
-          let pM = pMethods.find((p) => p.id === data.paymentMethod)
-          setSelectedPaymentMethod(pM)
         })
     }
 
@@ -318,6 +316,8 @@ export const EditInvoice = () => {
 
   //============ PAYMENT METHOD CHANGE ====================//
   const selectPaymentMethod = () => {
+    let pM = pMethods.find((p) => p.id === invoice.paymentMethod)
+    setSelectedPaymentMethod(pM)
     setOpenPaymentModal(true)
   }
   const cancelSelectPaymentMethod = () => {
@@ -333,7 +333,7 @@ export const EditInvoice = () => {
 
       let nInv = {
         ...invoice,
-        paymentMethod: selectedPaymentMethod.id
+        paymentMethod: pM.id
       }
       setInvoice(nInv)
     } catch (e) {
@@ -519,18 +519,7 @@ export const EditInvoice = () => {
           </div>
 
           <div className="flex flex-wrap -mx-3 mb-3">
-
             <div className="w-1/2 px-3 flex flex-row items-center">
-              {/* <svg
-                class="w-6 h-6 text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
-              </svg> */}
               <div>{selectedPaymentMethod.src}</div>
               <Label
                 id="paymentMethod"
@@ -566,12 +555,6 @@ export const EditInvoice = () => {
       </form>
       {/** Second Column */}
       <div className="flex flex-row w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
-        {/* <EditItem
-          eItem={defaultEmptyItem}
-          onSave={createOrUpdateItem}
-          displayName="Add Item"
-          className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
-        /> */}
         <div
           className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
           onClick={() => editItem(defaultEmptyItem)}
@@ -601,12 +584,6 @@ export const EditInvoice = () => {
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
                   <Table.Cell className="sm:px-1 py-1">
                     <div className="grid grid-cols-1 py-0 my-0">
-                      {/* <EditItem
-                        eItem={exp}
-                        onSave={createOrUpdateItem}
-                        displayName={exp.itemName}
-                        className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
-                      /> */}
                       <div
                         className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
                         onClick={() => editItem(exp)}
@@ -743,38 +720,17 @@ export const EditInvoice = () => {
                 return (
                   <div
                     className="block w-1/5"
-                    id={pM.id}
-                    onClick={changePaymentMethod}
                   >
-                    <div>
-                    <img src={pM.srcLargeImg} alt="image"/>
-                    </div>
+                    <img
+                      src={pM.srcLargeImg}
+                      alt=""
+                      id={pM.id}
+                      onClick={changePaymentMethod}
+                    />
                   </div>
                 )
               })
             }
-            {/* <fieldset className="flex w-full flex-col gap-4">
-              <legend className="mb-4">Choose payment method</legend>
-              {
-                pMethods.map(pM => {
-                  return (
-                    <div
-                      className="flex items-center gap-2 w-full"
-                      id={pM.id}
-                      onClick={changePaymentMethod}
-                    >
-                      {/* <Radio
-                        id={"pmt_" + pM.id}
-                        name="paymentMethods"
-                        value={pM.name}
-                        defaultChecked={selectedPaymentMethod === null ? false : pM.id === selectedPaymentMethod.id}
-                      />
-                      <Label htmlFor="united-state">{pM.name}</Label> }
-                    </div>
-                  )
-                })
-              }
-            </fieldset> */}
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
