@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
-import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash, HiUserCircle } from "react-icons/hi";
 import { getUsers } from "../../db/users";
@@ -153,12 +152,11 @@ export const EditInvoice = () => {
     invoiceLink.current.click()
   }, [invoiceUrl])
 
-  const exportWithMethod = (method) => {
-    console.log("Export invoice %s with method [%s]...", invoiceId, method.name)
+  const exportInv = () => {
+    console.log("Export invoice %s with method [%s]...", invoiceId)
 
     const inv = {
-      ...invoice,
-      paymentMethod: method.id
+      ...invoice
     }
 
     exportInvoice(inv)
@@ -554,14 +552,40 @@ export const EditInvoice = () => {
         </div>
       </form>
       {/** Second Column */}
-      <div className="flex flex-row w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
+      <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
         <div
-          className="font-sans font-bold text-amber-700 bg-gray-200 rounded-lg px-2 py-1"
+          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
           onClick={() => editItem(defaultEmptyItem)}
         >
-          Add Item
+          <svg
+            class="w-5 h-5 text-amber-700 dark:text-white"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+          </svg>
+          <span>Add Item</span>
         </div>
-        <ExportInvoice fncCallback={exportWithMethod} />
+        <div
+          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+          onClick={exportInv}
+        >
+          <svg
+            class="w-[18px] h-[18px] text-amber-700 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
+          </svg>
+          <span>Export</span>
+        </div>
         <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
       </div>
 
@@ -665,9 +689,7 @@ export const EditInvoice = () => {
       <Modal show={openDelItemModal} onClose={cancelDelItem}>
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
-          <div className="text-center">
-            <TextInput
-            />
+          <div>
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
@@ -798,13 +820,14 @@ export const EditInvoice = () => {
                   </svg>
                 </button>
                 <input
-                  type="text"
+                  type="number"
                   id="quantity-input"
                   data-input-counter aria-describedby="helper-text-explanation"
                   class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="999"
                   required
                   value={editingItem.quantity}
+                  readOnly
                 />
                 <button
                   type="button"

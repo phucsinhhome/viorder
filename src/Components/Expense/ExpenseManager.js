@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Table, TextInput, Label, Spinner } from "flowbite-react";
+import { Table, TextInput, Label, Spinner, Modal, Button } from "flowbite-react";
 import listLatestExpenses, { deleteExpense, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
@@ -42,6 +42,9 @@ export const ExpenseManager = () => {
 
   const [expense, setExpense] = useState(intialExpense())
   const [genState, setGenState] = useState(undefined); // GENERATING -> GENERATED -> SAVING -> SAVED || GENERATION_ERROR
+
+  const [openDelExpenseModal, setOpenDelExpenseModal] = useState(false)
+  const [deletingExpense, setDeletingExpense] = useState(null)
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -183,15 +186,41 @@ export const ExpenseManager = () => {
     }
   }
 
-  const handleDeleteExpense = (e) => {
-    console.warn("Deleting expense [%s]..." + e.id)
-    deleteExpense(e)
+  const handleDeleteExpense = (exp) => {
+    console.warn("Deleting expense [%s]..." + exp.id)
+    deleteExpense(exp)
       .then((rsp) => {
         if (rsp !== null) {
-          console.log("Delete expense %s successully", e.id)
+          console.log("Delete expense %s successully", exp.id)
           fetchData(location.state.pageNumber, location.state.pageSize)
         }
       })
+  }
+
+  //============ EXPENSE DELETION ====================//
+  const askForDelExpenseConfirmation = (exp) => {
+    setDeletingExpense(exp);
+    setOpenDelExpenseModal(true)
+  }
+
+  const cancelDelExpense = () => {
+    setOpenDelExpenseModal(false)
+    setDeletingExpense(null)
+  }
+
+  const confirmDelExpense = () => {
+    try {
+      if (deletingExpense === undefined || deletingExpense === null) {
+        return;
+      }
+      handleDeleteExpense(deletingExpense)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setOpenDelExpenseModal(false)
+      setDeletingExpense(null)
+    }
+
   }
 
   return (
@@ -333,7 +362,7 @@ export const ExpenseManager = () => {
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
                       height="24" fill="none" viewBox="0 0 24 24"
-                      onClick={() => handleDeleteExpense(exp)}
+                      onClick={() => askForDelExpenseConfirmation(exp)}
                     >
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg>
@@ -365,6 +394,21 @@ export const ExpenseManager = () => {
           </li>
         </ul>
       </nav>
+
+
+      <Modal show={openDelExpenseModal} onClose={cancelDelExpense}>
+        <Modal.Header>Confirm</Modal.Header>
+        <Modal.Body>
+          <div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmDelExpense}>Delete</Button>
+          <Button color="gray" onClick={cancelDelExpense}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div >
   );
 }
