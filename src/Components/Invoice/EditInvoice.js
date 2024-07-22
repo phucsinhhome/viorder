@@ -74,14 +74,6 @@ export const EditInvoice = () => {
     setInvoice(inv)
   }
 
-  const changeEditingDate = (value) => {
-    const inv = {
-      ...invoice,
-      [editingDate.dateField]: new Date(new Date(value).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
-    }
-    setInvoice(inv)
-  }
-
   const handleSaveInvoice = () => {
     console.info("Saving invoice")
     console.log(invoice)
@@ -258,6 +250,16 @@ export const EditInvoice = () => {
     setOpenEditDateModal(true)
   }
 
+  const changeEditingDate = (date) => {
+    const nInv = {
+      ...invoice,
+      [editingDate.dateField]: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+    }
+    setInvoice(nInv)
+    setEditingDate({ dateField: null, value: new Date() })
+    setOpenEditDateModal(false)
+  }
+
   const confirmEditDate = () => {
     try {
       let nInv = {
@@ -432,10 +434,10 @@ export const EditInvoice = () => {
                   required={true}
                   value={invoice.reservationCode}
                   readOnly={true}
-                  className="outline-none font-mono text-[10px] italic text-gray-400"
+                  className="outline-none font-mono text-[10px] italic text-gray-700"
                 />
 
-                <div className="flex flex-row" onClick={selectIssuer}>
+                <div className="flex flex-row items-center" >
                   <HiUserCircle className="mx-1 h-5 w-5" />
                   <Label
                     id="issuerId"
@@ -443,11 +445,23 @@ export const EditInvoice = () => {
                     required={true}
                     value={invoice.issuer}
                     readOnly={false}
-                    className="outline-none font-mono italic"
+                    className="outline-none font-mono italic pr-2"
                   />
+                  <svg
+                    className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    onClick={selectIssuer}
+                  >
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                  </svg>
                 </div>
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center">
                 <Label
                   id="guestName"
                   required={true}
@@ -470,7 +484,7 @@ export const EditInvoice = () => {
             </div>
           </div>
           <div className="flex flex-wrap -mx-3 mb-1">
-            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row">
+            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
               <Label
                 value={String(invoice.checkInDate)}
                 className="pr-2"
@@ -489,7 +503,7 @@ export const EditInvoice = () => {
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
               </svg>
             </div>
-            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row">
+            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
               <Label
                 value={String(invoice.checkOutDate)}
                 className="pr-2"
@@ -511,15 +525,41 @@ export const EditInvoice = () => {
           </div>
 
           <div className="flex flex-wrap -mx-3 mb-3">
-            <div className="w-full flex justify-between px-3 mb-1 md:mb-0">
+
+            <div className="w-1/2 px-3 flex flex-row items-center">
+              <svg
+                class="w-6 h-6 text-gray-800 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
+              </svg>
               <Label
                 id="paymentMethod"
                 placeholder="Cash"
                 required={true}
                 value={String(invoice.paymentMethod).toUpperCase()}
                 readOnly={true}
-                onClick={selectPaymentMethod}
+                className="pr-2"
               />
+              <svg
+                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+                id="checkOutDate"
+                onClick={selectPaymentMethod}
+              >
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+              </svg>
+            </div>
+            <div className="w-1/2 px-3 flex flex-row items-center">
               <Label
                 id="totalAmount"
                 placeholder="100000"
@@ -640,12 +680,13 @@ export const EditInvoice = () => {
                 onSelectedDateChanged={(date) => changeEditingDate(date)}
                 id="checkInDate"
                 defaultChecked={true}
+                inline
               />
             </p>
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmEditDate}>Done</Button>
+          {/* <Button onClick={confirmEditDate}>Done</Button> */}
           <Button color="gray" onClick={cancelEditDate}>
             Cancel
           </Button>
