@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, getPaymentMethods, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, paymentMethods, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
@@ -47,8 +47,8 @@ export const EditInvoice = () => {
   const users = getUsers()
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
-  const paymentMethods = getPaymentMethods()
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0])
+ 
 
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
@@ -60,7 +60,8 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
-
+          let pM = paymentMethods.find((p) => p.id === data.paymentMethod)
+          setSelectedPaymentMethod(pM)
         })
     }
 
@@ -322,14 +323,15 @@ export const EditInvoice = () => {
   }
   const cancelSelectPaymentMethod = () => {
     setOpenPaymentModal(false)
-    setSelectedPaymentMethod(null)
   }
-  const confirmSelectPaymentMethod = () => {
+
+  const changePaymentMethod = (e) => {
+
     try {
-      if (selectedPaymentMethod === undefined || selectedPaymentMethod === null || selectedPaymentMethod.id === invoice.paymentMethod) {
-        return;
-      }
-      console.warn("Change the payment method to {}...", selectedPaymentMethod.id)
+      let is = e.currentTarget
+      let pM = paymentMethods.find((p) => p.id === is.id)
+      setSelectedPaymentMethod(pM)
+
       let nInv = {
         ...invoice,
         paymentMethod: selectedPaymentMethod.id
@@ -339,14 +341,7 @@ export const EditInvoice = () => {
       console.error(e)
     } finally {
       setOpenPaymentModal(false)
-      setSelectedPaymentMethod(null)
     }
-  }
-  const paymentMethodChange = (e) => {
-    let is = e.currentTarget
-    let pM = paymentMethods.find((p) => p.id === is.id)
-    console.info("Selected payment method", is.value)
-    setSelectedPaymentMethod(pM)
   }
 
   //================= EDIT ITEM ===================//
@@ -537,10 +532,10 @@ export const EditInvoice = () => {
                 viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
               </svg> */}
-              <div>{paymentMethods.find(i=>i.id===invoice.paymentMethod).src}</div>
+              <div>{selectedPaymentMethod.src}</div>
               <Label
                 id="paymentMethod"
-                value={String(invoice.paymentMethod).toUpperCase()}
+                value={selectedPaymentMethod.name}
                 className="pr-2"
               />
               <svg
@@ -744,18 +739,21 @@ export const EditInvoice = () => {
         <Modal.Header>Payment</Modal.Header>
         <Modal.Body>
           <div className="justify-center">
-            <fieldset className="flex max-w-md flex-col gap-4">
+            <fieldset className="flex w-full flex-col gap-4">
               <legend className="mb-4">Choose payment method</legend>
               {
                 paymentMethods.map(pM => {
                   return (
-                    <div className="flex items-center gap-2">
+                    <div
+                      className="flex items-center gap-2 w-full"
+                      id={pM.id}
+                      onChange={changePaymentMethod}
+                    >
                       <Radio
-                        id={pM.id}
+                        id={"pmt_" + pM.id}
                         name="paymentMethods"
                         value={pM.name}
                         defaultChecked={selectedPaymentMethod === null ? false : pM.id === selectedPaymentMethod.id}
-                        onChange={paymentMethodChange}
                       />
                       <Label htmlFor="united-state">{pM.name}</Label>
                     </div>
@@ -766,7 +764,6 @@ export const EditInvoice = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmSelectPaymentMethod}>OK</Button>
           <Button color="gray" onClick={cancelSelectPaymentMethod}>
             Cancel
           </Button>

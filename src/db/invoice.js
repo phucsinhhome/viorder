@@ -51,7 +51,7 @@ export function getInvoice(invoiceId) {
     .then(response => response.json())
 }
 
-export function getPaymentMethods() {
+export const paymentMethods=()=>{
   return [
     {
       id: "cash",
@@ -71,7 +71,8 @@ export function getPaymentMethods() {
         <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
       </svg>
 
-    }, {
+    },
+    {
       id: "creditCard",
       name: "Credit Card",
       template: "invoice_with_transfer_fee",

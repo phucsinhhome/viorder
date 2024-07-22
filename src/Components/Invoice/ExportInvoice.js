@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, ListGroup } from 'flowbite-react';
-import { getPaymentMethods } from "../../db/invoice";
+import { paymentMethods } from "../../db/invoice";
 import { Link } from "react-router-dom";
 
 export function ExportInvoice({ fncCallback }) {
@@ -13,7 +13,7 @@ export function ExportInvoice({ fncCallback }) {
     setShow(false)
   }
 
-  const methods = getPaymentMethods()
+  const methods = paymentMethods()
 
   useEffect(() => {
   }, []);
