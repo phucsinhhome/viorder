@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, paymentMethods, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, listPaymentMethods, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { ExportInvoice } from "./ExportInvoice";
 import { getPresignedLink } from "../../Service/FileService";
-import { HiOutlineCash, HiOutlineExclamationCircle, HiUserCircle } from "react-icons/hi";
+import { HiOutlineCash, HiUserCircle } from "react-icons/hi";
 import { getUsers } from "../../db/users";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 
@@ -29,6 +29,7 @@ export const EditInvoice = () => {
       items: []
     }
   )
+  const pMethods = listPaymentMethods()
 
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
   const { invoiceId } = useParams()
@@ -47,8 +48,8 @@ export const EditInvoice = () => {
   const users = getUsers()
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0])
- 
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(pMethods[0])
+
 
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
@@ -60,7 +61,7 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
-          let pM = paymentMethods.find((p) => p.id === data.paymentMethod)
+          let pM = pMethods.find((p) => p.id === data.paymentMethod)
           setSelectedPaymentMethod(pM)
         })
     }
@@ -317,8 +318,6 @@ export const EditInvoice = () => {
 
   //============ PAYMENT METHOD CHANGE ====================//
   const selectPaymentMethod = () => {
-    let pM = paymentMethods.find((p) => p.id === invoice.paymentMethod)
-    setSelectedPaymentMethod(pM)
     setOpenPaymentModal(true)
   }
   const cancelSelectPaymentMethod = () => {
@@ -329,7 +328,7 @@ export const EditInvoice = () => {
 
     try {
       let is = e.currentTarget
-      let pM = paymentMethods.find((p) => p.id === is.id)
+      let pM = pMethods.find((p) => p.id === is.id)
       setSelectedPaymentMethod(pM)
 
       let nInv = {
@@ -738,29 +737,44 @@ export const EditInvoice = () => {
       <Modal show={openPaymentModal} onClose={cancelSelectPaymentMethod}>
         <Modal.Header>Payment</Modal.Header>
         <Modal.Body>
-          <div className="justify-center">
-            <fieldset className="flex w-full flex-col gap-4">
+          <div className="flex flex-row items-center w-full space-x-2">
+            {
+              pMethods.map(pM => {
+                return (
+                  <div
+                    className="block w-1/5"
+                    id={pM.id}
+                    onClick={changePaymentMethod}
+                  >
+                    <div>
+                    <img src={pM.srcLargeImg} alt="image"/>
+                    </div>
+                  </div>
+                )
+              })
+            }
+            {/* <fieldset className="flex w-full flex-col gap-4">
               <legend className="mb-4">Choose payment method</legend>
               {
-                paymentMethods.map(pM => {
+                pMethods.map(pM => {
                   return (
                     <div
                       className="flex items-center gap-2 w-full"
                       id={pM.id}
-                      onChange={changePaymentMethod}
+                      onClick={changePaymentMethod}
                     >
-                      <Radio
+                      {/* <Radio
                         id={"pmt_" + pM.id}
                         name="paymentMethods"
                         value={pM.name}
                         defaultChecked={selectedPaymentMethod === null ? false : pM.id === selectedPaymentMethod.id}
                       />
-                      <Label htmlFor="united-state">{pM.name}</Label>
+                      <Label htmlFor="united-state">{pM.name}</Label> }
                     </div>
                   )
                 })
               }
-            </fieldset>
+            </fieldset> */}
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
