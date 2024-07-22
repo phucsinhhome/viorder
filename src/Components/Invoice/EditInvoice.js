@@ -31,8 +31,11 @@ export const EditInvoice = () => {
   )
 
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
-
   const { invoiceId } = useParams()
+
+  const [openGuestNameModal, setOpenGuestNameModal] = useState(false)
+  const [editingGuestName, setEditingGuestName] = useState(null)
+
   const [openDelItemModal, setOpenDelItemModal] = useState(false)
   const [deletingItem, setDeletingItem] = useState(null)
 
@@ -226,6 +229,25 @@ export const EditInvoice = () => {
     }
 
   }
+  //============ GUEST NAME ====================//
+  const editGuestName = (e) => {
+    let nGN = e.target.value
+    setEditingGuestName(nGN)
+    setOpenGuestNameModal(true)
+  }
+  const cancelEditGuestName = () => {
+    setEditingGuestName("")
+    setOpenGuestNameModal(false)
+  }
+
+  const confirmEditGuestName = () => {
+    let nInv = {
+      ...invoice,
+      guestName: editingGuestName
+    }
+    setInvoice(nInv)
+    setOpenGuestNameModal(false)
+  }
 
   //============ ISSUER CHANGE ====================//
   const selectIssuer = () => {
@@ -376,10 +398,6 @@ export const EditInvoice = () => {
             <div className="w-full md:w-1/2 px-3 mb-1 md:mb-0">
               <div className="flex justify-between w-full space-x-4 mb-1">
                 <Label
-                  htmlFor="guestName"
-                  value="Guest:"
-                />
-                <Label
                   id="reservationCode"
                   placeholder="12345"
                   required={true}
@@ -400,13 +418,26 @@ export const EditInvoice = () => {
                   />
                 </div>
               </div>
-              <TextInput
-                id="guestName"
-                placeholder="John Smith"
-                required={true}
-                value={invoice.guestName}
-                onChange={onDataChange}
-              />
+              <div className="flex flex-row">
+                <Label
+                  id="guestName"
+                  required={true}
+                  value={invoice.guestName.toUpperCase()}
+                  className="text-lg pr-2 font font-bold font-sans"
+                />
+                <svg
+                  className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  onClick={editGuestName}
+                  >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                </svg>
+              </div>
             </div>
           </div>
           <div className="flex flex-wrap -mx-3 mb-1">
@@ -537,14 +568,33 @@ export const EditInvoice = () => {
         </Table>
       </div>
 
+      <Modal show={openGuestNameModal} onClose={cancelEditGuestName}>
+        <Modal.Header>Change guest name</Modal.Header>
+        <Modal.Body>
+          <div className="text-center">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              {/* {deletingItem !== null && deletingItem !== undefined ? "Remove item" + deletingItem.itemName + " ?" : "No item selected"} */}
+              <TextInput
+                value={editingGuestName}
+                onChange={editGuestName}
+              />
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmEditGuestName}>Done</Button>
+          <Button color="gray" onClick={cancelEditGuestName}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <Modal show={openDelItemModal} onClose={cancelDelItem}>
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              {deletingItem !== null && deletingItem !== undefined ? "Remove item" + deletingItem.itemName + " ?" : "No item selected"}
-            </p>
+            <TextInput
+            />
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
