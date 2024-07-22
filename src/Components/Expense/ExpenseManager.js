@@ -7,6 +7,7 @@ import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
 import { currentUser } from "../../App";
+import { formatMoneyAmount } from "../Invoice/EditItem";
 
 const intialExpense = () => {
   var today = new Date()
@@ -45,6 +46,9 @@ export const ExpenseManager = () => {
 
   const [openDelExpenseModal, setOpenDelExpenseModal] = useState(false)
   const [deletingExpense, setDeletingExpense] = useState(null)
+
+  const [openEditingExpenseModal, setOpenEditingExpenseModal] = useState(false)
+  const [editingExpense, setEditingExpense] = useState(defaultEmptyItem)
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -223,6 +227,69 @@ export const ExpenseManager = () => {
 
   }
 
+  //================= EDIT EXPENSE ===================//
+  const editExpense = (exp) => {
+    let uP = formatMoneyAmount(String(exp.unitPrice))
+    let eI = {
+      ...exp,
+      formattedUnitPrice: uP.formattedAmount
+    }
+    setEditingExpense(eI)
+    setOpenEditingExpenseModal(true)
+  }
+
+  const cancelEditingExpense = () => {
+    setEditingExpense(defaultEmptyItem)
+    setOpenEditingExpenseModal(false)
+  }
+
+  const changeItemName = (e) => {
+    let iName = e.target.value
+    let eI = {
+      ...editingExpense,
+      itemName: iName
+    }
+    setEditingExpense(eI)
+  }
+
+  const blurItemName = () => {
+    let nItemName = editingExpense.itemName
+    if (nItemName === null || nItemName === undefined || nItemName === "") {
+      return;
+    }
+    console.log("Classify the service by expense name %s", nItemName)
+    classifyServiceByItemName(nItemName)
+      .then((srv) => {
+        var nexItem = {
+          ...editingExpense,
+          service: srv
+        }
+        setEditingExpense(nexItem)
+      })
+  }
+
+  const changeUnitPrice = (e) => {
+    let v = e.target.value
+    let uP = formatMoneyAmount(v)
+    let eI = {
+      ...editingExpense,
+      amount: uP.amount * editingExpense.quantity,
+      unitPrice: uP.amount,
+      formattedUnitPrice: uP.formattedAmount
+    }
+    setEditingExpense(eI)
+  }
+
+  const changeQuantity = (delta) => {
+    let nQ = editingItem.quantity + delta
+    let eI = {
+      ...editingExpense,
+      quantity: nQ,
+      amount: editingExpense.unitPrice * nQ
+    }
+    setEditingExpense(eI)
+  }
+
   return (
     <div className="h-full">
       <div className="mt-2 px-2">
@@ -340,13 +407,12 @@ export const ExpenseManager = () => {
                   </Table.Cell>
                   <Table.Cell className="sm:px-1">
                     <div className="grid grid-cols-1">
-                      <Link
-                        to={exp.id}
+                      <Label
+                        onClick={() => editExpense(exp)}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
                         className="font-medium text-blue-600 hover:underline dark:text-blue-500"
-                      >
-                        {exp.itemName}
-                      </Link>
+                        value={exp.itemName}
+                      />
                       <div className="flex flex-row text-sm space-x-1">
                         <div className="w-24">
                           <span>{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
@@ -400,6 +466,7 @@ export const ExpenseManager = () => {
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
           <div>
+            <span>{deletingExpense === null ? "" : "Are you sure to delete [" + deletingExpense.itemName + "]?"}</span>
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
@@ -408,6 +475,117 @@ export const ExpenseManager = () => {
             Cancel
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={openEditingExpenseModal}
+        size="md"
+        popup={true}
+        onClose={cancelEditingExpense}
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+            <div>
+              <TextInput
+                id="itemName"
+                placeholder="Item name"
+                required={true}
+                value={editingExpense.itemName}
+                onChange={changeItemName}
+                onBlur={blurItemName}
+              />
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="unitPrice"
+                  value="Unit Price"
+                />
+              </div>
+              <TextInput
+                id="unitPrice"
+                placeholder="Enter amount here"
+                type="currency"
+                step={5000}
+                required={true}
+                value={editingExpense.formattedUnitPrice}
+                onChange={changeUnitPrice}
+                rightIcon={HiOutlineCash}
+                className="w-full"
+              />
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="quantity"
+                  value="Quantity"
+                />
+              </div>
+              <div class="relative flex items-center w-full">
+                <button
+                  type="button"
+                  id="decrement-button"
+                  data-input-counter-decrement="quantity-input"
+                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  onClick={() => changeQuantity(-1)}
+                >
+                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                  </svg>
+                </button>
+                <input
+                  type="number"
+                  id="quantity-input"
+                  data-input-counter aria-describedby="helper-text-explanation"
+                  class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="999"
+                  required
+                  value={editingExpense.quantity}
+                  readOnly
+                />
+                <button
+                  type="button"
+                  id="increment-button"
+                  data-input-counter-increment="quantity-input"
+                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  onClick={() => changeQuantity(1)}
+                >
+                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="amount"
+                  value="Amount"
+                />
+              </div>
+              <span className="w-full">{editingExpense.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="service"
+                  value="Service"
+                />
+              </div>
+              <span className="w-full">{editingExpense.service}</span>
+            </div>
+            <div className="w-full flex justify-center">
+              <Button onClick={createOrUpdateItem} className="mx-2">
+                Save
+              </Button>
+              <Button onClick={cancelEditingExpense} className="mx-2">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
       </Modal>
     </div >
   );
