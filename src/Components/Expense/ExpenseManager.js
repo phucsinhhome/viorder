@@ -8,6 +8,19 @@ import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
 import { currentUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
+import { HiOutlineCash } from "react-icons/hi";
+
+const defaultEmptExpense = {
+  "expenseDate": null,
+  "itemName": null,
+  "quantity": 1,
+  "unitPrice": 0,
+  "expenserName": null,
+  "expenserId": null,
+  "service": null,
+  "id": null,
+  "amount": 0
+}
 
 const intialExpense = () => {
   var today = new Date()
@@ -27,19 +40,7 @@ const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
 export const ExpenseManager = () => {
 
-  const [expenses, setExpenses] = useState([
-    {
-      "expenseDate": null,
-      "itemName": null,
-      "quantity": 1,
-      "unitPrice": 0,
-      "expenserName": null,
-      "expenserId": null,
-      "service": null,
-      "id": null,
-      "amount": 0
-    }
-  ])
+  const [expenses, setExpenses] = useState([defaultEmptExpense])
 
   const [expense, setExpense] = useState(intialExpense())
   const [genState, setGenState] = useState(undefined); // GENERATING -> GENERATED -> SAVING -> SAVED || GENERATION_ERROR
@@ -48,7 +49,7 @@ export const ExpenseManager = () => {
   const [deletingExpense, setDeletingExpense] = useState(null)
 
   const [openEditingExpenseModal, setOpenEditingExpenseModal] = useState(false)
-  const [editingExpense, setEditingExpense] = useState(defaultEmptyItem)
+  const [editingExpense, setEditingExpense] = useState(defaultEmptExpense)
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -156,7 +157,7 @@ export const ExpenseManager = () => {
       })
   }
 
-  const hanldleSaveExpense = () => {
+  const handleCreateExpense = () => {
     setGenState("SAVING")
     try {
       let exp = {
@@ -239,7 +240,7 @@ export const ExpenseManager = () => {
   }
 
   const cancelEditingExpense = () => {
-    setEditingExpense(defaultEmptyItem)
+    setEditingExpense(defaultEmptExpense)
     setOpenEditingExpenseModal(false)
   }
 
@@ -281,13 +282,43 @@ export const ExpenseManager = () => {
   }
 
   const changeQuantity = (delta) => {
-    let nQ = editingItem.quantity + delta
+    let nQ = editingExpense.quantity + delta
     let eI = {
       ...editingExpense,
       quantity: nQ,
       amount: editingExpense.unitPrice * nQ
     }
     setEditingExpense(eI)
+  }
+
+  const handleUpdateExpense = () => {
+    try {
+      let exp = {
+        ...editingExpense
+      }
+      if (exp.id === null || exp.id === "" || exp.id === "new") {
+        console.error("Editing expense must have a valid ID")
+        return
+      }
+      console.info("Updating expense %s...", exp.id)
+      saveExpense(exp)
+        .then((resp) => {
+          if (resp.ok) {
+            console.log("Save expense %s successully", exp.id)
+            fetchData(0, DEFAULT_PAGE_SIZE)
+            setEditingExpense(defaultEmptExpense)
+          } else {
+            console.log("Failed to save expense %s", exp.id)
+            console.error(resp)
+          }
+        })
+    }
+    catch (e) {
+      console.error(e)
+    }
+    finally {
+      setOpenEditingExpenseModal(false)
+    }
   }
 
   return (
@@ -366,7 +397,7 @@ export const ExpenseManager = () => {
           >{genError}
           </span>
           <span
-            onClick={hanldleSaveExpense}
+            onClick={handleCreateExpense}
             state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
             className="text-brown-600 dark:text-white-500 font-bold"
             hidden={genState !== "GENERATED"}
@@ -577,7 +608,7 @@ export const ExpenseManager = () => {
               <span className="w-full">{editingExpense.service}</span>
             </div>
             <div className="w-full flex justify-center">
-              <Button onClick={createOrUpdateItem} className="mx-2">
+              <Button onClick={handleUpdateExpense} className="mx-2">
                 Save
               </Button>
               <Button onClick={cancelEditingExpense} className="mx-2">
