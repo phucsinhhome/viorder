@@ -233,7 +233,8 @@ export const ExpenseManager = () => {
     let uP = formatMoneyAmount(String(exp.unitPrice))
     let eI = {
       ...exp,
-      formattedUnitPrice: uP.formattedAmount
+      formattedUnitPrice: uP.formattedAmount,
+      originItemName: exp.itemName
     }
     setEditingExpense(eI)
     setOpenEditingExpenseModal(true)
@@ -255,10 +256,10 @@ export const ExpenseManager = () => {
 
   const blurItemName = () => {
     let nItemName = editingExpense.itemName
-    if (nItemName === null || nItemName === undefined || nItemName === "") {
+    if (nItemName === null || nItemName === undefined || nItemName === "" || nItemName === editingExpense.originItemName) {
       return;
     }
-    console.log("Classify the service by expense name %s", nItemName)
+    console.log("Classify the service by expense name [%s]", nItemName)
     classifyServiceByItemName(nItemName)
       .then((srv) => {
         var nexItem = {
@@ -294,7 +295,15 @@ export const ExpenseManager = () => {
   const handleUpdateExpense = () => {
     try {
       let exp = {
-        ...editingExpense
+        expenseDate: editingExpense.expenseDate,
+        itemName: editingExpense.itemName,
+        quantity: editingExpense.quantity,
+        unitPrice: editingExpense.unitPrice,
+        expenserName: editingExpense.expenserName,
+        expenserId: editingExpense.expenserId,
+        service: editingExpense.service,
+        id: editingExpense.id,
+        amount: editingExpense.amount
       }
       if (exp.id === null || exp.id === "" || exp.id === "new") {
         console.error("Editing expense must have a valid ID")
