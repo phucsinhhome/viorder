@@ -65,13 +65,6 @@ export const EditInvoice = () => {
 
   }, [invoiceId]);
 
-  const onDataChange = (e) => {
-    const inv = {
-      ...invoice,
-      [e.target.id]: e.target.value
-    }
-    setInvoice(inv)
-  }
 
   const handleSaveInvoice = () => {
     console.info("Saving invoice")
@@ -258,20 +251,6 @@ export const EditInvoice = () => {
     setOpenEditDateModal(false)
   }
 
-  const confirmEditDate = () => {
-    try {
-      let nInv = {
-        ...invoice,
-        [editingDate.dateField]: editDate.value
-      }
-      setInvoice(nInv)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setEditingDate({ dateField: null, value: new Date() })
-      setOpenEditDateModal(false)
-    }
-  }
 
   const cancelEditDate = () => {
     setEditingDate({ dateField: null, value: new Date() })
