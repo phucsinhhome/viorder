@@ -49,9 +49,10 @@ export const EditInvoice = () => {
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(pMethods[0])
 
-
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
+
+  const [openExportInvModal, setOpenExportInvModal] = useState(false)
 
 
   useEffect(() => {
@@ -386,6 +387,14 @@ export const EditInvoice = () => {
     setEditingItem(eI)
   }
 
+  //================= EXPORT INVOICE ===================//
+  const showExportInv = () => {
+    setOpenExportInvModal(true)
+  }
+  const closeExportInv = () => {
+    setOpenExportInvModal(false)
+  }
+
   return (
     <div className="h-full">
       <div className="py-2 px-2 space-x-8">
@@ -537,7 +546,7 @@ export const EditInvoice = () => {
           onClick={() => editItem(defaultEmptyItem)}
         >
           <svg
-            class="w-5 h-5 text-amber-700 dark:text-white"
+            className="w-5 h-5 text-amber-700 dark:text-white"
             aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
@@ -550,10 +559,25 @@ export const EditInvoice = () => {
         </div>
         <div
           className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+          onClick={showExportInv}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+          >
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+          </svg>
+          <span>View</span>
+        </div>
+        <div
+          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
           onClick={exportInv}
         >
           <svg
-            class="w-[18px] h-[18px] text-amber-700 dark:text-white"
+            className="w-[18px] h-[18px] text-amber-700 dark:text-white"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -601,7 +625,7 @@ export const EditInvoice = () => {
                     </div>
                   </Table.Cell>
                   <Table.Cell className="py-1">
-                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                    <svg className="w-6 h-6 text-red-800 dark:text-white"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
@@ -666,9 +690,9 @@ export const EditInvoice = () => {
       </Modal>
 
       <Modal show={openDelItemModal} onClose={cancelDelItem}>
-        <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
           <div>
+            <span>{deletingItem === null || deletingItem === undefined ? "" : "Are you sure to remove [" + deletingItem.itemName + "]?"}</span>
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
@@ -786,15 +810,15 @@ export const EditInvoice = () => {
                   value="Quantity"
                 />
               </div>
-              <div class="relative flex items-center w-full">
+              <div className="relative flex items-center w-full">
                 <button
                   type="button"
                   id="decrement-button"
                   data-input-counter-decrement="quantity-input"
-                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                   onClick={() => changeQuantity(-1)}
                 >
-                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                   </svg>
                 </button>
@@ -802,7 +826,7 @@ export const EditInvoice = () => {
                   type="number"
                   id="quantity-input"
                   data-input-counter aria-describedby="helper-text-explanation"
-                  class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="999"
                   required
                   value={editingItem.quantity}
@@ -812,10 +836,10 @@ export const EditInvoice = () => {
                   type="button"
                   id="increment-button"
                   data-input-counter-increment="quantity-input"
-                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                   onClick={() => changeQuantity(1)}
                 >
-                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                   </svg>
                 </button>
@@ -847,6 +871,110 @@ export const EditInvoice = () => {
               <Button onClick={cancelEditingItem} className="mx-2">
                 Cancel
               </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={openExportInvModal}
+        size="md"
+        popup={true}
+        onClose={closeExportInv}
+        dismissible
+      >
+        <Modal.Body>
+          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+            <div className="flex flex-row pt-2">
+              <div className="block w-1/5">
+                <img src="/ps_logo_96.jpg" className="w-25 border border-1 rounded-2xl" alt=""></img>
+              </div>
+              <div className="flex flex-col w-4/5 ">
+                <span className="text-right font-serif font-bold text-amber-800 capitalize">phuc sinh home</span>
+                <span className="text-right font-mono text-[9px] font italic text-gray-500">15, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
+                <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
+              </div>
+            </div>
+            <div className="flex flex-row w-full">
+              <div className="flex flex-col w-3/5">
+                <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
+                <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
+              </div>
+              <div className="flex w-2/5">
+                <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
+              </div>
+            </div>
+            <div>
+              <Table hoverable>
+                <Table.Head className="my-1">
+                  <Table.HeadCell className="py-2">
+                    Item Name
+                  </Table.HeadCell>
+                  <Table.HeadCell className="py-2">
+                    Amount
+                  </Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y" >
+                  {invoice.items.map((exp) => {
+                    return (
+                      <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0" key={exp.id}>
+                        <Table.Cell className="py-0">
+                          <div className="grid grid-cols-1 py-0 my-0">
+                            <div
+                              className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
+                              onClick={() => editItem(exp)}
+                            >
+                              {exp.itemName}
+                            </div>
+                            <div className="flex flex-row text-[9px] space-x-1">
+                              <span className="w-6">{"x" + exp.quantity}</span>
+                              <span className="w-24">{exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                            </div>
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell className="py-0">
+                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </Table.Cell>
+                      </Table.Row>
+                    )
+                  })}
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      SUBTOTAL
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24">{(invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      GRAND TOTAL
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24 text-red-800 font-bold">{(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+            </div>
+            <div className="flex flex-col justify-items-center w-full">
+              <span className="text-center">Payment Info</span>
+              <div className="flex justify-center w-full">
+                <img
+                  src={selectedPaymentMethod.paymentInfo}
+                  alt=""
+                  className="border rounded-lg w-4/5 max-w-fit"
+                />
+              </div>
+              <span className="text-center font italic font-serif">Thank you so much !</span>
             </div>
           </div>
         </Modal.Body>

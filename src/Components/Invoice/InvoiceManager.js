@@ -95,7 +95,10 @@ export function InvoiceManager() {
   }
 
   const handleDeleteInvoice = (inv) => {
-
+    if (inv.paymentMethod !== null && inv.paymentMethod !== undefined && inv.paymentMethod !== "") {
+      console.warn("Can not delete the paid invoice")
+      return
+    }
     setDeletingInv(inv);
     setOpenModal(true)
   }
@@ -149,19 +152,19 @@ export function InvoiceManager() {
           <Table.Body className="divide-y">
             {invoices.map((inv) => {
               return (
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={inv.id}>
+                <Table.Row
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  key={inv.id}
+                >
                   <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
                     <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                   </Table.Cell>
-
-
-
                   <Table.Cell className="sm:px-1 px-1">
                     <div className="grid grid-cols-1">
                       <Link
                         to={inv.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                        className={inv.paymentMethod === null ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
                       >
                         {inv.guestName}
                       </Link>
@@ -177,7 +180,8 @@ export function InvoiceManager() {
 
 
                   <Table.Cell>
-                    <svg class="w-6 h-6 text-red-800 dark:text-white"
+                    <svg
+                      className={inv.paymentMethod === null ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
