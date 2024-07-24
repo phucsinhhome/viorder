@@ -411,11 +411,31 @@ export const EditInvoice = () => {
   return (
     <>
       <div className="h-full">
-        <div className="py-2 px-2 space-x-8">
-          <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
-            Save
-          </Link>
-          <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
+        <div className="flex flex-row py-2 px-2 space-x-8">
+          <div className="flex flex-row items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-amber-700 dark:text-white"
+            >
+              <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
+            </svg>
+            <Link onClick={handleSaveInvoice} className="font-sans font-bold text-amber-800">
+              Save
+            </Link>
+          </div>
+          <div className="flex flex-row items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-amber-700 dark:text-white"
+            >
+              <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+            <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
+          </div>
         </div>
         <form className="flex flex-wrap mx-1">
           <div className="w-full md:w-1/2 px-1 mb-1">
