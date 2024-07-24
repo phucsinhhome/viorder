@@ -6,13 +6,13 @@ import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
-import { currentUser } from "../../App";
+import { currentUser, currentUserFullname } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
 
 const defaultEmptExpense = {
   "expenseDate": null,
-  "itemName": null,
+  "itemName": "",
   "quantity": 1,
   "unitPrice": 0,
   "expenserName": null,
@@ -142,7 +142,10 @@ export const ExpenseManager = () => {
             quantity: qty,
             unitPrice: uP,
             amount: pr,
-            service: eE.service
+            service: eE.service,
+            expenseDate: new Date().toISOString(),
+            expenserId: currentUser.id,
+            expenserName: currentUserFullname()
           }
           if (eE.service === undefined || eE.service === null || !SERVICE_NAMES.includes(eE.service)) {
             console.info("Re-classify the service...")
@@ -200,7 +203,7 @@ export const ExpenseManager = () => {
   }
 
   const handleDeleteExpense = (exp) => {
-    console.warn("Deleting expense [%s]..." + exp.id)
+    console.warn("Deleting expense [%s]...", exp.id)
     deleteExpense(exp)
       .then((rsp) => {
         if (rsp !== null) {
@@ -314,10 +317,20 @@ export const ExpenseManager = () => {
         amount: editingExpense.amount
       }
       if (exp.id === null || exp.id === "" || exp.id === "new") {
-        console.error("Editing expense must have a valid ID")
-        return
+        exp.id = newExpId()
+        console.info("Generated the expense id %s", exp.id)
       }
-      console.info("Updating expense %s...", exp.id)
+      if (exp.expenseDate === null) {
+        let expDate = new Date().toISOString()
+        exp.expenseDate = expDate
+        console.info("Updated expense date to %s", expDate)
+      }
+      if (exp.expenserId === null) {
+        exp.expenserId = currentUser.id
+        exp.expenserName = currentUserFullname()
+        console.info("Updated expenser to %s", currentUser.id)
+      }
+      console.info("Save expense %s...", exp.id)
       saveExpense(exp)
         .then((resp) => {
           if (resp.ok) {
@@ -340,13 +353,26 @@ export const ExpenseManager = () => {
 
   return (
     <div className="h-full">
-      <div className="mt-2 px-2">
-        <Link
-          to={"new"}
-          state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-          className="font-bold text-amber-800 pl-4"
-        >New Expense
-        </Link>
+      <div className="flex flex-row mt-2 px-2">
+        <div className="flex flex-row pl-4 pb-2">
+          <svg
+            className="w-5 h-5 text-amber-700 dark:text-white"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+          </svg>
+          <Link
+            onClick={() => editExpense(defaultEmptExpense)}
+            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+            className="font-bold text-amber-800"
+          >
+            Add Expense
+          </Link>
+        </div>
       </div>
       <div>
         <form className="flex flex-wrap mx-1">
@@ -450,10 +476,10 @@ export const ExpenseManager = () => {
             {expenses.map((exp) => {
               return (
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-lg" key={exp.id}>
-                  <Table.Cell className="sm:px-1">
+                  <Table.Cell className="sm:px-1 py-0.5">
                     <Moment format="DD.MM">{new Date(exp.expenseDate)}</Moment>
                   </Table.Cell>
-                  <Table.Cell className="sm:px-1">
+                  <Table.Cell className="sm:px-1 py-0.5">
                     <div className="grid grid-cols-1">
                       <Label
                         onClick={() => editExpense(exp)}
@@ -470,7 +496,7 @@ export const ExpenseManager = () => {
                       </div>
                     </div>
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className=" py-0.5">
                     <svg
                       className="w-6 h-6 text-red-800 dark:text-white"
                       aria-hidden="true"

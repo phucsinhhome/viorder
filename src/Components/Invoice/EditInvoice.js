@@ -7,6 +7,8 @@ import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash, HiUserCircle } from "react-icons/hi";
 import { getUsers } from "../../db/users";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
+import { dateToISODate } from "../../Service/Utils";
+import { currentUser, currentUserFullname } from "../../App";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -17,14 +19,14 @@ export const EditInvoice = () => {
     {
       id: "new",
       guestName: "",
-      issuer: "",
-      issuerId: "",
+      issuer: currentUserFullname(),
+      issuerId: currentUser.id,
       subTotal: 0,
-      checkInDate: new Date(),
-      checkOutDate: new Date(),
+      checkInDate: dateToISODate(new Date()),
+      checkOutDate: dateToISODate(new Date()),
       prepaied: false,
-      paymentMethod: "cash",
-      reservationCode: "NO_LINKED_BOOKING",
+      paymentMethod: null,
+      reservationCode: null,
       items: []
     }
   )
@@ -54,7 +56,6 @@ export const EditInvoice = () => {
 
   const [openExportInvModal, setOpenExportInvModal] = useState(false)
 
-
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
     if (invoiceId !== "new") {
@@ -62,12 +63,20 @@ export const EditInvoice = () => {
         .then(data => {
           setInvoice(data)
         })
+    } else {
+      setOpenGuestNameModal(true)
     }
-
-  }, [invoiceId]);
+  }, [invoiceId])
 
 
   const handleSaveInvoice = () => {
+    if (invoice === null) {
+      return
+    }
+    if (invoice.guestName === null || invoice.guestName === undefined || invoice.guestName === "") {
+      editGuestName()
+      return
+    }
     console.info("Saving invoice")
     console.log(invoice)
 
@@ -217,11 +226,17 @@ export const EditInvoice = () => {
 
   }
   //============ GUEST NAME ====================//
-  const editGuestName = (e) => {
+  const editGuestName = () => {
+    setEditingGuestName(invoice.guestName)
+    setOpenGuestNameModal(true)
+  }
+
+  const changeGuestName = (e) => {
     let nGN = e.target.value
     setEditingGuestName(nGN)
     setOpenGuestNameModal(true)
   }
+
   const cancelEditGuestName = () => {
     setEditingGuestName("")
     setOpenGuestNameModal(false)
@@ -245,7 +260,7 @@ export const EditInvoice = () => {
   const changeEditingDate = (date) => {
     const nInv = {
       ...invoice,
-      [editingDate.dateField]: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+      [editingDate.dateField]: dateToISODate(date)
     }
     setInvoice(nInv)
     setEditingDate({ dateField: null, value: new Date() })
@@ -294,8 +309,6 @@ export const EditInvoice = () => {
 
   //============ PAYMENT METHOD CHANGE ====================//
   const selectPaymentMethod = () => {
-    let pM = pMethods.find((p) => p.id === invoice.paymentMethod)
-    setSelectedPaymentMethod(pM)
     setOpenPaymentModal(true)
   }
   const cancelSelectPaymentMethod = () => {
@@ -396,36 +409,75 @@ export const EditInvoice = () => {
   }
 
   return (
-    <div className="h-full">
-      <div className="py-2 px-2 space-x-8">
-        <Link onClick={handleSaveInvoice} className="px-1 font-sans font-bold text-amber-800">
-          Save
-        </Link>
-        <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
-      </div>
-      <form className="flex flex-wrap mx-1">
-        <div className="w-full md:w-1/2 px-1 mb-1">
-          <div className="flex flex-wrap -mx-3 mb-1">
-            <div className="w-full md:w-1/2 px-3 mb-1 md:mb-0">
-              <div className="flex justify-between w-full space-x-4 mb-1">
-                <Label
-                  id="reservationCode"
-                  placeholder="12345"
-                  required={true}
-                  value={invoice.reservationCode}
-                  readOnly={true}
-                  className="outline-none font-mono text-[10px] italic text-gray-700"
-                />
-
-                <div className="flex flex-row items-center" >
-                  <HiUserCircle className="mx-1 h-5 w-5" />
+    <>
+      <div className="h-full">
+        <div className="flex flex-row py-2 px-2 space-x-8">
+          <div className="flex flex-row items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-amber-700 dark:text-white"
+            >
+              <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
+            </svg>
+            <Link onClick={handleSaveInvoice} className="font-sans font-bold text-amber-800">
+              Save
+            </Link>
+          </div>
+          <div className="flex flex-row items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-amber-700 dark:text-white"
+            >
+              <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+            <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
+          </div>
+        </div>
+        <form className="flex flex-wrap mx-1">
+          <div className="w-full md:w-1/2 px-1 mb-1">
+            <div className="flex flex-wrap -mx-3 mb-1">
+              <div className="w-full md:w-1/2 px-3 mb-1 md:mb-0">
+                <div className="flex justify-between w-full space-x-4 mb-1">
                   <Label
-                    id="issuerId"
-                    placeholder="Min"
+                    id="reservationCode"
+                    value={invoice.reservationCode}
+                    className="outline-none font-mono text-[10px] italic text-gray-700"
+                  />
+
+                  <div className="flex flex-row items-center" >
+                    <HiUserCircle className="mx-1 h-5 w-5" />
+                    <Label
+                      id="issuerId"
+                      placeholder="Min"
+                      required={true}
+                      value={invoice.issuer}
+                      readOnly={false}
+                      className="outline-none font-mono italic pr-2"
+                    />
+                    <svg
+                      className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      onClick={selectIssuer}
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center">
+                  <Label
+                    id="guestName"
                     required={true}
-                    value={invoice.issuer}
-                    readOnly={false}
-                    className="outline-none font-mono italic pr-2"
+                    value={invoice.guestName.toUpperCase()}
+                    className="text-lg pr-2 font font-bold font-sans"
                   />
                   <svg
                     className="w-[16px] h-[16px] text-gray-800 dark:text-white"
@@ -435,18 +487,18 @@ export const EditInvoice = () => {
                     height="24"
                     fill="none"
                     viewBox="0 0 24 24"
-                    onClick={selectIssuer}
+                    onClick={editGuestName}
                   >
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                   </svg>
                 </div>
               </div>
-              <div className="flex flex-row items-center">
+            </div>
+            <div className="flex flex-wrap -mx-3 mb-1">
+              <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
                 <Label
-                  id="guestName"
-                  required={true}
-                  value={invoice.guestName.toUpperCase()}
-                  className="text-lg pr-2 font font-bold font-sans"
+                  value={String(invoice.checkInDate)}
+                  className="pr-2"
                 />
                 <svg
                   className="w-[16px] h-[16px] text-gray-800 dark:text-white"
@@ -456,433 +508,417 @@ export const EditInvoice = () => {
                   height="24"
                   fill="none"
                   viewBox="0 0 24 24"
-                  onClick={editGuestName}
+                  id="checkInDate"
+                  onClick={editDate}
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                </svg>
+              </div>
+              <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
+                <Label
+                  value={String(invoice.checkOutDate)}
+                  className="pr-2"
+                />
+                <svg
+                  className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  id="checkOutDate"
+                  onClick={editDate}
                 >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="flex flex-wrap -mx-3 mb-1">
-            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
-              <Label
-                value={String(invoice.checkInDate)}
-                className="pr-2"
-              />
-              <svg
-                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-                id="checkInDate"
-                onClick={editDate}
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-              </svg>
-            </div>
-            <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
-              <Label
-                value={String(invoice.checkOutDate)}
-                className="pr-2"
-              />
-              <svg
-                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-                id="checkOutDate"
-                onClick={editDate}
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-              </svg>
+
+            <div className="flex flex-wrap -mx-3 mb-3">
+              <div className="w-1/2 px-3 flex flex-row items-center">
+                <div>{selectedPaymentMethod.src}</div>
+                <Label
+                  id="paymentMethod"
+                  value={selectedPaymentMethod.name}
+                  className="pr-2"
+                />
+                <svg
+                  className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  id="checkOutDate"
+                  onClick={selectPaymentMethod}
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                </svg>
+              </div>
+              <div className="w-1/2 px-3 flex flex-row items-center">
+                <Label
+                  id="totalAmount"
+                  placeholder="100000"
+                  required={true}
+                  value={invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                  readOnly={true}
+                  className="font-mono font-bold text-red-900"
+                />
+              </div>
             </div>
           </div>
-
-          <div className="flex flex-wrap -mx-3 mb-3">
-            <div className="w-1/2 px-3 flex flex-row items-center">
-              <div>{selectedPaymentMethod.src}</div>
-              <Label
-                id="paymentMethod"
-                value={selectedPaymentMethod.name}
-                className="pr-2"
-              />
-              <svg
-                className="w-[16px] h-[16px] text-gray-800 dark:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-                id="checkOutDate"
-                onClick={selectPaymentMethod}
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-              </svg>
-            </div>
-            <div className="w-1/2 px-3 flex flex-row items-center">
-              <Label
-                id="totalAmount"
-                placeholder="100000"
-                required={true}
-                value={invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
-                readOnly={true}
-                className="font-mono font-bold text-red-900"
-              />
-            </div>
+        </form>
+        {/** Second Column */}
+        <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
+          <div
+            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+            onClick={() => editItem(defaultEmptyItem)}
+          >
+            <svg
+              className="w-5 h-5 text-amber-700 dark:text-white"
+              aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+            </svg>
+            <span>Add Item</span>
           </div>
-        </div>
-      </form>
-      {/** Second Column */}
-      <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
-        <div
-          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
-          onClick={() => editItem(defaultEmptyItem)}
-        >
-          <svg
-            className="w-5 h-5 text-amber-700 dark:text-white"
-            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
+          <div
+            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+            onClick={showExportInv}
           >
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
-          </svg>
-          <span>Add Item</span>
-        </div>
-        <div
-          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
-          onClick={showExportInv}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+            >
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+              <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+            </svg>
+            <span>View</span>
+          </div>
+          <div
+            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+            onClick={exportInv}
           >
-            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
-          </svg>
-          <span>View</span>
+            <svg
+              className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
+            </svg>
+            <span>Export</span>
+          </div>
+          <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
         </div>
-        <div
-          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
-          onClick={exportInv}
-        >
-          <svg
-            className="w-[18px] h-[18px] text-amber-700 dark:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
-          </svg>
-          <span>Export</span>
-        </div>
-        <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
-      </div>
 
-      <div className="h-2/3 max-h-fit overflow-scroll">
-        <Table hoverable>
-          <Table.Head className="my-1">
-            <Table.HeadCell className="sm:px-1 py-2">
-              Item Name
-            </Table.HeadCell>
+        <div className="h-2/3 max-h-fit overflow-scroll">
+          <Table hoverable>
+            <Table.Head className="my-1">
+              <Table.HeadCell className="sm:px-1 py-2">
+                Item Name
+              </Table.HeadCell>
 
-            <Table.HeadCell className="py-2">
-              <span className="sr-only">
-                Delete
-              </span>
-            </Table.HeadCell>
-          </Table.Head>
-          <Table.Body className="divide-y" >
-            {invoice.items.map((exp) => {
-              return (
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
-                  <Table.Cell className="sm:px-1 py-1">
-                    <div className="grid grid-cols-1 py-0 my-0">
-                      <div
-                        className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
-                        onClick={() => editItem(exp)}
+              <Table.HeadCell className="py-2">
+                <span className="sr-only">
+                  Delete
+                </span>
+              </Table.HeadCell>
+            </Table.Head>
+            <Table.Body className="divide-y" >
+              {invoice.items.map((exp) => {
+                return (
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
+                    <Table.Cell className="sm:px-1 py-1">
+                      <div className="grid grid-cols-1 py-0 my-0">
+                        <div
+                          className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
+                          onClick={() => editItem(exp)}
+                        >
+                          {exp.itemName}
+                        </div>
+                        <div className="flex flex-row text-[10px] space-x-1">
+                          <span className="w-6">{"x" + exp.quantity}</span>
+                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                          <span className="font font-mono font-black">{exp.service}</span>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell className="py-1">
+                      <svg className="w-6 h-6 text-red-800 dark:text-white"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        onClick={() => askForDelItemConfirmation(exp)}
                       >
-                        {exp.itemName}
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                      </svg>
+
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              })}
+            </Table.Body>
+          </Table>
+        </div>
+
+        <Modal show={openGuestNameModal} onClose={cancelEditGuestName}>
+          <Modal.Header>Guest name</Modal.Header>
+          <Modal.Body>
+            <div className="text-center">
+              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <TextInput
+                  value={editingGuestName}
+                  onChange={changeGuestName}
+                />
+              </p>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="flex justify-center gap-4">
+            <Button onClick={confirmEditGuestName}>Done</Button>
+            <Button color="gray" onClick={cancelEditGuestName}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={openEditDateModal}
+          onClose={cancelEditDate}
+          popup
+        >
+          <Modal.Header />
+          <Modal.Body>
+            <div className="text-center">
+              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <Datepicker
+                  value={editingDate.value}
+                  onSelectedDateChanged={(date) => changeEditingDate(date)}
+                  id="checkInDate"
+                  defaultChecked={true}
+                  inline
+                />
+              </p>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="flex justify-center gap-4">
+            {/* <Button color="gray" onClick={cancelEditDate}>
+              Cancel
+            </Button> */}
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={openDelItemModal} onClose={cancelDelItem}>
+          <Modal.Body>
+            <div>
+              <span>{deletingItem === null || deletingItem === undefined ? "" : "Are you sure to remove [" + deletingItem.itemName + "]?"}</span>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="flex justify-center gap-4">
+            <Button onClick={confirmDelItem}>Remove</Button>
+            <Button color="gray" onClick={cancelDelItem}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={openUsersModal} onClose={cancelSelectIssuer}>
+          <Modal.Header>Users</Modal.Header>
+          <Modal.Body>
+            <div className="justify-center">
+              <fieldset className="flex max-w-md flex-col gap-4">
+                <legend className="mb-4">Choose the issuer</legend>
+                {
+                  users.map(user => {
+                    return (
+                      <div className="flex items-center gap-2">
+                        <Radio
+                          id={user.id}
+                          name="users"
+                          value={user.name}
+                          defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId}
+                          onChange={issuerChange}
+                        />
+                        <Label htmlFor="united-state">{user.name}</Label>
                       </div>
-                      <div className="flex flex-row text-[10px] space-x-1">
-                        <span className="w-6">{"x" + exp.quantity}</span>
-                        <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
-                        <span className="font font-mono font-black">{exp.service}</span>
-                      </div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell className="py-1">
-                    <svg className="w-6 h-6 text-red-800 dark:text-white"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      onClick={() => askForDelItemConfirmation(exp)}
-                    >
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                    </svg>
+                    )
+                  })
+                }
+              </fieldset>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="flex justify-center gap-4">
+            <Button onClick={confirmSelectIssuer}>OK</Button>
+            <Button color="gray" onClick={cancelSelectIssuer}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-                  </Table.Cell>
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        </Table>
-      </div>
-
-      <Modal show={openGuestNameModal} onClose={cancelEditGuestName}>
-        <Modal.Header>Change guest name</Modal.Header>
-        <Modal.Body>
-          <div className="text-center">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              {/* {deletingItem !== null && deletingItem !== undefined ? "Remove item" + deletingItem.itemName + " ?" : "No item selected"} */}
-              <TextInput
-                value={editingGuestName}
-                onChange={editGuestName}
-              />
-            </p>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmEditGuestName}>Done</Button>
-          <Button color="gray" onClick={cancelEditGuestName}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={openEditDateModal} onClose={cancelEditDate}>
-        <Modal.Header />
-        <Modal.Body>
-          <div className="text-center">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              <Datepicker
-                value={editingDate.value}
-                onSelectedDateChanged={(date) => changeEditingDate(date)}
-                id="checkInDate"
-                defaultChecked={true}
-                inline
-              />
-            </p>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          {/* <Button onClick={confirmEditDate}>Done</Button> */}
-          <Button color="gray" onClick={cancelEditDate}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={openDelItemModal} onClose={cancelDelItem}>
-        <Modal.Body>
-          <div>
-            <span>{deletingItem === null || deletingItem === undefined ? "" : "Are you sure to remove [" + deletingItem.itemName + "]?"}</span>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmDelItem}>Remove</Button>
-          <Button color="gray" onClick={cancelDelItem}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={openUsersModal} onClose={cancelSelectIssuer}>
-        <Modal.Header>Users</Modal.Header>
-        <Modal.Body>
-          <div className="justify-center">
-            <fieldset className="flex max-w-md flex-col gap-4">
-              <legend className="mb-4">Choose the issuer</legend>
+        <Modal show={openPaymentModal} onClose={cancelSelectPaymentMethod}>
+          <Modal.Header>Payment</Modal.Header>
+          <Modal.Body>
+            <div className="flex flex-row items-center w-full space-x-2">
               {
-                users.map(user => {
+                pMethods.map(pM => {
                   return (
-                    <div className="flex items-center gap-2">
-                      <Radio
-                        id={user.id}
-                        name="users"
-                        value={user.name}
-                        defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId}
-                        onChange={issuerChange}
+                    <div
+                      className="block w-1/5"
+                    >
+                      <img
+                        src={pM.srcLargeImg}
+                        alt=""
+                        id={pM.id}
+                        onClick={changePaymentMethod}
                       />
-                      <Label htmlFor="united-state">{user.name}</Label>
                     </div>
                   )
                 })
               }
-            </fieldset>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmSelectIssuer}>OK</Button>
-          <Button color="gray" onClick={cancelSelectIssuer}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="flex justify-center gap-4">
+            <Button color="gray" onClick={cancelSelectPaymentMethod}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-      <Modal show={openPaymentModal} onClose={cancelSelectPaymentMethod}>
-        <Modal.Header>Payment</Modal.Header>
-        <Modal.Body>
-          <div className="flex flex-row items-center w-full space-x-2">
-            {
-              pMethods.map(pM => {
-                return (
-                  <div
-                    className="block w-1/5"
+        <Modal
+          show={openEditingItemModal}
+          size="md"
+          popup={true}
+          onClose={cancelEditingItem}
+        >
+          <Modal.Header />
+          <Modal.Body>
+            <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+              <div>
+                <TextInput
+                  id="itemName"
+                  placeholder="Item name"
+                  required={true}
+                  value={editingItem.itemName}
+                  onChange={changeItemName}
+                  onBlur={blurItemName}
+                />
+              </div>
+              <div className="flex flex-row w-full align-middle">
+                <div className="flex items-center w-2/5">
+                  <Label
+                    htmlFor="unitPrice"
+                    value="Unit Price"
+                  />
+                </div>
+                <TextInput
+                  id="unitPrice"
+                  placeholder="Enter amount here"
+                  type="currency"
+                  step={5000}
+                  required={true}
+                  value={editingItem.formattedUnitPrice}
+                  onChange={changeUnitPrice}
+                  rightIcon={HiOutlineCash}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex flex-row w-full align-middle">
+                <div className="flex items-center w-2/5">
+                  <Label
+                    htmlFor="quantity"
+                    value="Quantity"
+                  />
+                </div>
+                <div className="relative flex items-center w-full">
+                  <button
+                    type="button"
+                    id="decrement-button"
+                    data-input-counter-decrement="quantity-input"
+                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                    onClick={() => changeQuantity(-1)}
                   >
-                    <img
-                      src={pM.srcLargeImg}
-                      alt=""
-                      id={pM.id}
-                      onClick={changePaymentMethod}
-                    />
-                  </div>
-                )
-              })
-            }
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          <Button color="gray" onClick={cancelSelectPaymentMethod}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                    <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                    </svg>
+                  </button>
+                  <input
+                    type="number"
+                    id="quantity-input"
+                    data-input-counter aria-describedby="helper-text-explanation"
+                    className="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="999"
+                    required
+                    value={editingItem.quantity}
+                    readOnly
+                  />
+                  <button
+                    type="button"
+                    id="increment-button"
+                    data-input-counter-increment="quantity-input"
+                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                    onClick={() => changeQuantity(1)}
+                  >
+                    <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-row w-full align-middle">
+                <div className="flex items-center w-2/5">
+                  <Label
+                    htmlFor="amount"
+                    value="Amount"
+                  />
+                </div>
+                <span className="w-full">{editingItem.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
 
-      <Modal
-        show={openEditingItemModal}
-        size="md"
-        popup={true}
-        onClose={cancelEditingItem}
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
-            <div>
-              <TextInput
-                id="itemName"
-                placeholder="Item name"
-                required={true}
-                value={editingItem.itemName}
-                onChange={changeItemName}
-                onBlur={blurItemName}
-              />
-            </div>
-            <div className="flex flex-row w-full align-middle">
-              <div className="flex items-center w-2/5">
-                <Label
-                  htmlFor="unitPrice"
-                  value="Unit Price"
-                />
               </div>
-              <TextInput
-                id="unitPrice"
-                placeholder="Enter amount here"
-                type="currency"
-                step={5000}
-                required={true}
-                value={editingItem.formattedUnitPrice}
-                onChange={changeUnitPrice}
-                rightIcon={HiOutlineCash}
-                className="w-full"
-              />
-            </div>
-            <div className="flex flex-row w-full align-middle">
-              <div className="flex items-center w-2/5">
-                <Label
-                  htmlFor="quantity"
-                  value="Quantity"
-                />
+              <div className="flex flex-row w-full align-middle">
+                <div className="flex items-center w-2/5">
+                  <Label
+                    htmlFor="service"
+                    value="Service"
+                  />
+                </div>
+                <span className="w-full">{editingItem.service}</span>
               </div>
-              <div className="relative flex items-center w-full">
-                <button
-                  type="button"
-                  id="decrement-button"
-                  data-input-counter-decrement="quantity-input"
-                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                  onClick={() => changeQuantity(-1)}
-                >
-                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                  </svg>
-                </button>
-                <input
-                  type="number"
-                  id="quantity-input"
-                  data-input-counter aria-describedby="helper-text-explanation"
-                  className="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="999"
-                  required
-                  value={editingItem.quantity}
-                  readOnly
-                />
-                <button
-                  type="button"
-                  id="increment-button"
-                  data-input-counter-increment="quantity-input"
-                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                  onClick={() => changeQuantity(1)}
-                >
-                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                  </svg>
-                </button>
+              <div className="w-full flex justify-center">
+                <Button onClick={createOrUpdateItem} className="mx-2">
+                  Save
+                </Button>
+                <Button onClick={cancelEditingItem} className="mx-2">
+                  Cancel
+                </Button>
               </div>
             </div>
-            <div className="flex flex-row w-full align-middle">
-              <div className="flex items-center w-2/5">
-                <Label
-                  htmlFor="amount"
-                  value="Amount"
-                />
-              </div>
-              <span className="w-full">{editingItem.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+          </Modal.Body>
+        </Modal>
 
-            </div>
-            <div className="flex flex-row w-full align-middle">
-              <div className="flex items-center w-2/5">
-                <Label
-                  htmlFor="service"
-                  value="Service"
-                />
-              </div>
-              <span className="w-full">{editingItem.service}</span>
-            </div>
-            <div className="w-full flex justify-center">
-              <Button onClick={createOrUpdateItem} className="mx-2">
-                Save
-              </Button>
-              <Button onClick={cancelEditingItem} className="mx-2">
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+
+
+      </div >
 
       <Modal
         show={openExportInvModal}
-        size="md"
-        popup={true}
+        popup
         onClose={closeExportInv}
-        dismissible
       >
+        <Modal.Header />
         <Modal.Body>
           <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div className="flex flex-row pt-2">
@@ -891,7 +927,7 @@ export const EditInvoice = () => {
               </div>
               <div className="flex flex-col w-4/5 ">
                 <span className="text-right font-serif font-bold text-amber-800 capitalize">phuc sinh home</span>
-                <span className="text-right font-mono text-[9px] font italic text-gray-500">15, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
+                <span className="text-right font-mono text-[9px] font italic text-gray-500">10, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
                 <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
               </div>
             </div>
@@ -922,7 +958,6 @@ export const EditInvoice = () => {
                           <div className="grid grid-cols-1 py-0 my-0">
                             <div
                               className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
-                              onClick={() => editItem(exp)}
                             >
                               {exp.itemName}
                             </div>
@@ -979,7 +1014,6 @@ export const EditInvoice = () => {
           </div>
         </Modal.Body>
       </Modal>
-
-    </div >
+    </>
   );
 }

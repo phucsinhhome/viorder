@@ -83,7 +83,7 @@ export function InvoiceManager() {
       label: 'Last 5 days'
     }]
   const filterClass = (days) => {
-    var classNamePattern = "font-bold text-amber-800 rounded px-2 py-1"
+    var classNamePattern = "font-bold text-amber-800 rounded px-2 py-0.5"
     return classNamePattern + " " + (deltaDays === days ? "bg-slate-400" : "bg-slate-200");
   }
 
@@ -113,7 +113,7 @@ export function InvoiceManager() {
       if (deletingInv === undefined || deletingInv === null) {
         return;
       }
-      console.warn("Delete invoice {}...", deletingInv.id)
+      console.warn("Delete invoice %s...", deletingInv.id)
     } catch (e) {
       console.error(e)
     } finally {
@@ -126,13 +126,38 @@ export function InvoiceManager() {
 
   return (
     <div className="h-full">
-      <div className="py-2 px-2 space-x-4 flex flex-wrap space-y-2">
-        <Link to="../invoice/new" relative="route" className="font-bold text-amber-800 pl-4 py-1">New Invoice</Link>
-        <div className="space-x-4">
-          {filterOpts.map((opt) => {
-            return (<Link key={opt.days} onClick={() => filterDay(opt.days)} relative="route" className={filterClass(opt.days)}>{opt.label}</Link>)
-          })}
+      <div className="flex flex-wrap pt-2 pb-4 px-2 space-x-4 space-y-2">
+        <div className="flex flex-row items-center pl-4">
+          <svg
+            className="w-5 h-5 text-amber-700 dark:text-white"
+            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+          </svg>
+          <Link
+            to="../invoice/new"
+            relative="route"
+            className="font-bold text-amber-800 py-1"
+          >
+            Add Invoice
+          </Link>
         </div>
+      </div>
+      <div className="flex flex-row space-x-4 px-4">
+        {filterOpts.map((opt) => {
+          return (<Link
+            key={opt.days}
+            onClick={() => filterDay(opt.days)}
+            relative="route"
+            className={filterClass(opt.days)}
+          >
+            {opt.label}
+          </Link>)
+        })}
       </div>
       <div className="h-3/5 max-h-fit overflow-hidden">
         <Table hoverable={true}>
@@ -156,10 +181,10 @@ export function InvoiceManager() {
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   key={inv.id}
                 >
-                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
+                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
                     <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                   </Table.Cell>
-                  <Table.Cell className="sm:px-1 px-1">
+                  <Table.Cell className="sm:px-1 px-1 py-0.5">
                     <div className="grid grid-cols-1">
                       <Link
                         to={inv.id}
@@ -179,7 +204,7 @@ export function InvoiceManager() {
                   </Table.Cell>
 
 
-                  <Table.Cell>
+                  <Table.Cell className="py-0.5">
                     <svg
                       className={inv.paymentMethod === null ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
