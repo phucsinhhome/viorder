@@ -883,15 +883,14 @@ export const EditInvoice = () => {
         onClose={closeExportInv}
         dismissible
       >
-        {/* <Modal.Header /> */}
         <Modal.Body>
           <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div className="flex flex-row pt-2">
               <div className="block w-1/5">
-                <img src="/momo.svg" className="w-25 border border-1" alt=""></img>
+                <img src="/ps_logo_96.jpg" className="w-25 border border-1 rounded-2xl" alt=""></img>
               </div>
               <div className="flex flex-col w-4/5 ">
-                <span className="text-right font-serif font-bold text-amber-800">Business Name</span>
+                <span className="text-right font-serif font-bold text-amber-800 capitalize">phuc sinh home</span>
                 <span className="text-right font-mono text-[9px] font italic text-gray-500">15, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
                 <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
               </div>
@@ -968,13 +967,14 @@ export const EditInvoice = () => {
             </div>
             <div className="flex flex-col justify-items-center w-full">
               <span className="text-center">Payment Info</span>
-              <img src={selectedPaymentMethod.paymentInfo} alt="" />
+              <div className="flex justify-center w-full">
+                <img
+                  src={selectedPaymentMethod.paymentInfo}
+                  alt=""
+                  className="border rounded-lg w-4/5 max-w-fit"
+                />
+              </div>
               <span className="text-center font italic font-serif">Thank you so much !</span>
-            </div>
-            <div className="w-full flex justify-center">
-              {/* <Button onClick={closeExportInv} className="mx-2">
-                Close
-              </Button> */}
             </div>
           </div>
         </Modal.Body>
