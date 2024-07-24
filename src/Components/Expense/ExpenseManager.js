@@ -38,6 +38,14 @@ const intialExpense = () => {
 }
 const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
+const GEN_STATE = {
+  GENERATION_ERROR: "GENERATION_ERROR",
+  GENERATING: "GENERATING",
+  GENERATED: "GENERATED",
+  SAVING: "SAVING",
+  SAVED: "SAVED"
+}
+
 export const ExpenseManager = () => {
 
   const [expenses, setExpenses] = useState([defaultEmptExpense])
@@ -108,12 +116,12 @@ export const ExpenseManager = () => {
   const extractExpense = () => {
     console.info("Extracting expense from message " + expenseMessage)
     if (expenseMessage.length < 5) {
-      setGenState("GENERATION_ERROR")
+      setGenState(GEN_STATE.GENERATION_ERROR)
       setGenError("Message must be longer than 5 characters")
       inputRef.current.focus()
       return
     }
-    setGenState("GENERATING")
+    setGenState(GEN_STATE.GENERATING)
     run(expenseMessage)
       .then(data => {
         try {
@@ -144,11 +152,11 @@ export const ExpenseManager = () => {
               })
           }
           setExpense(exp);
-          setGenState("GENERATED")
+          setGenState(GEN_STATE.GENERATED)
         }
         catch (e) {
           console.error(e)
-          setGenState("GENERATION_ERROR")
+          setGenState(GEN_STATE.GENERATION_ERROR)
           setGenError("Cannot generate expense")
         }
         finally {
@@ -158,7 +166,7 @@ export const ExpenseManager = () => {
   }
 
   const handleCreateExpense = () => {
-    setGenState("SAVING")
+    setGenState(GEN_STATE.SAVING)
     try {
       let exp = {
         ...expense
@@ -187,7 +195,7 @@ export const ExpenseManager = () => {
       console.error(e)
     }
     finally {
-      setGenState("SAVED")
+      setGenState(GEN_STATE.SAVED)
     }
   }
 
