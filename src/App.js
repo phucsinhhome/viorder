@@ -18,6 +18,11 @@ export const currentUser = tele.initDataUnsafe.user || {
   last_name: "Tran"
 }
 
+export const currentUserFullname = () => {
+  let sufix = currentUser.last_name === null || currentUser.last_name === undefined || currentUser.last_name === "" ? "" : (" " + currentUser.last_name)
+  return currentUser.first_name + sufix
+}
+
 export default function App() {
 
   useEffect(() => {
@@ -45,8 +50,8 @@ export default function App() {
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
       </Router>
-      <div className="absolute top-0 right-0 flex flex-col mt-10">
-        <span className=" font text-[10px] font-bold italic text-gray-800 dark:text-white">{currentUser.first_name + " " + currentUser.last_name}</span>
+      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-60 rounded-sm">
+        <span className=" font text-[10px] font-bold italic text-gray-800 dark:text-white">{currentUserFullname()}</span>
         <span className=" font text-[8px] italic text-gray-900 dark:text-white">{currentUser.id}</span>
       </div>
     </div>

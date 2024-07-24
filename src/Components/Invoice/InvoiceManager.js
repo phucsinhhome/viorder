@@ -113,7 +113,7 @@ export function InvoiceManager() {
       if (deletingInv === undefined || deletingInv === null) {
         return;
       }
-      console.warn("Delete invoice {}...", deletingInv.id)
+      console.warn("Delete invoice %s...", deletingInv.id)
     } catch (e) {
       console.error(e)
     } finally {
@@ -156,10 +156,10 @@ export function InvoiceManager() {
                   className="bg-white dark:border-gray-700 dark:bg-gray-800"
                   key={inv.id}
                 >
-                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
+                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
                     <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                   </Table.Cell>
-                  <Table.Cell className="sm:px-1 px-1">
+                  <Table.Cell className="sm:px-1 px-1 py-0.5">
                     <div className="grid grid-cols-1">
                       <Link
                         to={inv.id}
@@ -179,7 +179,7 @@ export function InvoiceManager() {
                   </Table.Cell>
 
 
-                  <Table.Cell>
+                  <Table.Cell className="py-0.5">
                     <svg
                       className={inv.paymentMethod === null ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
