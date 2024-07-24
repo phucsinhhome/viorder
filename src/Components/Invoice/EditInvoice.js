@@ -49,9 +49,10 @@ export const EditInvoice = () => {
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(pMethods[0])
 
-
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
+
+  const [openExportInvModal, setOpenExportInvModal] = useState(false)
 
 
   useEffect(() => {
@@ -386,6 +387,14 @@ export const EditInvoice = () => {
     setEditingItem(eI)
   }
 
+  //================= EXPORT INVOICE ===================//
+  const showExportInv = () => {
+    setOpenExportInvModal(true)
+  }
+  const closeExportInv = () => {
+    setOpenExportInvModal(false)
+  }
+
   return (
     <div className="h-full">
       <div className="py-2 px-2 space-x-8">
@@ -550,7 +559,7 @@ export const EditInvoice = () => {
         </div>
         <div
           className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
-          onClick={exportInv}
+          onClick={showExportInv}
         >
           <svg
             class="w-[18px] h-[18px] text-amber-700 dark:text-white"
@@ -847,6 +856,79 @@ export const EditInvoice = () => {
               <Button onClick={cancelEditingItem} className="mx-2">
                 Cancel
               </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={openExportInvModal}
+        size="md"
+        popup={true}
+        onClose={closeExportInv}
+      >
+        <Modal.Body>
+          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+            <div className="flex flex-row pt-2">
+              <div className="block w-1/5">
+                <img src="/momo.svg" className="w-25 border border-1" alt=""></img>
+              </div>
+              <div className="flex flex-col w-4/5 ">
+                <span className="text-right font-serif font-bold text-amber-800">Business Name</span>
+                <span className="text-right font-mono text-[9px] font italic text-gray-500">15, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
+                <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
+              </div>
+            </div>
+            <div className="flex flex-row w-full">
+              <div className="flex flex-col w-3/5">
+                <span className="font uppercase font-serif text-sm">tran hoang minh</span>
+                <span className="font text-gray-400 text-[8px]">No: 2324342</span>
+              </div>
+              <div className="flex w-2/5">
+                <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
+              </div>
+            </div>
+            <div>
+              <Table hoverable>
+                <Table.Head className="my-1">
+                  <Table.HeadCell className="py-2">
+                    Item Name
+                  </Table.HeadCell>
+                  <Table.HeadCell className="py-2">
+                    Amount
+                  </Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y" >
+                  {invoice.items.map((exp) => {
+                    return (
+                      <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0" key={exp.id}>
+                        <Table.Cell className="py-0">
+                          <div className="grid grid-cols-1 py-0 my-0">
+                            <div
+                              className="font text-sm text-blue-600 font-semibold hover:underline dark:text-blue-500"
+                              onClick={() => editItem(exp)}
+                            >
+                              {exp.itemName}
+                            </div>
+                            <div className="flex flex-row text-[9px] space-x-1">
+                              <span className="w-6">{"x" + exp.quantity}</span>
+                              <span className="w-24">{exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                            </div>
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell className="py-0">
+                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        </Table.Cell>
+                      </Table.Row>
+                    )
+                  })}
+                </Table.Body>
+              </Table>
+            </div>
+            <div className="w-full flex justify-center">
+              {/* <Button onClick={closeExportInv} className="mx-2">
+                Close
+              </Button> */}
             </div>
           </div>
         </Modal.Body>
