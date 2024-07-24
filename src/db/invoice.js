@@ -1,3 +1,7 @@
+export const Configs ={
+  logo: process.env.REACT_APP_PS_LOGO
+}
+
 const requestOptions = {
   method: 'GET'
 }
@@ -56,6 +60,7 @@ export function listPaymentMethods() {
     {
       id: "cash",
       name: "Cash",
+      feeRate: 0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -70,11 +75,13 @@ export function listPaymentMethods() {
         <path fill-rule="evenodd" d="M2 11a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Zm7.5 1a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" clip-rule="evenodd" />
         <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
       </svg>,
-      srcLargeImg: "/cash.svg"
+      srcLargeImg: "/cash.svg",
+      paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/cash.jpeg"
     },
     {
       id: "creditCard",
       name: "Credit Card",
+      feeRate: 0.025,
       template: "invoice_with_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -86,11 +93,13 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/mastercard.svg"
+      srcLargeImg: "/mastercard.svg",
+      paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/creditcard.jpeg"
     },
     {
       id: "momo",
       name: "MoMo",
+      feeRate: 0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -102,10 +111,12 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/momo-square.png"
+      srcLargeImg: "/momo-square.png",
+      paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/mono.jpg"
     }, {
       id: "paypal",
       name: "Paypal",
+      feeRate: 0.025,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -117,10 +128,12 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/paypal.svg"
+      srcLargeImg: "/paypal.svg",
+      paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/paypal.png"
     }, {
       id: "bankTransfer",
       name: "Bank Transfer",
+      feeRate: 0.0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -132,7 +145,8 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/bank.svg"
+      srcLargeImg: "/bank.svg",
+      paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/bankTransfer.jpg"
     }
   ]
 }
