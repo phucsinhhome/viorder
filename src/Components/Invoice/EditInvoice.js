@@ -968,6 +968,10 @@ export const EditInvoice = () => {
                 </Table.Body>
               </Table>
             </div>
+            <div className="flex flex-col justify-items-center w-full">
+              <span className="text-center">Payment Info</span>
+              <img src={selectedPaymentMethod.paymentInfo} alt=""/>
+            </div>
             <div className="w-full flex justify-center">
               {/* <Button onClick={closeExportInv} className="mx-2">
                 Close

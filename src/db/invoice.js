@@ -71,7 +71,8 @@ export function listPaymentMethods() {
         <path fill-rule="evenodd" d="M2 11a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Zm7.5 1a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" clip-rule="evenodd" />
         <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
       </svg>,
-      srcLargeImg: "/cash.svg"
+      srcLargeImg: "/cash.svg",
+      paymentInfo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/800px-QR_code_for_mobile_English_Wikipedia.svg.png"
     },
     {
       id: "creditCard",
@@ -88,7 +89,8 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/mastercard.svg"
+      srcLargeImg: "/mastercard.svg",
+      paymentInfo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/800px-QR_code_for_mobile_English_Wikipedia.svg.png"
     },
     {
       id: "momo",
@@ -105,7 +107,8 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/momo-square.png"
+      srcLargeImg: "/momo-square.png",
+      paymentInfo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/800px-QR_code_for_mobile_English_Wikipedia.svg.png"
     }, {
       id: "paypal",
       name: "Paypal",
@@ -121,7 +124,8 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/paypal.svg"
+      srcLargeImg: "/paypal.svg",
+      paymentInfo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/800px-QR_code_for_mobile_English_Wikipedia.svg.png"
     }, {
       id: "bankTransfer",
       name: "Bank Transfer",
@@ -137,7 +141,8 @@ export function listPaymentMethods() {
         viewBox="0 0 24 24">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
       </svg>,
-      srcLargeImg: "/bank.svg"
+      srcLargeImg: "/bank.svg",
+      paymentInfo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/800px-QR_code_for_mobile_English_Wikipedia.svg.png"
     }
   ]
 }
