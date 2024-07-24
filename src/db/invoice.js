@@ -56,6 +56,7 @@ export function listPaymentMethods() {
     {
       id: "cash",
       name: "Cash",
+      feeRate: 0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -75,6 +76,7 @@ export function listPaymentMethods() {
     {
       id: "creditCard",
       name: "Credit Card",
+      feeRate: 0.025,
       template: "invoice_with_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -91,6 +93,7 @@ export function listPaymentMethods() {
     {
       id: "momo",
       name: "MoMo",
+      feeRate: 0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -106,6 +109,7 @@ export function listPaymentMethods() {
     }, {
       id: "paypal",
       name: "Paypal",
+      feeRate: 0.025,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"
@@ -121,6 +125,7 @@ export function listPaymentMethods() {
     }, {
       id: "bankTransfer",
       name: "Bank Transfer",
+      feeRate: 0.0,
       template: "invoice_without_transfer_fee",
       src: <svg
         class="w-6 h-6 text-gray-800 dark:text-white"

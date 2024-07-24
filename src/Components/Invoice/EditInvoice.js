@@ -572,6 +572,23 @@ export const EditInvoice = () => {
           >
             <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
           </svg>
+          <span>View</span>
+        </div>
+        <div
+          className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+          onClick={exportInv}
+        >
+          <svg
+            class="w-[18px] h-[18px] text-amber-700 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
+          </svg>
           <span>Export</span>
         </div>
         <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
@@ -866,7 +883,9 @@ export const EditInvoice = () => {
         size="md"
         popup={true}
         onClose={closeExportInv}
+        dismissible
       >
+        {/* <Modal.Header /> */}
         <Modal.Body>
           <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div className="flex flex-row pt-2">
@@ -881,8 +900,8 @@ export const EditInvoice = () => {
             </div>
             <div className="flex flex-row w-full">
               <div className="flex flex-col w-3/5">
-                <span className="font uppercase font-serif text-sm">tran hoang minh</span>
-                <span className="font text-gray-400 text-[8px]">No: 2324342</span>
+                <span className="font uppercase font-serif text-sm">{invoice.guestName}</span>
+                <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
               </div>
               <div className="flex w-2/5">
                 <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
@@ -905,7 +924,7 @@ export const EditInvoice = () => {
                         <Table.Cell className="py-0">
                           <div className="grid grid-cols-1 py-0 my-0">
                             <div
-                              className="font text-sm text-blue-600 font-semibold hover:underline dark:text-blue-500"
+                              className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
                               onClick={() => editItem(exp)}
                             >
                               {exp.itemName}
@@ -922,6 +941,30 @@ export const EditInvoice = () => {
                       </Table.Row>
                     )
                   })}
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      SUBTOTAL
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24">{(invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
+                    <Table.Cell className="py-0 text-center">
+                      GRAND TOTAL
+                    </Table.Cell>
+                    <Table.Cell className="py-0">
+                      <span className="w-24 text-red-800 font-bold">{(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    </Table.Cell>
+                  </Table.Row>
                 </Table.Body>
               </Table>
             </div>
