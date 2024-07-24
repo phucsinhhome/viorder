@@ -153,9 +153,6 @@ export function InvoiceManager() {
                   <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1">
                     <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                   </Table.Cell>
-
-
-
                   <Table.Cell className="sm:px-1 px-1">
                     <div className="grid grid-cols-1">
                       <Link
