@@ -900,7 +900,7 @@ export const EditInvoice = () => {
             </div>
             <div className="flex flex-row w-full">
               <div className="flex flex-col w-3/5">
-                <span className="font uppercase font-serif text-sm">{invoice.guestName}</span>
+                <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
                 <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
               </div>
               <div className="flex w-2/5">
@@ -971,6 +971,7 @@ export const EditInvoice = () => {
             <div className="flex flex-col justify-items-center w-full">
               <span className="text-center">Payment Info</span>
               <img src={selectedPaymentMethod.paymentInfo} alt=""/>
+              <span className="text-center font italic font-serif">Thank you so much !</span>
             </div>
             <div className="w-full flex justify-center">
               {/* <Button onClick={closeExportInv} className="mx-2">
