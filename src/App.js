@@ -26,8 +26,10 @@ export const currentUserFullname = () => {
 export default function App() {
 
   useEffect(() => {
+    document.title = "PMS"
     tele.ready();
     tele.expand();
+    tele.disableVerticalSwipes();
   }, []);
 
 
