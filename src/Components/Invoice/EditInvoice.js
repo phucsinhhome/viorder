@@ -706,7 +706,6 @@ export const EditInvoice = () => {
             <div className="text-center">
               <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <Datepicker
-                  value={editingDate.value}
                   onSelectedDateChanged={(date) => changeEditingDate(date)}
                   id="checkInDate"
                   defaultChecked={true}
@@ -716,9 +715,6 @@ export const EditInvoice = () => {
             </div>
           </Modal.Body>
           <Modal.Footer className="flex justify-center gap-4">
-            {/* <Button color="gray" onClick={cancelEditDate}>
-              Cancel
-            </Button> */}
           </Modal.Footer>
         </Modal>
 

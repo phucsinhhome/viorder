@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProfitReportThisMonth } from "../../db/profit";
 import { Link } from "react-router-dom";
-import { toVND } from "../../Service/Utils";
+import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, toVND, simpleDateToISODate } from "../../Service/Utils";
 
 const reports = [
   {
@@ -17,33 +17,7 @@ const reports = [
     key: "investors"
   }
 ]
-const lastDateOf = (date) => {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-}
 
-const beginOfDay = (date) => {
-  date.setHours(0)
-  date.setMinutes(0)
-  date.setSeconds(0)
-  return date
-}
-
-const endOfDay = (date) => {
-  date.setHours(23)
-  date.setMinutes(59)
-  date.setSeconds(59)
-  return date
-}
-
-const adjustMonths = (date, numOfMonths) => {
-  return new Date(date.setMonth(date.getMonth() + numOfMonths))
-}
-
-const beginOfMonth = (date) => {
-  date.setDate(1)
-  beginOfDay(date)
-  return date
-}
 
 export function ProfitReport() {
   const [report, setReport] = useState({
@@ -73,8 +47,8 @@ export function ProfitReport() {
     {
       name: "Today",
       range: {
-        fromDate: beginOfMonth(new Date()),
-        toDate: endOfDay(new Date())
+        fromDate: simpleDateToISODate(beginOfMonth(new Date())),
+        toDate: simpleDateToISODate(new Date())
       }
     })
 
@@ -103,17 +77,20 @@ export function ProfitReport() {
 
   const calculatePeriod = (timeFilter) => {
 
-    var nextFromDate = timeFilter.adjustedMonths === 0 ? beginOfDay(beginOfMonth(new Date())) : beginOfDay(adjustMonths(period.range.fromDate, timeFilter.adjustedMonths))
-    var nextToDate = endOfDay(new Date(nextFromDate))
-    var dayOfMonth = timeFilter.entiredMonth ? lastDateOf(nextToDate) : new Date().getDate()
-    console.info("Setting day of [%s] is [%d]", nextToDate, dayOfMonth)
-    nextToDate.setDate(dayOfMonth)
+    var nextFromDate = timeFilter.adjustedMonths === 0 ? beginOfMonth(new Date()) : adjustMonths(new Date(period.range.fromDate), timeFilter.adjustedMonths)
+    var nextToDate = new Date(nextFromDate)
+    var numOfDay = timeFilter.entiredMonth ? lastDayOfMonth(nextToDate) : new Date().getDate()
+    nextToDate.setDate(numOfDay)
 
+    let nFD = simpleDateToISODate(nextFromDate)
+    let nTD = simpleDateToISODate(nextToDate)
+
+    console.info("Setting report period from [%s] to [%s] with days of month [%d]", nFD, nTD, numOfDay)
     var newPeriod = {
       name: timeFilter.name,
       range: {
-        fromDate: nextFromDate,
-        toDate: nextToDate
+        fromDate: nFD,
+        toDate: nTD
       }
     }
     setPeriod(newPeriod)
@@ -121,19 +98,16 @@ export function ProfitReport() {
 
 
   const fetchReport = () => {
-    var fD = period.range.fromDate.toISOString().split('T')[0]
-    var tD = period.range.toDate.toISOString().split('T')[0]
+    var fD = period.range.fromDate
+    var tD = period.range.toDate
+    console.info("Loading profit report by %s from %s to %s", reportType.key, fD, tD)
 
     getProfitReportThisMonth(fD, tD, reportType.key)
       .then(data => setReport(data))
   }
 
   useEffect(() => {
-    var fD = period.range.fromDate.toISOString().split('T')[0]
-    var tD = period.range.toDate.toISOString().split('T')[0]
-
-    getProfitReportThisMonth(fD, tD, reportType.key)
-      .then(data => setReport(data))
+    fetchReport()
   }, [reportType, period]);
 
   const filterClass = (reportKey, currentKey) => {
@@ -152,7 +126,7 @@ export function ProfitReport() {
               fill="currentColor"
               className="w-5 h-5 text-amber-700 dark:text-white"
             >
-              <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+              <path fillRule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clipRule="evenodd" />
             </svg>
             <Link
               onClick={() => fetchReport()}
@@ -168,7 +142,9 @@ export function ProfitReport() {
               key={rp.key}
               onClick={() => setReportType(rp)}
               relative="route"
-              className={filterClass(rp.key, reportType.key)}>{rp.name}
+              className={filterClass(rp.key, reportType.key)}
+            >
+              {rp.name}
             </Link>)
           })}
         </div>
@@ -176,7 +152,13 @@ export function ProfitReport() {
         <div className="flex flex-wrap py-2 space-x-4">
           <div className="space-x-2 pl-4">
             {timeFilters.map((per) => {
-              return (<Link key={per.name} onClick={() => calculatePeriod(per)} relative="route" className={filterClass(per.name, period.name)}>{per.name}</Link>)
+              return (<Link key={per.name}
+                onClick={() => calculatePeriod(per)}
+                relative="route"
+                className={filterClass(per.name, period.name)}
+              >
+                {per.name}
+              </Link>)
             })}
           </div>
         </div>
@@ -209,7 +191,7 @@ export function ProfitReport() {
         <div className="flex flex-col w-full space-y-2">
           {report.breakdown.map((item) => {
             return (
-              <div className="flex flex-col py-1 border border-spacing-1 shadow-sm rounded-md">
+              <div key={item.name} className="flex flex-col py-1 border border-spacing-1 shadow-sm rounded-md">
                 <div className="text-left px-4 mb-2">
                   <span
                     className="font-sans font-semibold text-gray-500 text-[12px]"

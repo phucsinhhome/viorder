@@ -26,23 +26,12 @@ export const currentUserFullname = () => {
 export default function App() {
 
   useEffect(() => {
-    // const script = document.createElement('script');
-    // script.setAttribute('src', 'https://phucsinhhcm.hopto.org:9000/openresources/lib/telegram-web-app.js');
-    // script.async = true
-    // script.integrity = "sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-    // script.crossOrigin = "anonymous"
-    // document.appendChild(script);
-
     document.title = "PMS"
     tele.ready();
     tele.expand();
     tele.disableVerticalSwipes();
     console.info("TELEGRAM BOT API VERSION: %s", tele.version)
 
-    // return () => {
-    //   // clean up the script when the component in unmounted
-    //   document.body.removeChild(script)
-    // }
   }, []);
 
 
@@ -65,10 +54,10 @@ export default function App() {
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
       </Router>
-      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-90 rounded-sm shadow-lg">
-        <span className=" font text-[10px] font-bold italic text-gray-800 dark:text-white">{currentUserFullname()}</span>
-        <span className=" font text-[8px] italic text-gray-900 dark:text-white">{currentUser.id}</span>
-        <span className=" font font-mono text-center text-[8px] text-gray-900 dark:text-white">{tele.version}</span>
+      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">
+        <span className=" font text-[10px] font-bold text-gray-800 dark:text-white">{currentUserFullname()}</span>
+        <span className=" font text-[8px] italic text-gray-600 dark:text-white">{currentUser.id}</span>
+        <span className=" font font-mono text-center text-[8px] text-gray-900 dark:text-white">{"API " + tele.version}</span>
       </div>
     </div>
   );
