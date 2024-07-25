@@ -30,6 +30,7 @@ export default function App() {
     tele.ready();
     tele.expand();
     tele.disableVerticalSwipes();
+    console.info("TELEGRAM BOT API VERSION: %s", tele.version)
   }, []);
 
 

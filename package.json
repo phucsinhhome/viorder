@@ -31,7 +31,6 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "tailwind-datepicker-react": "^1.2.3",
-    "telegraf": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
