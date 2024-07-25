@@ -206,6 +206,39 @@ export function ProfitReport() {
           </div>
         </div>
 
+        <div className="flex flex-col w-full space-y-2">
+          {report.breakdown.map((item) => {
+            return (
+              <div className="flex flex-col py-1 border border-spacing-1 shadow-sm rounded-md">
+                <div className="text-left px-4 mb-2">
+                  <span
+                    className="font-sans font-semibold text-gray-500 text-[12px]"
+                  >
+                    {item.displayName}
+                  </span>
+                </div>
+                <div className="flex flex-row">
+                  <span
+                    className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
+                  >
+                    {toVND(item.revenue)}
+                  </span>
+                  <span
+                    className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
+                  >
+                    {toVND(item.expense)}
+                  </span>
+                  <span
+                    className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
+                  >
+                    {toVND(item.profit)}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
         {/* <div>
           <Table hoverable>
             <Table.Head className="my-1">
@@ -256,7 +289,7 @@ export function ProfitReport() {
           </Table>
         </div> */}
 
-        <table class="table-auto border-separate border-spacing-0 font-sans px-2 w-11/12" >
+        {/* <table class="table-auto border-separate border-spacing-0 font-sans px-2 w-11/12" >
           <thead class="bg-slate-200">
             <tr class="">
               <th class="" />
@@ -277,7 +310,7 @@ export function ProfitReport() {
               )
             })}
           </tbody>
-        </table>
+        </table> */}
       </div >
     </>
   )
