@@ -3,7 +3,7 @@ import { getProfitReportThisMonth } from "../../db/profit";
 import { Link } from "react-router-dom";
 import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, toVND, simpleDateToISODate } from "../../Service/Utils";
 
-const reports = [
+const reportTypes = [
   {
     name: "By Service",
     key: "services"
@@ -18,9 +18,16 @@ const reports = [
   }
 ]
 
+const defaultPeriod = {
+  name: "Today",
+  range: {
+    fromDate: simpleDateToISODate(beginOfMonth(new Date())),
+    toDate: simpleDateToISODate(new Date())
+  }
+}
 
 export function ProfitReport() {
-  const [report, setReport] = useState({
+  const [report, setReportData] = useState({
     "fromDate": "2023-12-01",
     "toDate": "2023-12-13",
     "id": null,
@@ -42,15 +49,12 @@ export function ProfitReport() {
     ]
   })
 
-  const [reportType, setReportType] = useState(reports[0])
-  const [period, setPeriod] = useState(
-    {
-      name: "Today",
-      range: {
-        fromDate: simpleDateToISODate(beginOfMonth(new Date())),
-        toDate: simpleDateToISODate(new Date())
-      }
-    })
+  const [params, setParams] = useState({
+    type: reportTypes[0].key,
+    periodName: defaultPeriod.name,
+    fromDate: defaultPeriod.range.fromDate,
+    toDate: defaultPeriod.range.toDate
+  })
 
   const timeFilters = [
     // {
@@ -75,9 +79,9 @@ export function ProfitReport() {
     // }
   ]
 
-  const calculatePeriod = (timeFilter) => {
+  const changePeriod = (timeFilter) => {
 
-    var nextFromDate = timeFilter.adjustedMonths === 0 ? beginOfMonth(new Date()) : adjustMonths(new Date(period.range.fromDate), timeFilter.adjustedMonths)
+    var nextFromDate = timeFilter.adjustedMonths === 0 ? beginOfMonth(new Date()) : adjustMonths(new Date(params.fromDate), timeFilter.adjustedMonths)
     var nextToDate = new Date(nextFromDate)
     var numOfDay = timeFilter.entiredMonth ? lastDayOfMonth(nextToDate) : new Date().getDate()
     nextToDate.setDate(numOfDay)
@@ -86,33 +90,42 @@ export function ProfitReport() {
     let nTD = simpleDateToISODate(nextToDate)
 
     console.info("Setting report period from [%s] to [%s] with days of month [%d]", nFD, nTD, numOfDay)
-    var newPeriod = {
-      name: timeFilter.name,
-      range: {
-        fromDate: nFD,
-        toDate: nTD
-      }
+    let nParam={
+      ...params,
+      periodName: timeFilter.name,
+      fromDate: nFD,
+      toDate: nTD
     }
-    setPeriod(newPeriod)
+    setParams(nParam)
   }
 
 
   const fetchReport = () => {
-    var fD = period.range.fromDate
-    var tD = period.range.toDate
-    console.info("Loading profit report by %s from %s to %s", reportType.key, fD, tD)
+    var fD = params.fromDate
+    var tD = params.toDate
+    console.info("Profit report by %s from %s to %s", params.type, fD, tD)
 
-    getProfitReportThisMonth(fD, tD, reportType.key)
-      .then(data => setReport(data))
+    getProfitReportThisMonth(fD, tD, params.type)
+      .then(data => setReportData(data))
   }
+
 
   useEffect(() => {
     fetchReport()
-  }, [reportType, period]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
 
   const filterClass = (reportKey, currentKey) => {
     var classNamePattern = "font-bold text-sm text-amber-800 rounded px-2 py-0.5"
     return classNamePattern + " " + (currentKey === reportKey ? "bg-slate-400" : "bg-slate-200");
+  }
+
+  const changeReportType = (type) => {
+    let nParam ={
+      ...params,
+      type: type.key
+    }
+    setParams(nParam)
   }
 
   return (
@@ -129,36 +142,35 @@ export function ProfitReport() {
               <path fillRule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clipRule="evenodd" />
             </svg>
             <Link
-              onClick={() => fetchReport()}
+              onClick={fetchReport}
               className="font-bold text-amber-800"
             >
               Update
             </Link>
           </div>
         </div>
-        <div className="flex flex-row space-x-2 pl-4 mb-2">
-          {reports.map((rp) => {
-            return (<Link
+        <div className="flex flex-row items-center space-x-2 pl-4 mb-2">
+          {reportTypes.map((rp) => {
+            return (<span
               key={rp.key}
-              onClick={() => setReportType(rp)}
-              relative="route"
-              className={filterClass(rp.key, reportType.key)}
+              onClick={() => changeReportType(rp)}
+              className={filterClass(rp.key, params.type)}
             >
               {rp.name}
-            </Link>)
+            </span>)
           })}
         </div>
 
-        <div className="flex flex-wrap py-2 space-x-4">
+        <div className="flex flex-row py-2 space-x-4">
           <div className="space-x-2 pl-4">
             {timeFilters.map((per) => {
-              return (<Link key={per.name}
-                onClick={() => calculatePeriod(per)}
-                relative="route"
-                className={filterClass(per.name, period.name)}
+              return (<span
+                key={per.name}
+                onClick={() => changePeriod(per)}
+                className={filterClass(per.name, params.periodName)}
               >
                 {per.name}
-              </Link>)
+              </span>)
             })}
           </div>
         </div>
