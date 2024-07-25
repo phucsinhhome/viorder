@@ -52,7 +52,7 @@ export default function App() {
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
       </Router>
-      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-60 rounded-sm">
+      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-90 rounded-sm shadow-lg">
         <span className=" font text-[10px] font-bold italic text-gray-800 dark:text-white">{currentUserFullname()}</span>
         <span className=" font text-[8px] italic text-gray-900 dark:text-white">{currentUser.id}</span>
       </div>

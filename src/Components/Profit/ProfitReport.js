@@ -143,8 +143,8 @@ export function ProfitReport() {
 
   return (
     <>
-      <div class="bg-slate-50 px-2">
-        <div class="flex flex-wrap py-2 px-2 space-x-4 pl-4">
+      <div className="bg-slate-50 px-2">
+        <div className="flex flex-wrap py-2 px-2 space-x-4 pl-4">
           <div className="flex flex-row items-center mb-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +173,7 @@ export function ProfitReport() {
           })}
         </div>
 
-        <div class="flex flex-wrap py-2 space-x-4">
+        <div className="flex flex-wrap py-2 space-x-4">
           <div className="space-x-2 pl-4">
             {timeFilters.map((per) => {
               return (<Link key={per.name} onClick={() => calculatePeriod(per)} relative="route" className={filterClass(per.name, period.name)}>{per.name}</Link>)
@@ -238,79 +238,6 @@ export function ProfitReport() {
             )
           })}
         </div>
-
-        {/* <div>
-          <Table hoverable>
-            <Table.Head className="my-1">
-              <Table.HeadCell className="sm:px-1 py-2">
-
-              </Table.HeadCell>
-              <Table.HeadCell className="sm:px-1 py-2">
-                Amount
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y" >
-              {invoice.items.map((exp) => {
-                return (
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-1" key={exp.id}>
-                    <Table.Cell className="sm:px-1 py-1">
-                      <div className="grid grid-cols-1 py-0 my-0">
-                        <div
-                          className="font text-sm text-blue-600 hover:underline dark:text-blue-500"
-                          onClick={() => editItem(exp)}
-                        >
-                          {exp.itemName}
-                        </div>
-                        <div className="flex flex-row text-[10px] space-x-1">
-                          <span className="w-6">{"x" + exp.quantity}</span>
-                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
-                          <span className="font font-mono font-black">{exp.service}</span>
-                        </div>
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell className="py-1">
-                      <svg className="w-6 h-6 text-red-800 dark:text-white"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        onClick={() => askForDelItemConfirmation(exp)}
-                      >
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                      </svg>
-
-                    </Table.Cell>
-                  </Table.Row>
-                )
-              })}
-            </Table.Body>
-          </Table>
-        </div> */}
-
-        {/* <table class="table-auto border-separate border-spacing-0 font-sans px-2 w-11/12" >
-          <thead class="bg-slate-200">
-            <tr class="">
-              <th class="" />
-              <th class="px-2 pl-4 text-right text-green-900">Revenue</th>
-              <th class="px-2 text-center text-green-900">Expense</th>
-              <th class="px-2 text-center text-green-900">Profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.breakdown.map((item) => {
-              return (
-                <tr class="text-sm">
-                  <td class="text-center">{item.displayName}</td>
-                  <td class="px-2 text-right font-mono">{item.revenue.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                  <td class="px-2 text-right font-mono">{item.expense.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                  <td class="px-2 text-right font-mono">{item.profit.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table> */}
       </div >
     </>
   )
