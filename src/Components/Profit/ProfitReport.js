@@ -185,18 +185,18 @@ export function ProfitReport() {
           <div className="flex flex-row space-x-2 ">
             <div className="flex flex-col w-1/2 rounded-lg border border-spacing-1 px-2 py-2 shadow-lg">
               <div>
-                <span className="font font-bold text-gray-500">Expenditure</span>
-              </div>
-              <div>
-                <span>{toVND(report.overall.expense)}</span>
-              </div>
-            </div>
-            <div className="flex flex-col w-1/2 rounded-lg border border-spacing-1 px-2 py-2 shadow-lg">
-              <div>
                 <span className="font font-bold text-gray-500">Revenue</span>
               </div>
               <div>
                 <span>{toVND(report.overall.revenue)}</span>
+              </div>
+            </div>
+            <div className="flex flex-col w-1/2 rounded-lg border border-spacing-1 px-2 py-2 shadow-lg">
+              <div>
+                <span className="font font-bold text-gray-500">Expenditure</span>
+              </div>
+              <div>
+                <span>{toVND(report.overall.expense)}</span>
               </div>
             </div>
           </div>
@@ -266,15 +266,6 @@ export function ProfitReport() {
             </tr>
           </thead>
           <tbody>
-            <td class="font-bold italic text-sm">GENERAL</td><td /><td />
-            <tr class="text-sm">
-              <td class="text-center ">{report.overall.displayName}</td>
-              <td class="px-2 text-right font-mono ">{report.overall.revenue.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-              <td class="px-2 text-right font-mono">{report.overall.expense.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-              <td class="px-2 text-right font-mono">{report.overall.profit.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</td>
-            </tr>
-
-            <td class="font-bold italic text-sm">{String(reportType.name).toUpperCase()}</td><td /><td />
             {report.breakdown.map((item) => {
               return (
                 <tr class="text-sm">
