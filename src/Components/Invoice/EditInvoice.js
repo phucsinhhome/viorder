@@ -444,11 +444,32 @@ export const EditInvoice = () => {
                 <div className="flex justify-between w-full space-x-4 mb-1">
                   <Label
                     id="reservationCode"
-                    value={invoice.reservationCode}
+                    value={"Code: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}
                     className="outline-none font-mono text-[10px] italic text-gray-700"
                   />
-
-                  <div className="flex flex-row items-center" >
+                </div>
+                <div className="flex flex-row w-full items-center">
+                  <div className="flex flex-row items-center w-2/3">
+                    <Label
+                      id="guestName"
+                      required={true}
+                      value={invoice.guestName.toUpperCase()}
+                      className="text-lg pr-2 font font-bold font-sans"
+                    />
+                    <svg
+                      className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      onClick={editGuestName}
+                    >
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-row w-1/3 justify-end" >
                     <HiUserCircle className="mx-1 h-5 w-5" />
                     <Label
                       id="issuerId"
@@ -471,26 +492,6 @@ export const EditInvoice = () => {
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                     </svg>
                   </div>
-                </div>
-                <div className="flex flex-row items-center">
-                  <Label
-                    id="guestName"
-                    required={true}
-                    value={invoice.guestName.toUpperCase()}
-                    className="text-lg pr-2 font font-bold font-sans"
-                  />
-                  <svg
-                    className="w-[16px] h-[16px] text-gray-800 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    onClick={editGuestName}
-                  >
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                  </svg>
                 </div>
               </div>
             </div>

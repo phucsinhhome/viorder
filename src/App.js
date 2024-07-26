@@ -12,6 +12,7 @@ import { EditReservation } from "./Components/Reservation/EditReservation";
 const tele = window.Telegram.WebApp;
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
+export const initialUser = tele.initDataUnsafe.user
 export const currentUser = tele.initDataUnsafe.user || {
   id: "1351151927",
   first_name: "Minh",
@@ -38,11 +39,11 @@ export default function App() {
   return (
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
-        <div className="mt-2 mx-2 w-full flex flex-row  space-x-2">
-          <Link to="profit" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Profit</Link>
-          <Link to="invoice" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
-          <Link to="expenses" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
-          <Link to="reservation" className="px-3 py-0.5 bg-gray-200 text-amber-900 text-sm font-sans rounded-sm">Reservation</Link>
+        <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
+          <Link to="profit" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link>
+          <Link to="invoice" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
+          <Link to="expenses" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
+          <Link to="reservation" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link>
         </div>
         <Routes>
           <Route path="profit" element={<ProfitReport />} />
@@ -54,7 +55,7 @@ export default function App() {
           <Route path="reservation/:reservationId" element={<EditReservation />} />
         </Routes>
       </Router>
-      <div className="absolute top-0 right-0 flex flex-col mt-3 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">
+      <div className="absolute top-0 right-0 flex flex-col mt-10 mr-2 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">
         <span className=" font text-[10px] font-bold text-gray-800 dark:text-white">{currentUserFullname()}</span>
         <span className=" font text-[8px] italic text-gray-600 dark:text-white">{currentUser.id}</span>
         <span className=" font font-mono text-center text-[8px] text-gray-900 dark:text-white">{"API " + tele.version}</span>
