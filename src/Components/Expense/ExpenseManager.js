@@ -6,7 +6,7 @@ import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
-import { currentUser, currentUserFullname } from "../../App";
+import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
 
@@ -82,7 +82,12 @@ export const ExpenseManager = () => {
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
       .then(data => {
-        let sortedItems = data.content.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
+        let exps = data.content
+        if (initialUser !== null && initialUser !== undefined) {
+          console.info("The initial user is %s", initialUser.id)
+          exps = exps.filter(e => e.expenserId === initialUser.id)
+        }
+        let sortedItems = exps.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
         setExpenses(sortedItems)
         setPagination({
           pageNumber: data.number,
