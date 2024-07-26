@@ -85,10 +85,10 @@ export const ExpenseManager = () => {
         let exps = data.content
         if (initialUser !== null && initialUser !== undefined) {
           console.info("The initial user is %s", initialUser.id)
-          exps = exps.filter(e => e.expenserId === initialUser.id)
+          exps = data.content.filter((e) => e.expenserId === initialUser.id)
         }
-        let sortedItems = exps.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
-        setExpenses(sortedItems)
+        let sortedExps = exps.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
+        setExpenses(sortedExps)
         setPagination({
           pageNumber: data.number,
           pageSize: data.size,
