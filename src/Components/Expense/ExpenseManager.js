@@ -82,9 +82,9 @@ export const ExpenseManager = () => {
   const fetchData = (pageNumber, pageSize) => {
     listLatestExpenses(pageNumber, pageSize)
       .then(data => {
-        let exps = data.content
+        var exps = data.content
         if (initialUser !== null && initialUser !== undefined) {
-          console.info("The initial user is %s", initialUser.id)
+          console.info("The initial user is %s.", initialUser.id)
           exps = data.content.filter((e) => e.expenserId === initialUser.id)
         }
         let sortedExps = exps.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())

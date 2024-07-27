@@ -68,7 +68,7 @@ export const EditInvoice = () => {
     } else {
       setOpenGuestNameModal(true)
     }
-  }, [invoiceId])
+  }, [invoiceId, pMethods])
 
 
   const handleSaveInvoice = () => {
