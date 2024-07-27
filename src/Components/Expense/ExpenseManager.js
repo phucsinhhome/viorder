@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Table, TextInput, Label, Spinner, Modal, Button } from "flowbite-react";
-import listLatestExpenses, { deleteExpense, listExpenseByExpenserAndDate, newExpId } from "../../db/expense";
+import { deleteExpense, listExpenseByExpenserAndDate, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
-import { currentUser, currentUserFullname, initialUser, initialUserId } from "../../App";
+import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
 import { dateToISODate } from "../../Service/Utils";
