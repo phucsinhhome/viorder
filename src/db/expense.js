@@ -12,6 +12,22 @@ const listLatestExpenses = (pageNumber, pageSize) => {
     .then(response => response.json())
 }
 
+export const listExpenseByDate = (byDate, pageNumber, pageSize) => {
+  console.info("Fetching expenses by date %s", byDate)
+  return fetch(`${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/list/bydate?byDate=${byDate}&page=${pageNumber}&size=${pageSize}`, requestOptions)
+    .then(response => response.json())
+}
+
+export const listExpenseByExpenserAndDate = (expenserId, byDate, pageNumber, pageSize) => {
+  console.info("Fetching %s expenses by date %s", expenserId, byDate)
+  let url = `${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/list/bydate?byDate=${byDate}&page=${pageNumber}&size=${pageSize}`
+  if (expenserId !== null && expenserId !== undefined && expenserId !== "") {
+    url = `${process.env.REACT_APP_EXPENSE_SERVICE_ENDPOINT}/list/bydate?expenserId=${expenserId}&byDate=${byDate}&page=${pageNumber}&size=${pageSize}`
+  }
+  return fetch(url, requestOptions)
+    .then(response => response.json())
+}
+
 export default listLatestExpenses;
 
 export function getExpense(expenseId) {

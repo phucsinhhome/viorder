@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Table, TextInput, Label, Spinner, Modal, Button } from "flowbite-react";
-import listLatestExpenses, { deleteExpense, newExpId } from "../../db/expense";
+import listLatestExpenses, { deleteExpense, listExpenseByExpenserAndDate, newExpId } from "../../db/expense";
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
-import { currentUser, currentUserFullname, initialUser } from "../../App";
+import { currentUser, currentUserFullname, initialUser, initialUserId } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
+import { dateToISODate } from "../../Service/Utils";
 
 const defaultEmptExpense = {
   "expenseDate": null,
@@ -80,14 +81,11 @@ export const ExpenseManager = () => {
 
 
   const fetchData = (pageNumber, pageSize) => {
-    listLatestExpenses(pageNumber, pageSize)
+    let byDate = dateToISODate(new Date())
+    let expenserId = (initialUser !== null && initialUser !== undefined) ? initialUser.id : null
+    listExpenseByExpenserAndDate(expenserId, byDate, pageNumber, pageSize)
       .then(data => {
-        var exps = data.content
-        if (initialUser !== null && initialUser !== undefined) {
-          console.info("The initial user is %s.", initialUser.id)
-          exps = data.content.filter((e) => e.expenserId === initialUser.id)
-        }
-        let sortedExps = exps.sort((i1, i2) => new Date(i1.expenseDate).getTime() - new Date(i2.expenseDate).getTime())
+        let sortedExps = data.content
         setExpenses(sortedExps)
         setPagination({
           pageNumber: data.number,
