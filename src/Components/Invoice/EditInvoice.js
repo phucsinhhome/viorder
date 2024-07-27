@@ -62,11 +62,13 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
+          let pM = pMethods.find(p => p.id === data.paymentMethod)
+          setSelectedPaymentMethod(pM)
         })
     } else {
       setOpenGuestNameModal(true)
     }
-  }, [invoiceId])
+  }, [invoiceId, pMethods])
 
 
   const handleSaveInvoice = () => {
