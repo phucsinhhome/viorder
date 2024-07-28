@@ -62,15 +62,11 @@ export const EditInvoice = () => {
       getInvoice(invoiceId)
         .then(data => {
           setInvoice(data)
-          // console.log(data)
-          // let pM = pMethods.find(p => p.id === data.paymentMethod)
-          // console.info("FOUND %s", pM)
-          // setSelectedPaymentMethod(pM)
         })
     } else {
       setOpenGuestNameModal(true)
     }
-  }, [invoiceId, pMethods])
+  }, [invoiceId])
 
 
   const handleSaveInvoice = () => {
@@ -941,7 +937,7 @@ export const EditInvoice = () => {
                 <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
               </div>
             </div>
-            <div>
+            <div className="w-full">
               <Table hoverable>
                 <Table.Head className="my-1">
                   <Table.HeadCell className="py-2">
