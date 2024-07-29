@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal, ListGroup } from 'flowbite-react';
-import { getUsers } from "../../db/users";
 import {HiUserCircle} from 'react-icons/hi'
+import { getUsers } from "../../db/users";
 
 export const SelectUser = ({ initialUser, handleUserChange }) => {
 
@@ -13,8 +13,6 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
     setShow(false)
   }
 
-  const members = getUsers()
-
   const [user, setUser] = useState({ id: "", name: "" })
 
   useEffect(() => {
@@ -24,7 +22,7 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
   const handleItemSelection = (e) => {
     console.log(e)
     console.info("Selected User: %s ", e.target.value)
-    let selectedItem = members.find((i) => i.id === e.target.value)
+    let selectedItem = getUsers.find((i) => i.id === e.target.value)
     console.log(selectedItem)
     handleUserChange(selectedItem)
     setUser(selectedItem)
@@ -46,7 +44,7 @@ export const SelectUser = ({ initialUser, handleUserChange }) => {
 
             <ListGroup>
               {
-                members.filter((m) => m.id !== user.id).map((mem) => {
+                getUsers.filter((m) => m.id !== user.id).map((mem) => {
                   return (
                     <ListGroup.Item key={mem.id} onClick={handleItemSelection} value={mem.id}>
                       {mem.name}

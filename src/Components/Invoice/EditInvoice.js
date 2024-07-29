@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, listPaymentMethods, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
-import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
+import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
 import { getPresignedLink } from "../../Service/FileService";
-import { HiOutlineCash, HiUserCircle } from "react-icons/hi";
-import { getUsers } from "../../db/users";
+import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { dateToISODate } from "../../Service/Utils";
 import { currentUser, currentUserFullname } from "../../App";
+import { getUsers as issuers } from "../../db/users";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -30,7 +30,6 @@ export const EditInvoice = () => {
       items: []
     }
   )
-  const pMethods = listPaymentMethods()
 
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
   const { invoiceId } = useParams()
@@ -45,11 +44,10 @@ export const EditInvoice = () => {
   const [deletingItem, setDeletingItem] = useState(null)
 
   const [openUsersModal, setOpenUsersModal] = useState(false)
-  const [selectedIssuer, setSelectedIssuer] = useState(null)
-  const users = getUsers()
+  const [selectedIssuer, setSelectedIssuer] = useState(issuers[0])
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(pMethods[0])
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0])
 
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
@@ -61,6 +59,14 @@ export const EditInvoice = () => {
     if (invoiceId !== "new") {
       getInvoice(invoiceId)
         .then(data => {
+          if (data.paymentMethod !== null && data.paymentMethod !== undefined && data.paymentMethod !== "") {
+            const pM = paymentMethods.find(m => m.id === data.paymentMethod)
+            setSelectedPaymentMethod(pM)
+          }
+          if (data.issuerId !== null && data.issuerId !== undefined && data.issuerId !== "") {
+            const issuer = issuers.find(usr => usr.id === data.issuerId)
+            setSelectedIssuer(issuer)
+          }
           setInvoice(data)
         })
     } else {
@@ -276,35 +282,25 @@ export const EditInvoice = () => {
   //============ ISSUER CHANGE ====================//
   const selectIssuer = () => {
     setOpenUsersModal(true)
-    setSelectedIssuer({ issuerId: invoice.issuerId, issuer: invoice.issuer })
   }
   const cancelSelectIssuer = () => {
     setOpenUsersModal(false)
-    setSelectedIssuer(null)
   }
-  const confirmSelectIssuer = () => {
+  const changeIssuer = (user) => {
     try {
-      if (selectedIssuer === undefined || selectedIssuer === null || selectIssuer.issuerId === invoice.issuerId) {
-        return;
-      }
-      console.warn("Change the issuer to {}...", selectedIssuer.issuerId)
+      console.warn("Change the issuer to {}...", user.id)
+      setSelectedIssuer(user)
       let nInv = {
         ...invoice,
-        issuerId: selectedIssuer.issuerId,
-        issuer: selectedIssuer.issuer
+        issuerId: user.issuerId,
+        issuer: user.issuer
       }
       setInvoice(nInv)
     } catch (e) {
       console.error(e)
     } finally {
       setOpenUsersModal(false)
-      setSelectedIssuer(null)
     }
-  }
-  const issuerChange = (e) => {
-    let is = e.currentTarget
-    console.info("Selected user", is.value)
-    setSelectedIssuer({ issuerId: is.id, issuer: is.value })
   }
 
   //============ PAYMENT METHOD CHANGE ====================//
@@ -319,12 +315,16 @@ export const EditInvoice = () => {
 
     try {
       let is = e.currentTarget
-      let pM = pMethods.find((p) => p.id === is.id)
+      let pM = paymentMethods.find((p) => p.id === is.id)
       setSelectedPaymentMethod(pM)
+      let issuer = issuers.find(iss => iss.id === pM.defaultIssuerId)
+      setSelectedIssuer(issuer)
 
       let nInv = {
         ...invoice,
-        paymentMethod: pM.id
+        paymentMethod: pM.id,
+        issuerId: issuer.id,
+        issuer: issuer.name
       }
       setInvoice(nInv)
     } catch (e) {
@@ -470,7 +470,8 @@ export const EditInvoice = () => {
                     </svg>
                   </div>
                   <div className="flex flex-row w-1/3 justify-end" >
-                    <HiUserCircle className="mx-1 h-5 w-5" />
+                    {/* <HiUserCircle className="mx-1 h-5 w-5" /> */}
+                    {selectedIssuer.imgSrc}
                     <Label
                       id="issuerId"
                       placeholder="Min"
@@ -733,33 +734,32 @@ export const EditInvoice = () => {
           </Modal.Footer>
         </Modal>
 
-        <Modal show={openUsersModal} onClose={cancelSelectIssuer}>
-          <Modal.Header>Users</Modal.Header>
+        <Modal
+          show={openUsersModal}
+          onClose={cancelSelectIssuer}
+          popup
+          dismissible
+        >
+          <Modal.Header></Modal.Header>
           <Modal.Body>
-            <div className="justify-center">
-              <fieldset className="flex max-w-md flex-col gap-4">
-                <legend className="mb-4">Choose the issuer</legend>
-                {
-                  users.map(user => {
-                    return (
-                      <div className="flex items-center gap-2">
-                        <Radio
-                          id={user.id}
-                          name="users"
-                          value={user.name}
-                          defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId}
-                          onChange={issuerChange}
-                        />
-                        <Label htmlFor="united-state">{user.name}</Label>
-                      </div>
-                    )
-                  })
-                }
-              </fieldset>
+            <div className="flex flex-row items-center gap-2 space-x-2 w-full ">
+              {
+                issuers.map(user => {
+                  return (
+                    <div
+                      id={user.id}
+                      className="flex flex-col border-spacing-1 shadow-sm hover:shadow-lg rounded-lg items-center "
+                      onClick={() => changeIssuer(user)}
+                    >
+                      {user.imgSrc}
+                      <span className="text text-center">{user.name}</span>
+                    </div>
+                  )
+                })
+              }
             </div>
           </Modal.Body>
           <Modal.Footer className="flex justify-center gap-4">
-            <Button onClick={confirmSelectIssuer}>OK</Button>
             <Button color="gray" onClick={cancelSelectIssuer}>
               Cancel
             </Button>
@@ -771,7 +771,7 @@ export const EditInvoice = () => {
           <Modal.Body>
             <div className="flex flex-row items-center w-full space-x-2">
               {
-                pMethods.map(pM => {
+                paymentMethods.map(pM => {
                   return (
                     <div
                       className="block w-1/5"
