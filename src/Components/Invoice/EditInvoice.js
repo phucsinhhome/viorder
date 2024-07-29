@@ -30,7 +30,6 @@ export const EditInvoice = () => {
       items: []
     }
   )
-  const pMethods = listPaymentMethods
 
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
   const { invoiceId } = useParams()
@@ -49,7 +48,7 @@ export const EditInvoice = () => {
   const users = getUsers()
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(pMethods[0])
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(listPaymentMethods[0])
 
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
@@ -323,7 +322,7 @@ export const EditInvoice = () => {
 
     try {
       let is = e.currentTarget
-      let pM = pMethods.find((p) => p.id === is.id)
+      let pM = listPaymentMethods.find((p) => p.id === is.id)
       setSelectedPaymentMethod(pM)
 
       let nInv = {
@@ -775,7 +774,7 @@ export const EditInvoice = () => {
           <Modal.Body>
             <div className="flex flex-row items-center w-full space-x-2">
               {
-                pMethods.map(pM => {
+                listPaymentMethods.map(pM => {
                   return (
                     <div
                       className="block w-1/5"
