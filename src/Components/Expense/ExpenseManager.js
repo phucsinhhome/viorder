@@ -355,9 +355,9 @@ export const ExpenseManager = () => {
   }
 
   return (
-    <div className="h-full">
-      <div className="flex flex-row mt-2 px-2">
-        <div className="flex flex-row pl-4 pb-2">
+    <div className="h-full pt-3">
+      <div className="flex flex-row px-2">
+        <div className="flex flex-row items-center pl-4 pb-2">
           <svg
             className="w-5 h-5 text-amber-700 dark:text-white"
             aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -368,13 +368,12 @@ export const ExpenseManager = () => {
           >
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
           </svg>
-          <Link
+          <span
             onClick={() => editExpense(defaultEmptExpense)}
-            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
             className="font-bold text-amber-800"
           >
             Add Expense
-          </Link>
+          </span>
         </div>
       </div>
       <div>
