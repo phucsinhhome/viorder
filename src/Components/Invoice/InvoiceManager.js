@@ -95,7 +95,7 @@ export function InvoiceManager() {
   }
 
   const handleDeleteInvoice = (inv) => {
-    if (inv.paymentMethod !== null && inv.paymentMethod !== undefined && inv.paymentMethod !== "") {
+    if (!isDeleteable(inv)) {
       console.warn("Can not delete the paid invoice")
       return
     }
@@ -120,7 +120,16 @@ export function InvoiceManager() {
       setOpenModal(false)
       setDeletingInv(null)
     }
+  }
 
+  const isDeleteable = (inv) => {
+    if (inv.prepaied) {
+      return false
+    }
+    if (inv.paymentMethod === null || inv.paymentMethod === undefined || inv.paymentMethod === "") {
+      return true
+    }
+    return false
   }
 
 
@@ -189,7 +198,7 @@ export function InvoiceManager() {
                       <Link
                         to={inv.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className={inv.paymentMethod === null ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
+                        className={isDeleteable(inv) ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
                       >
                         {inv.guestName}
                       </Link>
@@ -206,7 +215,7 @@ export function InvoiceManager() {
 
                   <Table.Cell className="py-0.5">
                     <svg
-                      className={inv.paymentMethod === null ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
+                      className={isDeleteable(inv) ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
