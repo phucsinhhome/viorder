@@ -7,7 +7,7 @@ import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { dateToISODate } from "../../Service/Utils";
-import { currentUser, currentUserFullname } from "../../App";
+import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 
 const getInvDownloadLink = (key, cbF) => {
@@ -160,6 +160,9 @@ export const EditInvoice = () => {
   useEffect(() => {
     invoiceLink.current.click()
   }, [invoiceUrl])
+
+  const exportable = (initialUser === null || initialUser) === undefined ? true : false
+
 
   const exportInv = () => {
     console.log("Export invoice %s with method [%s]...", invoiceId)
@@ -578,23 +581,25 @@ export const EditInvoice = () => {
             </svg>
             <span>View</span>
           </div>
-          {/* <div
-            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
-            onClick={exportInv}
-          >
-            <svg
-              className="w-[18px] h-[18px] text-amber-700 dark:text-white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+          {
+            exportable ? <div
+              className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+              onClick={exportInv}
             >
-              <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
-            </svg>
-            <span>Export</span>
-          </div> */}
+              <svg
+                className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
+              </svg>
+              <span>Export</span>
+            </div> : null
+          }
           <div
             className="flex flex-row items-center text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
             onClick={handleSaveInvoice}
