@@ -5,10 +5,10 @@ import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button, Radio } from 'flowbite-react';
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash, HiUserCircle } from "react-icons/hi";
-import { getUsers } from "../../db/users";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { dateToISODate } from "../../Service/Utils";
 import { currentUser, currentUserFullname } from "../../App";
+import { getUsers } from "../../db/users";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -45,7 +45,6 @@ export const EditInvoice = () => {
 
   const [openUsersModal, setOpenUsersModal] = useState(false)
   const [selectedIssuer, setSelectedIssuer] = useState(null)
-  const users = getUsers()
 
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(listPaymentMethods[0])
@@ -743,12 +742,12 @@ export const EditInvoice = () => {
               <fieldset className="flex max-w-md flex-col gap-4">
                 <legend className="mb-4">Choose the issuer</legend>
                 {
-                  users.map(user => {
+                  getUsers.map(user => {
                     return (
                       <div className="flex items-center gap-2">
                         <Radio
                           id={user.id}
-                          name="users"
+                          name="getUsers"
                           value={user.name}
                           defaultChecked={selectedIssuer === null ? false : user.id === selectedIssuer.issuerId}
                           onChange={issuerChange}
