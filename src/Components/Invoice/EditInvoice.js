@@ -30,7 +30,7 @@ export const EditInvoice = () => {
       items: []
     }
   )
-  const pMethods = listPaymentMethods()
+  const pMethods = listPaymentMethods
 
   const [invoiceUrl, setInvoiceUrl] = useState({ filename: "", presignedUrl: "", hidden: true })
   const { invoiceId } = useParams()
@@ -61,6 +61,10 @@ export const EditInvoice = () => {
     if (invoiceId !== "new") {
       getInvoice(invoiceId)
         .then(data => {
+          if (data.paymentMethod !== null && data.paymentMethod !== undefined && data.paymentMethod !== "") {
+            const pM = listPaymentMethods.find(m => m.id === data.paymentMethod)
+            setSelectedPaymentMethod(pM)
+          }
           setInvoice(data)
         })
     } else {
