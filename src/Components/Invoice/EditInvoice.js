@@ -52,7 +52,7 @@ export const EditInvoice = () => {
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
 
-  const [openExportInvModal, setOpenExportInvModal] = useState(false)
+  const [openViewInvModal, setOpenViewInvModal] = useState(false)
 
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
@@ -404,11 +404,12 @@ export const EditInvoice = () => {
   }
 
   //================= EXPORT INVOICE ===================//
-  const showExportInv = () => {
-    setOpenExportInvModal(true)
+  const showViewInv = () => {
+    handleSaveInvoice()
+    setOpenViewInvModal(true)
   }
-  const closeExportInv = () => {
-    setOpenExportInvModal(false)
+  const closeViewInv = () => {
+    setOpenViewInvModal(false)
   }
 
   return (
@@ -568,7 +569,7 @@ export const EditInvoice = () => {
           </div>
           <div
             className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
-            onClick={showExportInv}
+            onClick={showViewInv}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -923,9 +924,9 @@ export const EditInvoice = () => {
       </div >
 
       <Modal
-        show={openExportInvModal}
+        show={openViewInvModal}
         popup
-        onClose={closeExportInv}
+        onClose={closeViewInv}
       >
         <Modal.Header />
         <Modal.Body>
