@@ -466,11 +466,10 @@ export const EditInvoice = () => {
                       viewBox="0 0 24 24"
                       onClick={editGuestName}
                     >
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                     </svg>
                   </div>
                   <div className="flex flex-row w-1/3 justify-end" >
-                    {/* <HiUserCircle className="mx-1 h-5 w-5" /> */}
                     {selectedIssuer.imgSrc}
                     <Label
                       id="issuerId"
@@ -490,7 +489,7 @@ export const EditInvoice = () => {
                       viewBox="0 0 24 24"
                       onClick={selectIssuer}
                     >
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                     </svg>
                   </div>
                 </div>
@@ -513,7 +512,7 @@ export const EditInvoice = () => {
                   id="checkInDate"
                   onClick={editDate}
                 >
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
               <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
@@ -532,7 +531,7 @@ export const EditInvoice = () => {
                   id="checkOutDate"
                   onClick={editDate}
                 >
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
             </div>
@@ -556,7 +555,7 @@ export const EditInvoice = () => {
                   id="checkOutDate"
                   onClick={selectPaymentMethod}
                 >
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
               <div className="w-1/2 px-3 flex flex-row items-center">
@@ -586,7 +585,7 @@ export const EditInvoice = () => {
               fill="none"
               viewBox="0 0 24 24"
             >
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
             </svg>
             <span>Add Item</span>
           </div>
@@ -667,7 +666,7 @@ export const EditInvoice = () => {
                         viewBox="0 0 24 24"
                         onClick={() => askForDelItemConfirmation(exp)}
                       >
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                       </svg>
 
                     </Table.Cell>
@@ -849,7 +848,7 @@ export const EditInvoice = () => {
                     onClick={() => changeQuantity(-1)}
                   >
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M1 1h16" />
                     </svg>
                   </button>
                   <input
@@ -870,7 +869,7 @@ export const EditInvoice = () => {
                     onClick={() => changeQuantity(1)}
                   >
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
                     </svg>
                   </button>
                 </div>
@@ -940,18 +939,21 @@ export const EditInvoice = () => {
             <div className="w-full">
               <Table hoverable>
                 <Table.Head className="my-1">
-                  <Table.HeadCell className="py-2">
+                  <Table.HeadCell className="py-2 pl-0">
                     Item Name
                   </Table.HeadCell>
-                  <Table.HeadCell className="py-2">
+                  <Table.HeadCell className="py-2 text-right px-1">
                     Amount
                   </Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y" >
                   {invoice.items.map((exp) => {
                     return (
-                      <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0" key={exp.id}>
-                        <Table.Cell className="py-0">
+                      <Table.Row
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0 w-full"
+                        key={exp.id}
+                      >
+                        <Table.Cell className="py-0 pl-0 pr-1">
                           <div className="grid grid-cols-1 py-0 my-0">
                             <div
                               className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
@@ -964,8 +966,8 @@ export const EditInvoice = () => {
                             </div>
                           </div>
                         </Table.Cell>
-                        <Table.Cell className="py-0">
-                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                        <Table.Cell className="flex py-0 px-1">
+                          <span className="text-right w-full">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                         </Table.Cell>
                       </Table.Row>
                     )
@@ -974,24 +976,24 @@ export const EditInvoice = () => {
                     <Table.Cell className="py-0 text-center">
                       SUBTOTAL
                     </Table.Cell>
-                    <Table.Cell className="py-0">
-                      <span className="w-24">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    <Table.Cell className="flex py-0 px-1">
+                      <span className="w-full text-right">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
                     <Table.Cell className="py-0 text-center">
                       {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
                     </Table.Cell>
-                    <Table.Cell className="py-0">
-                      <span className="w-24">{(invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    <Table.Cell className="flex py-0 px-1">
+                      <span className="w-full text-right">{(invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
                     <Table.Cell className="py-0 text-center">
                       GRAND TOTAL
                     </Table.Cell>
-                    <Table.Cell className="py-0">
-                      <span className="w-24 text-red-800 font-bold">{(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                    <Table.Cell className="flex py-0 px-1">
+                      <span className="w-full text-right text-red-800 font-bold">{(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
                     </Table.Cell>
                   </Table.Row>
                 </Table.Body>
