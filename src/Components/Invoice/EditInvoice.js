@@ -317,10 +317,14 @@ export const EditInvoice = () => {
       let is = e.currentTarget
       let pM = paymentMethods.find((p) => p.id === is.id)
       setSelectedPaymentMethod(pM)
+      let issuer = issuers.find(iss => iss.id === pM.defaultIssuerId)
+      setSelectedIssuer(issuer)
 
       let nInv = {
         ...invoice,
-        paymentMethod: pM.id
+        paymentMethod: pM.id,
+        issuerId: issuer.id,
+        issuer: issuer.name
       }
       setInvoice(nInv)
     } catch (e) {

@@ -75,7 +75,8 @@ export const listPaymentMethods = [
       <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
     </svg>,
     srcLargeImg: "/cash.svg",
-    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/cash.jpeg"
+    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/cash.jpeg",
+    defaultIssuerId: "6456500785"
   },
   {
     id: "creditCard",
@@ -93,7 +94,8 @@ export const listPaymentMethods = [
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
     </svg>,
     srcLargeImg: "/mastercard.svg",
-    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/creditcard.jpeg"
+    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/creditcard.jpeg",
+    defaultIssuerId: "1351151927"
   },
   {
     id: "momo",
@@ -111,7 +113,8 @@ export const listPaymentMethods = [
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
     </svg>,
     srcLargeImg: "/momo-square.png",
-    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/mono.jpg"
+    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/mono.jpg",
+    defaultIssuerId: "1351151927"
   }, {
     id: "paypal",
     name: "Paypal",
@@ -128,7 +131,8 @@ export const listPaymentMethods = [
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
     </svg>,
     srcLargeImg: "/paypal.svg",
-    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/paypal.png"
+    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/paypal.png",
+    defaultIssuerId: "1351151927"
   }, {
     id: "bankTransfer",
     name: "Bank Transfer",
@@ -145,7 +149,8 @@ export const listPaymentMethods = [
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z" />
     </svg>,
     srcLargeImg: "/bank.svg",
-    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/bankTransfer.jpg"
+    paymentInfo: "https://phucsinhhcm.hopto.org:9000/openresources/payment/bankTransfer.jpg",
+    defaultIssuerId: "1351151927"
   }
 ]
 
