@@ -125,8 +125,8 @@ export function InvoiceManager() {
 
 
   return (
-    <div className="h-full">
-      <div className="flex flex-wrap pt-2 pb-4 px-2 space-x-4 space-y-2">
+    <div className="h-full pt-3">
+      <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
         <div className="flex flex-row items-center pl-4">
           <svg
             className="w-5 h-5 text-amber-700 dark:text-white"
@@ -141,7 +141,7 @@ export function InvoiceManager() {
           <Link
             to="../invoice/new"
             relative="route"
-            className="font-bold text-amber-800 py-1"
+            className="font-bold text-amber-800"
           >
             Add Invoice
           </Link>

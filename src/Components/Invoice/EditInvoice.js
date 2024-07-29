@@ -410,33 +410,7 @@ export const EditInvoice = () => {
 
   return (
     <>
-      <div className="h-full">
-        <div className="flex flex-row py-2 px-2 space-x-8">
-          <div className="flex flex-row items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-5 h-5 text-amber-700 dark:text-white"
-            >
-              <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
-            </svg>
-            <Link onClick={handleSaveInvoice} className="font-sans font-bold text-amber-800">
-              Save
-            </Link>
-          </div>
-          <div className="flex flex-row items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-5 h-5 text-amber-700 dark:text-white"
-            >
-              <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z" clip-rule="evenodd" />
-            </svg>
-            <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
-          </div>
-        </div>
+      <div className="h-full pt-3">
         <form className="flex flex-wrap mx-1">
           <div className="w-full md:w-1/2 px-1 mb-1">
             <div className="flex flex-wrap -mx-3 mb-1">
@@ -574,11 +548,11 @@ export const EditInvoice = () => {
         {/** Second Column */}
         <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
             onClick={() => editItem(defaultEmptyItem)}
           >
             <svg
-              className="w-5 h-5 text-amber-700 dark:text-white"
+              className="w-5 h-5 text-amber-800 dark:text-white"
               aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
@@ -587,24 +561,24 @@ export const EditInvoice = () => {
             >
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
             </svg>
-            <span>Add Item</span>
+            <span>Item</span>
           </div>
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
             onClick={showExportInv}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+              className="w-[18px] h-[18px] dark:text-white"
             >
               <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
               <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
             </svg>
             <span>View</span>
           </div>
-          <div
+          {/* <div
             className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
             onClick={exportInv}
           >
@@ -620,8 +594,42 @@ export const EditInvoice = () => {
               <path fill-rule="evenodd" d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v9.293l-2-2a1 1 0 0 0-1.414 1.414l.293.293h-6.586a1 1 0 1 0 0 2h6.586l-.293.293A1 1 0 0 0 18 16.707l2-2V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z" clip-rule="evenodd" />
             </svg>
             <span>Export</span>
+          </div> */}
+          <div
+            className="flex flex-row items-center text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
+            onClick={handleSaveInvoice}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5  dark:text-white"
+            >
+              <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
+            </svg>
+            <span className="font-sans font-bold">
+              Save
+            </span>
           </div>
-          <Link to={invoiceUrl.presignedUrl} className="pl-5 font-thin text-sm" hidden={true} ref={invoiceLink} >{invoiceUrl.filename}</Link>
+          <div className="flex flex-row items-center  px-2 py-1 w-1/4 hover:bg-slate-200">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-amber-800 dark:text-white"
+            >
+              <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+            <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
+          </div>
+          <Link
+            to={invoiceUrl.presignedUrl}
+            className="pl-5 font-thin text-sm"
+            hidden={true}
+            ref={invoiceLink}
+          >
+            {invoiceUrl.filename}
+          </Link>
         </div>
 
         <div className="h-2/3 max-h-fit overflow-scroll">
