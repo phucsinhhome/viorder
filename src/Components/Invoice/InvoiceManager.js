@@ -32,7 +32,7 @@ export function InvoiceManager() {
   const [openModal, setOpenModal] = useState(false)
   const [deletingInv, setDeletingInv] = useState(null)
 
-  const [openChooseResModal, setOpenChooseResModal] = useState(false)
+
 
   const filterDay = (numDays) => {
 
@@ -136,23 +136,12 @@ export function InvoiceManager() {
     return false
   }
 
-  //================ ADD INVOICE ==========================//
-  const chooseRes = ()=>{
-    
-  }
-
-  const cancelChooseRes = ()=>{
-
-  }
-
-  const confirmSelectRes=()=>{
-    
-  }
-
   return (
     <div className="h-full pt-3">
       <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
-        <div className="flex flex-row items-center pl-4">
+        <div className="flex flex-row items-center pl-4"
+        // onClick={chooseRes}
+        >
           <svg
             className="w-5 h-5 text-amber-700 dark:text-white"
             aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -163,6 +152,12 @@ export function InvoiceManager() {
           >
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
           </svg>
+          {/* <span
+            relative="route"
+            className="font-bold text-amber-800"
+          >
+            Add Invoice
+          </span> */}
           <Link
             to="../invoice/new"
             relative="route"
@@ -286,24 +281,7 @@ export function InvoiceManager() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible>
-        <Modal.Header></Modal.Header>
-        <Modal.Body>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              {deletingInv !== null && deletingInv !== undefined ? "Delete invoice of " + deletingInv.guestName + " ?" : "You need to choose the invoice to delete"}
-            </p>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmSelectRes}>Continue</Button>
-          <Button onClick={confirmNoRes}>No Res</Button>
-          <Button color="gray" onClick={cancelChooseRes}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+
     </div >
   );
 }

@@ -6,12 +6,18 @@ import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-rea
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { dateToISODate, formatShortDate, formatVND } from "../../Service/Utils";
+import { dateToISODate, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
+import Moment from "react-moment";
+import { listLatestReservations } from "../../db/reservation";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
+}
+
+const internalRooms = (rooms) => {
+  return rooms.map(r => r.internalRoomName)
 }
 
 export const EditInvoice = () => {
@@ -54,6 +60,9 @@ export const EditInvoice = () => {
 
   const [openViewInvModal, setOpenViewInvModal] = useState(false)
 
+  const [openChooseResModal, setOpenChooseResModal] = useState(false)
+  const [reservations, setReservations] = useState([])
+
   const [dirty, setDirty] = useState(false)
 
   useEffect(() => {
@@ -72,7 +81,11 @@ export const EditInvoice = () => {
           setInvoice(data)
         })
     } else {
-      setOpenGuestNameModal(true)
+      fetchReservations()
+        .then(data => {
+          setReservations(data.content)
+          setOpenChooseResModal(true)
+        })
     }
   }, [invoiceId])
 
@@ -427,6 +440,71 @@ export const EditInvoice = () => {
     setOpenViewInvModal(false)
   }
 
+  //================ ADD INVOICE ==========================//
+  // const chooseRes = () => {
+  //   fetchReservations().then(data => {
+  //     setReservations(data.content)
+  //     setOpenChooseResModal(true)
+  //   })
+  // }
+
+  const cancelChooseRes = () => {
+    setOpenChooseResModal(false)
+  }
+
+  const confirmSelectRes = (res) => {
+    try {
+      let invId = currentUser.id + (Date.now() % 10000000)
+      let inv = {
+        id: currentUser.id + new Date().getTime(),
+        guestName: res.guestName,
+        issuer: currentUserFullname(),
+        issuerId: currentUser.id,
+        checkInDate: dateToISODate(new Date(res.checkInDate)),
+        checkOutDate: dateToISODate(new Date(res.checkOutDate)),
+        prepaied: false,
+        paymentMethod: null,
+        paymentPhotos: [],
+        reservationCode: res.code,
+        rooms: internalRooms(res.rooms),
+        creatorId: currentUser.id,
+        sheetName: null,
+        signed: false,
+        country: null,
+        items: res.rooms.map(i => ({
+          id: invId + (Date.now() % 10000000),
+          itemName: i.roomName,
+          unitPrice: i.totalPrice,
+          quantity: 1,
+          service: 'STAY',
+          amount: i.totalPrice
+        })),
+        subTotal: res.rooms.map(r => r.totalPrice).reduce((r1, r2) => r1 + r2),
+      }
+      setInvoice(inv)
+    }
+    finally {
+      setOpenChooseResModal(false)
+      setDirty(true)
+    }
+  }
+
+  const confirmNoRes = () => {
+
+  }
+
+  const fetchReservations = () => {
+    let nextDays = 50
+    let fromDate = new Date()
+    var toDate = new Date(fromDate.getTime() + nextDays * 86400000) // 20 days ahead of fromDate
+
+    var fD = formatISODate(fromDate)
+    var tD = formatISODate(toDate)
+    console.info("Loading reservations from %s to next %d days...", fD, nextDays)
+
+    return listLatestReservations(fD, tD, 0, 100)
+  }
+
   return (
     <>
       <div className="h-full pt-3">
@@ -489,7 +567,7 @@ export const EditInvoice = () => {
               </div>
             </div>
             <div className="flex flex-wrap -mx-3 mb-1">
-              <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
+              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-center">
                 <Label
                   value={String(invoice.checkInDate)}
                   className="pr-2"
@@ -508,7 +586,8 @@ export const EditInvoice = () => {
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
-              <div className="w-1/2 px-3 mb-1 md:mb-0 flex flex-row items-center">
+
+              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-center">
                 <Label
                   value={String(invoice.checkOutDate)}
                   className="pr-2"
@@ -523,6 +602,26 @@ export const EditInvoice = () => {
                   viewBox="0 0 24 24"
                   id="checkOutDate"
                   onClick={editDate}
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                </svg>
+              </div>
+
+              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-end">
+                <Label
+                  value={invoice.rooms ? invoice.rooms.join('.') : "[]"}
+                  className="pr-2"
+                />
+                <svg
+                  className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  id="checkOutDate"
+                // onClick={editDate}
                 >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
@@ -1041,6 +1140,62 @@ export const EditInvoice = () => {
             </div>
           </div>
         </Modal.Body>
+      </Modal>
+
+      <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible>
+        <Modal.Header></Modal.Header>
+        <Modal.Body>
+          <div className="flex flex-col overflow-scroll w-full">
+            <Table hoverable>
+              <Table.Head>
+                <Table.HeadCell className="pr-1">
+                  Check In
+                </Table.HeadCell>
+                <Table.HeadCell className="pr-1">
+                  Guest Details
+                </Table.HeadCell>
+              </Table.Head>
+              <Table.Body className="divide-y">
+                {reservations.map((res) => {
+                  return (
+                    <Table.Row
+                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                      key={res.id}
+                    >
+                      <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                        <Moment format="DD.MM">{new Date(res.checkInDate)}</Moment>
+                      </Table.Cell>
+                      <Table.Cell className="sm:px-1 px-1 py-0.5">
+                        <div className="grid grid-cols-1">
+                          <span
+                            // to="new"
+                            // state={{ reservation: pagination.pageNumber, pageSize: pagination.pageSize }}
+                            className={"font-medium text-blue-600 hover:underline dark:text-blue-500"}
+                            onClick={() => confirmSelectRes(res)}
+                          >
+                            {res.guestName}
+                          </span>
+                          <div className="flex flex-row text-[10px] space-x-1">
+                            <div className="w-24">
+                              <span>{res.code}</span>
+                            </div>
+                            <span className="font font-mono font-black">{res.channel}</span>
+                            <span className="font font-mono font-black">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
+                          </div>
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
+            </Table>
+
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmNoRes}>No Res</Button>
+          <Button color="gray" onClick={cancelChooseRes}>Cancel</Button>
+        </Modal.Footer>
       </Modal>
     </>
   );
