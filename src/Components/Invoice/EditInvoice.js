@@ -6,7 +6,7 @@ import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-rea
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { dateToISODate } from "../../Service/Utils";
+import { dateToISODate, formatUSDate } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 
@@ -962,7 +962,7 @@ export const EditInvoice = () => {
                 <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
               </div>
               <div className="flex w-2/5">
-                <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
+                <span className="text-right text-[12px] from-neutral-400 w-full">{formatUSDate(new Date(invoice.checkOutDate))}</span>
               </div>
             </div>
             <div className="w-full">

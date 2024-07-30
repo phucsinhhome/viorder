@@ -35,3 +35,9 @@ export const beginOfMonth = (date) => {
     beginOfDay(date)
     return date
 }
+
+const dateUSOptions = { year: 'numeric', month: 'short', day: 'numeric' }
+
+export const formatUSDate = (date) => {
+    return date.toLocaleDateString("en-US", dateUSOptions)
+}
