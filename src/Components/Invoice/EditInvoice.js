@@ -490,7 +490,40 @@ export const EditInvoice = () => {
   }
 
   const confirmNoRes = () => {
-
+    try {
+      let invId = currentUser.id + (Date.now() % 10000000)
+      let inv = {
+        id: currentUser.id + new Date().getTime(),
+        guestName: "Guest name",
+        issuer: currentUserFullname(),
+        issuerId: currentUser.id,
+        checkInDate: dateToISODate(new Date()),
+        checkOutDate: dateToISODate(new Date()),
+        prepaied: false,
+        paymentMethod: null,
+        paymentPhotos: [],
+        reservationCode: null,
+        rooms: ["R1"],
+        creatorId: currentUser.id,
+        sheetName: null,
+        signed: false,
+        country: null,
+        items: [{
+          id: invId + (Date.now() % 10000000),
+          itemName: "Bungalow garden view",
+          unitPrice: 450000,
+          quantity: 1,
+          service: 'STAY',
+          amount: 450000
+        }],
+        subTotal: 450000,
+      }
+      setInvoice(inv)
+    }
+    finally {
+      setOpenChooseResModal(false)
+      setDirty(true)
+    }
   }
 
   const fetchReservations = () => {
@@ -610,7 +643,7 @@ export const EditInvoice = () => {
               <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-end">
                 <Label
                   value={invoice.rooms ? invoice.rooms.join('.') : "[]"}
-                  className="pr-2"
+                  className="pr-2 w-full text-right"
                 />
                 <svg
                   className="w-[16px] h-[16px] text-gray-800 dark:text-white"
@@ -1193,8 +1226,8 @@ export const EditInvoice = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmNoRes}>No Res</Button>
-          <Button color="gray" onClick={cancelChooseRes}>Cancel</Button>
+          <Button onClick={confirmNoRes}>No Book</Button>
+          <Link to={"../invoice"}>Cancel</Link>
         </Modal.Footer>
       </Modal>
     </>
