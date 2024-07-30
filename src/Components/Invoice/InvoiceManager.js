@@ -5,6 +5,7 @@ import { Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { formatVND } from "../../Service/Utils";
 
 
 export function InvoiceManager() {
@@ -204,7 +205,7 @@ export function InvoiceManager() {
                       </Link>
                       <div className="flex flex-row text-sm space-x-1">
                         <div className="w-24">
-                          <span>{inv.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                          <span>{formatVND(inv.subTotal)}</span>
                         </div>
                         <span className="font font-mono font-black w-8">{inv.prepaied ? "TT" : "TS"}</span>
                         <span className="font font-mono font-black">{inv.issuer}</span>

@@ -6,7 +6,7 @@ import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-rea
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { dateToISODate } from "../../Service/Utils";
+import { dateToISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 
@@ -556,7 +556,7 @@ export const EditInvoice = () => {
                   id="totalAmount"
                   placeholder="100000"
                   required={true}
-                  value={invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}
+                  value={formatVND(invoice.subTotal)}
                   readOnly={true}
                   className="font-mono font-bold text-red-900"
                 />
@@ -680,7 +680,7 @@ export const EditInvoice = () => {
                         </div>
                         <div className="flex flex-row text-[10px] space-x-1">
                           <span className="w-6">{"x" + exp.quantity}</span>
-                          <span className="w-24">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                          <span className="w-24">{formatVND(exp.amount)}</span>
                           <span className="font font-mono font-black">{exp.service}</span>
                         </div>
                       </div>
@@ -910,7 +910,7 @@ export const EditInvoice = () => {
                     value="Amount"
                   />
                 </div>
-                <span className="w-full">{editingItem.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                <span className="w-full">{formatVND(editingItem.amount)}</span>
 
               </div>
               <div className="flex flex-row w-full align-middle">
@@ -952,7 +952,7 @@ export const EditInvoice = () => {
               </div>
               <div className="flex flex-col w-4/5 ">
                 <span className="text-right font-serif font-bold text-amber-800 capitalize">phuc sinh home</span>
-                <span className="text-right font-mono text-[9px] font italic text-gray-500">10, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
+                <span className="text-right font-mono text-[9px] font italic text-gray-500">Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
                 <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
               </div>
             </div>
@@ -962,7 +962,7 @@ export const EditInvoice = () => {
                 <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
               </div>
               <div className="flex w-2/5">
-                <span className="text-right text-[12px] from-neutral-400 w-full">Jul 24, 2024</span>
+                <span className="text-right text-[12px] from-neutral-400 w-full">{formatShortDate(new Date(invoice.checkOutDate))}</span>
               </div>
             </div>
             <div className="w-full">
@@ -991,12 +991,12 @@ export const EditInvoice = () => {
                             </div>
                             <div className="flex flex-row text-[9px] space-x-1">
                               <span className="w-6">{"x" + exp.quantity}</span>
-                              <span className="w-24">{exp.unitPrice.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                              <span className="w-24">{formatVND(exp.unitPrice)}</span>
                             </div>
                           </div>
                         </Table.Cell>
                         <Table.Cell className="flex py-0 px-1">
-                          <span className="text-right w-full">{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                          <span className="text-right w-full">{formatVND(exp.amount)}</span>
                         </Table.Cell>
                       </Table.Row>
                     )
@@ -1006,7 +1006,7 @@ export const EditInvoice = () => {
                       SUBTOTAL
                     </Table.Cell>
                     <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right">{invoice.subTotal.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                      <span className="w-full text-right">{formatVND(invoice.subTotal)}</span>
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
@@ -1014,7 +1014,7 @@ export const EditInvoice = () => {
                       {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
                     </Table.Cell>
                     <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right">{(invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                      <span className="w-full text-right">{formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}</span>
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
@@ -1022,7 +1022,7 @@ export const EditInvoice = () => {
                       GRAND TOTAL
                     </Table.Cell>
                     <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right text-red-800 font-bold">{(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate).toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                      <span className="w-full text-right text-red-800 font-bold">{formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}</span>
                     </Table.Cell>
                   </Table.Row>
                 </Table.Body>
