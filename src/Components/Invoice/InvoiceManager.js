@@ -32,6 +32,8 @@ export function InvoiceManager() {
   const [openModal, setOpenModal] = useState(false)
   const [deletingInv, setDeletingInv] = useState(null)
 
+  const [openChooseResModal, setOpenChooseResModal] = useState(false)
+
   const filterDay = (numDays) => {
 
     var newDate = Date.now() + numDays * 86400000
@@ -95,6 +97,7 @@ export function InvoiceManager() {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
+  //================ DELETE INVOICE ==========================//
   const handleDeleteInvoice = (inv) => {
     if (!isDeleteable(inv)) {
       console.warn("Can not delete the paid invoice")
@@ -133,6 +136,18 @@ export function InvoiceManager() {
     return false
   }
 
+  //================ ADD INVOICE ==========================//
+  const chooseRes = ()=>{
+    
+  }
+
+  const cancelChooseRes = ()=>{
+
+  }
+
+  const confirmSelectRes=()=>{
+    
+  }
 
   return (
     <div className="h-full pt-3">
@@ -266,6 +281,25 @@ export function InvoiceManager() {
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={confirmDeletion}>Delete</Button>
           <Button color="gray" onClick={cancelDeletion}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible>
+        <Modal.Header></Modal.Header>
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              {deletingInv !== null && deletingInv !== undefined ? "Delete invoice of " + deletingInv.guestName + " ?" : "You need to choose the invoice to delete"}
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmSelectRes}>Continue</Button>
+          <Button onClick={confirmNoRes}>No Res</Button>
+          <Button color="gray" onClick={cancelChooseRes}>
             Cancel
           </Button>
         </Modal.Footer>
