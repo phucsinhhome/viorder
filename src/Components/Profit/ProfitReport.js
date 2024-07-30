@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProfitReportThisMonth } from "../../db/profit";
 import { Link } from "react-router-dom";
-import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, toVND, simpleDateToISODate } from "../../Service/Utils";
+import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, formatVND, formatISODate } from "../../Service/Utils";
 
 const reportTypes = [
   {
@@ -21,8 +21,8 @@ const reportTypes = [
 const defaultPeriod = {
   name: "Today",
   range: {
-    fromDate: simpleDateToISODate(beginOfMonth(new Date())),
-    toDate: simpleDateToISODate(new Date())
+    fromDate: formatISODate(beginOfMonth(new Date())),
+    toDate: formatISODate(new Date())
   }
 }
 
@@ -86,8 +86,8 @@ export function ProfitReport() {
     var numOfDay = timeFilter.entiredMonth ? lastDayOfMonth(nextToDate) : new Date().getDate()
     nextToDate.setDate(numOfDay)
 
-    let nFD = simpleDateToISODate(nextFromDate)
-    let nTD = simpleDateToISODate(nextToDate)
+    let nFD = formatISODate(nextFromDate)
+    let nTD = formatISODate(nextToDate)
 
     console.info("Setting report period from [%s] to [%s] with days of month [%d]", nFD, nTD, numOfDay)
     let nParam={
@@ -182,7 +182,7 @@ export function ProfitReport() {
                 <span className="font font-bold text-gray-500">Revenue</span>
               </div>
               <div>
-                <span>{toVND(report.overall.revenue)}</span>
+                <span>{formatVND(report.overall.revenue)}</span>
               </div>
             </div>
             <div className="flex flex-col w-1/2 rounded-lg border border-spacing-1 px-2 py-2 shadow-lg">
@@ -190,13 +190,13 @@ export function ProfitReport() {
                 <span className="font font-bold text-gray-500">Expenditure</span>
               </div>
               <div>
-                <span>{toVND(report.overall.expense)}</span>
+                <span>{formatVND(report.overall.expense)}</span>
               </div>
             </div>
           </div>
           <div className="w-full py-1 flex flex-row justify-items-center pt-3">
             <span className="w-1/2 text-right font font-bold text-gray-500 pr-1">Profit:</span>
-            <span className="w-1/2 text-left pl-1">{toVND(report.overall.profit)}</span>
+            <span className="w-1/2 text-left pl-1">{formatVND(report.overall.profit)}</span>
           </div>
         </div>
 
@@ -215,17 +215,17 @@ export function ProfitReport() {
                   <span
                     className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
                   >
-                    {toVND(item.revenue)}
+                    {formatVND(item.revenue)}
                   </span>
                   <span
                     className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
                   >
-                    {toVND(item.expense)}
+                    {formatVND(item.expense)}
                   </span>
                   <span
                     className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
                   >
-                    {toVND(item.profit)}
+                    {formatVND(item.profit)}
                   </span>
                 </div>
               </div>

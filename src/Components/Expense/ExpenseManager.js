@@ -9,7 +9,7 @@ import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClas
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
-import { dateToISODate } from "../../Service/Utils";
+import { dateToISODate, formatVND } from "../../Service/Utils";
 
 const defaultEmptExpense = {
   "expenseDate": null,
@@ -491,7 +491,7 @@ export const ExpenseManager = () => {
                       />
                       <div className="flex flex-row text-sm space-x-1">
                         <div className="w-24">
-                          <span>{exp.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+                          <span>{formatVND(exp.amount)}</span>
                         </div>
 
                         <span className="font font-mono font-black">{exp.service}</span>
@@ -641,7 +641,7 @@ export const ExpenseManager = () => {
                   value="Amount"
                 />
               </div>
-              <span className="w-full">{editingExpense.amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })}</span>
+              <span className="w-full">{formatVND(editingExpense.amount)}</span>
 
             </div>
             <div className="flex flex-row w-full align-middle">

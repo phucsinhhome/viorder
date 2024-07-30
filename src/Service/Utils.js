@@ -2,11 +2,7 @@ export const dateToISODate = (date) => {
     return new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
 }
 
-export const simpleDateToISODate = (date) => {
-    return date.toISOString().substring(0, 10)
-}
-
-export const toVND = (amount) => {
+export const formatVND = (amount) => {
     return amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })
 }
 
@@ -36,8 +32,25 @@ export const beginOfMonth = (date) => {
     return date
 }
 
-const dateUSOptions = { year: 'numeric', month: 'short', day: 'numeric' }
+const dateShortOptions = { year: 'numeric', month: 'short', day: 'numeric' }
+export const formatShortDate = (date) => {
+    // Format: Jul 30, 2024
+    return date.toLocaleDateString("en-US", dateShortOptions)
+}
 
-export const formatUSDate = (date) => {
-    return date.toLocaleDateString("en-US", dateUSOptions)
+export const formatISODate = (date) => {
+    // Format: 2024-07-30
+    return date.toISOString().substring(0, 10)
+}
+
+const date2DigitOptions = { year: 'numeric', month: '2-digit', day: 'numeric' }
+export const format2DigitDate = (date) => {
+    // Format: 07/30/2024
+    return date.toLocaleDateString("en-US", date2DigitOptions)
+}
+
+const dateMonthOptions = { month: 'short', day: 'numeric' }
+export const formatDateMonthDate = (date) => {
+    // Format: Jul 30
+    return date.toLocaleDateString("en-US", dateMonthOptions)
 }
