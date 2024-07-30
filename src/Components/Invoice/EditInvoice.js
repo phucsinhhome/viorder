@@ -952,7 +952,7 @@ export const EditInvoice = () => {
               </div>
               <div className="flex flex-col w-4/5 ">
                 <span className="text-right font-serif font-bold text-amber-800 capitalize">phuc sinh home</span>
-                <span className="text-right font-mono text-[9px] font italic text-gray-500">10, Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
+                <span className="text-right font-mono text-[9px] font italic text-gray-500">Phuoc Xuan Hamlet, An Khanh Commune, Chau Thanh, Ben Tre</span>
                 <span className="text-right font-mono text-[9px] font text-gray-800">+84 328 944 788</span>
               </div>
             </div>
