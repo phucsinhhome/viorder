@@ -11,6 +11,7 @@ import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
 import { listLatestReservations } from "../../db/reservation";
+import { listAllProducts } from "../../db/product";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -66,8 +67,11 @@ export const EditInvoice = () => {
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0])
 
+
+  const [products, setProducts] = useState([])
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
+  const [lookupItems, setLookupItems] = useState([])
 
   const [openViewInvModal, setOpenViewInvModal] = useState(false)
 
@@ -105,7 +109,11 @@ export const EditInvoice = () => {
           setOpenChooseResModal(true)
         })
     }
-  }, [invoiceId])
+    if (products.length <= 0) {
+      console.info("Fetch the products")
+      listAllProducts().then(data => setProducts(data))
+    }
+  }, [invoiceId, products.length])
 
 
   const handleSaveInvoice = () => {
@@ -152,45 +160,49 @@ export const EditInvoice = () => {
 
   const createOrUpdateItem = () => {
     try {
-      let item = {
-        id: editingItem.id,
-        itemName: editingItem.itemName,
-        service: editingItem.service,
-        unitPrice: editingItem.unitPrice,
-        quantity: editingItem.quantity,
-        amount: editingItem.amount
+      if (editingItem === null || editingItem === undefined) {
+        console.warn("Invalid item")
+        return
       }
-      let items = []
-      if (item.id === null || item.id === "") {
-        let newItemId = invoiceId + (Date.now() % 10000000)
-        console.log("Added an item into invoice. Id [%s] was generated", newItemId)
-        items = [
-          ...invoice.items,
-          {
-            id: newItemId,
-            itemName: item.itemName,
-            unitPrice: item.unitPrice,
-            quantity: item.quantity,
-            amount: item.unitPrice * item.quantity
+      blurItemName()
+        .then((res) => {
+          console.info("Classification result %s", res)
+          let item = {
+            id: editingItem.id,
+            itemName: editingItem.itemName,
+            service: editingItem.service,
+            unitPrice: editingItem.unitPrice,
+            quantity: editingItem.quantity,
+            amount: editingItem.amount
           }
-        ]
-      } else {
-        console.log("Update item [%s] ", item.id)
-        items = invoice.items.map((i) => i.id === item.id ? item : i)
-      }
+          let items = []
+          if (item.id === null || item.id === "") {
+            let newItemId = invoiceId + (Date.now() % 10000000)
+            console.log("Added an item into invoice. Id [%s] was generated", newItemId)
+            items = [
+              ...invoice.items,
+              {
+                ...item,
+                id: newItemId
+              }
+            ]
+          } else {
+            console.log("Update item [%s] ", item.id)
+            items = invoice.items.map((i) => i.id === item.id ? item : i)
+          }
 
-      let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
-      const inv = {
-        ...invoice,
-        items: items,
-        subTotal: ta
-      }
-      setInvoice(inv)
+          let ta = items.map(({ amount }) => amount).reduce((a1, a2) => a1 + a2, 0)
+          const inv = {
+            ...invoice,
+            items: items,
+            subTotal: ta
+          }
+          setInvoice(inv)
+          setOpenEditingItemModal(false)
+        })
+
     } catch (e) {
       console.error(e)
-    }
-    finally {
-      setOpenEditingItemModal(false)
     }
   }
 
@@ -252,7 +264,7 @@ export const EditInvoice = () => {
       if (deletingItem === undefined || deletingItem === null) {
         return;
       }
-      console.warn("Delete item {}...", deletingItem.id)
+      console.warn("Delete item %s...", deletingItem.id)
 
       let item = deletingItem
       console.info("Item %s is deleted", item.id)
@@ -400,30 +412,67 @@ export const EditInvoice = () => {
   //================= ITEM NAME ===================//
   const changeItemName = (e) => {
     let iName = e.target.value
-    let eI = {
-      ...editingItem,
-      itemName: iName
+    try {
+      let eI = {
+        ...editingItem,
+        itemName: iName
+      }
+      setEditingItem(eI)
+      let fProducts = products.filter(p => p.name.toLowerCase().includes(iName.toLowerCase()))
+      setLookupItems(fProducts)
+    } catch (e) {
+      console.error(e)
+    } finally {
+
+      setDirty(true)
     }
-    setEditingItem(eI)
-    setDirty(true)
   }
 
   const blurItemName = () => {
     let nItemName = editingItem.itemName
     if (nItemName === null || nItemName === undefined || nItemName === "") {
-      return;
+      return Promise.resolve(false);
     }
-    console.log("Classify the service by service name %s", nItemName)
-    classifyServiceByItemName(nItemName)
-      .then((srv) => {
-        var nexItem = {
-          ...editingItem,
-          service: srv
-        }
-        setEditingItem(nexItem)
-        setDirty(true)
-      })
+    if (editingItem.service === null || editingItem.service === undefined || editingItem.service === "") {
+      console.log("Classify the service by service name [%s]", nItemName)
+      return classifyServiceByItemName(nItemName)
+        .then((srv) => {
+          var nexItem = {
+            ...editingItem,
+            service: srv
+          }
+          setEditingItem(nexItem)
+          setDirty(true)
+          console.info("How is it")
+          return true
+        })
+    } else {
+      return Promise.resolve(true)
+    }
   }
+
+  const confirmSelectItem = (product) => {
+    try {
+      let uP = formatMoneyAmount(String(product.unitPrice))
+      let eI = {
+        id: null,
+        itemName: product.name,
+        quantity: 1,
+        amount: product.unitPrice,
+        unitPrice: product.unitPrice,
+        formattedUnitPrice: uP.formattedAmount,
+        service: null
+      }
+      setLookupItems([])
+      setEditingItem(eI)
+
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setDirty(true)
+    }
+  }
+
 
   //================= UNIT PRICE ===================//
   const changeUnitPrice = (e) => {
@@ -1039,8 +1088,51 @@ export const EditInvoice = () => {
                   required={true}
                   value={editingItem.itemName}
                   onChange={changeItemName}
-                  onBlur={blurItemName}
+                // onBlur={blurItemName}
                 />
+                {/* ================= LOOKUP ITEMs=========================== */}
+                <Table hoverable>
+                  {/* <Table.Head>
+                    <Table.HeadCell className="pr-1">
+                      Check In
+                    </Table.HeadCell>
+                    <Table.HeadCell className="pr-1">
+                      Guest Details
+                    </Table.HeadCell>
+                  </Table.Head> */}
+                  <Table.Body className="divide-y">
+                    {lookupItems.map((item) => {
+                      return (
+                        <Table.Row
+                          className=" dark:border-gray-700 dark:bg-gray-800 bg-gray-200"
+                          key={item.id}
+                          onClick={() => confirmSelectItem(item)}
+                        >
+                          {/* <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                            <span>{item.id}</span>
+                          </Table.Cell> */}
+                          <Table.Cell className="sm:px-1 px-1 py-0.5">
+                            <div className="grid grid-cols-1">
+                              <span
+                                className={"font-medium text-blue-600 hover:underline dark:text-blue-500"}
+                              >
+                                {item.name}
+                              </span>
+                              <div className="flex flex-row text-[10px] space-x-1">
+                                <div className="w-24">
+                                  <span>{formatVND(item.unitPrice)}</span>
+                                </div>
+                                {/* <span className="font font-mono font-black">{item.channel}</span> */}
+                              </div>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      )
+                    })}
+                  </Table.Body>
+                </Table>
+
+
               </div>
               <div className="flex flex-row w-full align-middle">
                 <div className="flex items-center w-2/5">
@@ -1121,6 +1213,17 @@ export const EditInvoice = () => {
                   />
                 </div>
                 <span className="w-full">{editingItem.service}</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="w-8 h-8"
+                  onClick={blurItemName}
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+
               </div>
               <div className="w-full flex justify-center">
                 <Button onClick={createOrUpdateItem} className="mx-2">
