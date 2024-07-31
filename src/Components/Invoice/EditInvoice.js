@@ -20,6 +20,14 @@ const internalRooms = (rooms) => {
   return rooms.map(r => r.internalRoomName)
 }
 
+const config = {
+  fetchedRes: {
+    backwardDays: -3,
+    forwardDays: 20,
+    max: 100
+  }
+}
+
 export const EditInvoice = () => {
   const [invoice, setInvoice] = useState(
     {
@@ -527,15 +535,15 @@ export const EditInvoice = () => {
   }
 
   const fetchReservations = () => {
-    let nextDays = 20
-    let fromDate = addDays(new Date(), -3)
+    let nextDays = config.fetchedRes.forwardDays
+    let fromDate = addDays(new Date(), config.fetchedRes.backwardDays)
     var toDate = addDays(fromDate, nextDays) // 20 days ahead of fromDate
 
     var fD = formatISODate(fromDate)
     var tD = formatISODate(toDate)
     console.info("Loading reservations from %s to next %d days...", fD, nextDays)
 
-    return listLatestReservations(fD, tD, 0, 100)
+    return listLatestReservations(fD, tD, 0, config.fetchedRes.max)
   }
 
   return (
