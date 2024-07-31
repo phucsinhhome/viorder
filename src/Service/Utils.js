@@ -10,6 +10,10 @@ export const lastDateOf = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 }
 
+export const lastDateOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
 export const beginOfDay = (date) => {
     date.setHours(7, 0, 0, 0)
     return date

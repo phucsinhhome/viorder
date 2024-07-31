@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getProfitReportThisMonth } from "../../db/profit";
 import { Link } from "react-router-dom";
-import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, formatVND, formatISODate } from "../../Service/Utils";
+import { adjustMonths, beginOfMonth, lastDateOf as lastDayOfMonth, formatVND, formatISODate, formatDateMonthDate, lastDateOfMonth } from "../../Service/Utils";
 
 const reportTypes = [
   {
@@ -63,12 +63,14 @@ export function ProfitReport() {
     //   entiredMonth: true
     // },
     {
+      id: 'untilToday',
       name: "Today",
       adjustedMonths: 0,
       entiredMonth: false
     },
     {
-      name: "End of Month",
+      id: 'wholeMonth',
+      name: formatDateMonthDate(lastDateOfMonth(new Date())),
       adjustedMonths: 0,
       entiredMonth: true
     },
@@ -81,7 +83,10 @@ export function ProfitReport() {
 
   const changePeriod = (timeFilter) => {
 
-    var nextFromDate = timeFilter.adjustedMonths === 0 ? beginOfMonth(new Date()) : adjustMonths(new Date(params.fromDate), timeFilter.adjustedMonths)
+    var nextFromDate = timeFilter.adjustedMonths === 0 ?
+      beginOfMonth(new Date()) :
+      adjustMonths(new Date(params.fromDate), timeFilter.adjustedMonths)
+
     var nextToDate = new Date(nextFromDate)
     var numOfDay = timeFilter.entiredMonth ? lastDayOfMonth(nextToDate) : new Date().getDate()
     nextToDate.setDate(numOfDay)
@@ -90,9 +95,9 @@ export function ProfitReport() {
     let nTD = formatISODate(nextToDate)
 
     console.info("Setting report period from [%s] to [%s] with days of month [%d]", nFD, nTD, numOfDay)
-    let nParam={
+    let nParam = {
       ...params,
-      periodName: timeFilter.name,
+      periodName: timeFilter.id,
       fromDate: nFD,
       toDate: nTD
     }
@@ -121,7 +126,7 @@ export function ProfitReport() {
   }
 
   const changeReportType = (type) => {
-    let nParam ={
+    let nParam = {
       ...params,
       type: type.key
     }
@@ -165,9 +170,9 @@ export function ProfitReport() {
           <div className="space-x-2 pl-4">
             {timeFilters.map((per) => {
               return (<span
-                key={per.name}
+                key={per.id}
                 onClick={() => changePeriod(per)}
-                className={filterClass(per.name, params.periodName)}
+                className={filterClass(per.id, params.periodName)}
               >
                 {per.name}
               </span>)
