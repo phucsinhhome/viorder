@@ -22,6 +22,10 @@ export const endOfDay = (date) => {
     return date
 }
 
+export const addDays = (date, numOfDays) => {
+    return new Date(date.getTime() + numOfDays * 86400000)
+}
+
 export const adjustMonths = (date, numOfMonths) => {
     return new Date(date.setMonth(date.getMonth() + numOfMonths))
 }

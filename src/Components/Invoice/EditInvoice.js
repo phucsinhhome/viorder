@@ -6,7 +6,7 @@ import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-rea
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { dateToISODate, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
+import { addDays, dateToISODate, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
@@ -498,7 +498,7 @@ export const EditInvoice = () => {
         issuer: currentUserFullname(),
         issuerId: currentUser.id,
         checkInDate: dateToISODate(new Date()),
-        checkOutDate: dateToISODate(new Date()),
+        checkOutDate: dateToISODate(addDays(new Date(), 1)),
         prepaied: false,
         paymentMethod: null,
         paymentPhotos: [],
@@ -527,9 +527,9 @@ export const EditInvoice = () => {
   }
 
   const fetchReservations = () => {
-    let nextDays = 50
-    let fromDate = new Date()
-    var toDate = new Date(fromDate.getTime() + nextDays * 86400000) // 20 days ahead of fromDate
+    let nextDays = 20
+    let fromDate = addDays(new Date(), -3)
+    var toDate = addDays(fromDate, nextDays) // 20 days ahead of fromDate
 
     var fD = formatISODate(fromDate)
     var tD = formatISODate(toDate)
