@@ -762,10 +762,12 @@ export const EditInvoice = () => {
             </div>
           </div>
         </form>
-        {/** Second Column */}
-        <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-1 ml-2 divide-x">
+
+        <div className={exportable ?
+          "grid grid-cols-5 items-center w-full px-1 mb-1 space-x-1 ml-2"
+          : "grid grid-cols-4 items-center w-full px-1 mb-1 space-x-1 ml-2"}>
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 hover:bg-slate-200"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-1 py-1 hover:bg-slate-200"
             onClick={() => editItem(defaultEmptyItem)}
           >
             <svg
@@ -781,7 +783,7 @@ export const EditInvoice = () => {
             <span>Item</span>
           </div>
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 hover:bg-slate-200"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-1 py-1 hover:bg-slate-200"
             onClick={showViewInv}
           >
             <svg
@@ -797,15 +799,15 @@ export const EditInvoice = () => {
           </div>
           {
             exportable ? <div
-              className="flex flex-row items-center font-sans font-bold text-amber-700 px-2 py-1"
+              className="flex flex-row items-center font-sans font-bold text-amber-800 px-1 py-1"
               onClick={exportInv}
             >
               <svg
-                className="w-[18px] h-[18px] text-amber-700 dark:text-white"
+                className="w-[18px] h-[18px] dark:text-white"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
+                // width="24"
+                // height="24"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -815,7 +817,7 @@ export const EditInvoice = () => {
             </div> : null
           }
           <div
-            className="flex flex-row items-center text-amber-800 px-2 py-1 hover:bg-slate-200"
+            className="flex flex-row items-center text-amber-800 px-1 py-1 hover:bg-slate-200"
             onClick={handleSaveInvoice}
           >
             <svg
@@ -830,7 +832,7 @@ export const EditInvoice = () => {
               Save
             </span>
           </div>
-          <div className="flex flex-row items-center  px-2 py-1 hover:bg-slate-200">
+          <div className="flex flex-row items-center  px-1 py-1 hover:bg-slate-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
