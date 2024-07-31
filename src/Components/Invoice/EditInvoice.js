@@ -21,6 +21,9 @@ const internalRooms = (rooms) => {
 }
 
 const config = {
+  initialInvoice: {
+    guestName: 'Guest Name'
+  },
   fetchedRes: {
     backwardDays: -3,
     forwardDays: 20,
@@ -103,7 +106,11 @@ export const EditInvoice = () => {
     if (invoice === null) {
       return
     }
-    if (invoice.guestName === null || invoice.guestName === undefined || invoice.guestName === "") {
+    if (invoice.guestName === null
+      || invoice.guestName === undefined
+      || invoice.guestName === ""
+      || invoice.guestName === config.initialInvoice.guestName) {
+        console.warn("Invalid guest name")
       editGuestName()
       return
     }
@@ -457,7 +464,7 @@ export const EditInvoice = () => {
   // }
 
   const cancelChooseRes = () => {
-    setOpenChooseResModal(false)
+    confirmNoRes()
   }
 
   const confirmSelectRes = (res) => {
@@ -502,7 +509,7 @@ export const EditInvoice = () => {
       let invId = currentUser.id + (Date.now() % 10000000)
       let inv = {
         id: currentUser.id + new Date().getTime(),
-        guestName: "Guest name",
+        guestName: config.initialInvoice.guestName,
         issuer: currentUserFullname(),
         issuerId: currentUser.id,
         checkInDate: dateToISODate(new Date()),
