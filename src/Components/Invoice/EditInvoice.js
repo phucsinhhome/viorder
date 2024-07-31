@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
 import { getPresignedLink } from "../../Service/FileService";
@@ -75,6 +75,9 @@ export const EditInvoice = () => {
   const [reservations, setReservations] = useState([])
   const [filteredReservations, setFilteredReservations] = useState([])
   const [resFilteredText, setResFilteredText] = useState('')
+
+  const [openRoomModal, setOpenRoomModal] = useState(false)
+  const [selectedRooms, setSelectedRooms] = useState([])
 
   const [dirty, setDirty] = useState(false)
 
@@ -564,6 +567,43 @@ export const EditInvoice = () => {
     setFilteredReservations(fRes)
   }
 
+  //================ ROOMS ==========================//
+  const chooseRoom = () => {
+    let sR = invoice
+      .rooms
+      .map(rN => rooms.find(r => rN === r.name))
+      .map(r => r.id)
+    setSelectedRooms(sR)
+    setOpenRoomModal(true)
+  }
+  const selectRoom = (roomId) => {
+    let sR = [...selectedRooms]
+    if (sR.includes(roomId)) {
+      sR = selectedRooms.filter(r => r !== roomId)
+    } else {
+      sR.push(roomId)
+    }
+    setSelectedRooms(sR)
+  }
+
+  const confirmSelectRoom = () => {
+    let rs = selectedRooms
+      .map(rId => rooms.find(r => r.id === rId))
+      .map(r => r.name)
+    let nInv = {
+      ...invoice,
+      rooms: rs
+    }
+    setDirty(true)
+    setInvoice(nInv)
+    setOpenRoomModal(false)
+  }
+
+  const cancelSelectRoom = () => {
+    setSelectedRooms([])
+    setOpenRoomModal(false)
+  }
+
   return (
     <>
       <div className="h-full pt-3">
@@ -680,7 +720,7 @@ export const EditInvoice = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                   id="checkOutDate"
-                // onClick={editDate}
+                  onClick={chooseRoom}
                 >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
@@ -723,9 +763,9 @@ export const EditInvoice = () => {
           </div>
         </form>
         {/** Second Column */}
-        <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-5 ml-2">
+        <div className="flex flex-row items-center w-full md:w-1/2 px-1 mb-1 space-x-1 ml-2 divide-x">
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 hover:bg-slate-200"
             onClick={() => editItem(defaultEmptyItem)}
           >
             <svg
@@ -741,7 +781,7 @@ export const EditInvoice = () => {
             <span>Item</span>
           </div>
           <div
-            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
+            className="flex flex-row items-center font-sans font-bold text-amber-800 px-2 py-1 hover:bg-slate-200"
             onClick={showViewInv}
           >
             <svg
@@ -775,7 +815,7 @@ export const EditInvoice = () => {
             </div> : null
           }
           <div
-            className="flex flex-row items-center text-amber-800 px-2 py-1 w-1/4 hover:bg-slate-200"
+            className="flex flex-row items-center text-amber-800 px-2 py-1 hover:bg-slate-200"
             onClick={handleSaveInvoice}
           >
             <svg
@@ -790,7 +830,7 @@ export const EditInvoice = () => {
               Save
             </span>
           </div>
-          <div className="flex flex-row items-center  px-2 py-1 w-1/4 hover:bg-slate-200">
+          <div className="flex flex-row items-center  px-2 py-1 hover:bg-slate-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -1259,6 +1299,45 @@ export const EditInvoice = () => {
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={confirmNoRes}>No Book</Button>
           <Link to={"../invoice"}>Cancel</Link>
+        </Modal.Footer>
+      </Modal>
+
+
+      <Modal
+        show={openRoomModal}
+        onClose={cancelSelectRoom}
+        popup
+        dismissible
+      >
+        <Modal.Header></Modal.Header>
+        <Modal.Body>
+          <div className="flex flex-row items-center gap-2 space-x-2 w-full ">
+            {
+              rooms.map(r => {
+                return (
+                  <div
+                    id={r.id}
+                    className={selectedRooms.includes(r.id) ?
+                      "flex flex-col border-spacing-1 shadow-lg hover:shadow-lg rounded-sm items-center px-2 py-2 bg-slate-300" :
+                      "flex flex-col border-spacing-1 shadow-lg hover:shadow-lg rounded-sm items-center px-2 py-2"
+                    }
+                    onClick={() => selectRoom(r.id)}
+                  >
+                    {r.src}
+                    <span className="text text-center">{r.name}</span>
+                  </div>
+                )
+              })
+            }
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button color="gray" onClick={confirmSelectRoom}>
+            Done
+          </Button>
+          <Button color="gray" onClick={cancelSelectRoom}>
+            Cancel
+          </Button>
         </Modal.Footer>
       </Modal>
     </>
