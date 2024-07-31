@@ -32,6 +32,8 @@ export function InvoiceManager() {
   const [openModal, setOpenModal] = useState(false)
   const [deletingInv, setDeletingInv] = useState(null)
 
+
+
   const filterDay = (numDays) => {
 
     var newDate = Date.now() + numDays * 86400000
@@ -95,6 +97,7 @@ export function InvoiceManager() {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
+  //================ DELETE INVOICE ==========================//
   const handleDeleteInvoice = (inv) => {
     if (!isDeleteable(inv)) {
       console.warn("Can not delete the paid invoice")
@@ -133,11 +136,12 @@ export function InvoiceManager() {
     return false
   }
 
-
   return (
     <div className="h-full pt-3">
       <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
-        <div className="flex flex-row items-center pl-4">
+        <div className="flex flex-row items-center pl-4"
+        // onClick={chooseRes}
+        >
           <svg
             className="w-5 h-5 text-amber-700 dark:text-white"
             aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -148,6 +152,12 @@ export function InvoiceManager() {
           >
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
           </svg>
+          {/* <span
+            relative="route"
+            className="font-bold text-amber-800"
+          >
+            Add Invoice
+          </span> */}
           <Link
             to="../invoice/new"
             relative="route"
@@ -270,6 +280,8 @@ export function InvoiceManager() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+
     </div >
   );
 }
