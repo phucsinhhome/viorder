@@ -73,6 +73,8 @@ export const EditInvoice = () => {
 
   const [openChooseResModal, setOpenChooseResModal] = useState(false)
   const [reservations, setReservations] = useState([])
+  const [filteredReservations, setFilteredReservations] = useState([])
+  const [resFilteredText, setResFilteredText] = useState('')
 
   const [dirty, setDirty] = useState(false)
 
@@ -95,6 +97,8 @@ export const EditInvoice = () => {
       fetchReservations()
         .then(data => {
           setReservations(data.content)
+          setFilteredReservations(data.content)
+          setResFilteredText('')
           setOpenChooseResModal(true)
         })
     }
@@ -110,7 +114,7 @@ export const EditInvoice = () => {
       || invoice.guestName === undefined
       || invoice.guestName === ""
       || invoice.guestName === config.initialInvoice.guestName) {
-        console.warn("Invalid guest name")
+      console.warn("Invalid guest name")
       editGuestName()
       return
     }
@@ -551,6 +555,13 @@ export const EditInvoice = () => {
     console.info("Loading reservations from %s to next %d days...", fD, nextDays)
 
     return listLatestReservations(fD, tD, 0, config.fetchedRes.max)
+  }
+
+  const changeResFilteredText = (e) => {
+    let text = e.target.value
+    setResFilteredText(text)
+    let fRes = reservations.filter(res => res.guestName.toLowerCase().includes(text.toLowerCase()))
+    setFilteredReservations(fRes)
   }
 
   return (
@@ -1193,6 +1204,13 @@ export const EditInvoice = () => {
       <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible>
         <Modal.Header></Modal.Header>
         <Modal.Body>
+          <div className="w-full">
+            <TextInput
+              value={resFilteredText}
+              onChange={changeResFilteredText}
+              placeholder="Guest name"
+            />
+          </div>
           <div className="flex flex-col overflow-scroll w-full">
             <Table hoverable>
               <Table.Head>
@@ -1204,7 +1222,7 @@ export const EditInvoice = () => {
                 </Table.HeadCell>
               </Table.Head>
               <Table.Body className="divide-y">
-                {reservations.map((res) => {
+                {filteredReservations.map((res) => {
                   return (
                     <Table.Row
                       className="bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -1216,8 +1234,6 @@ export const EditInvoice = () => {
                       <Table.Cell className="sm:px-1 px-1 py-0.5">
                         <div className="grid grid-cols-1">
                           <span
-                            // to="new"
-                            // state={{ reservation: pagination.pageNumber, pageSize: pagination.pageSize }}
                             className={"font-medium text-blue-600 hover:underline dark:text-blue-500"}
                             onClick={() => confirmSelectRes(res)}
                           >
