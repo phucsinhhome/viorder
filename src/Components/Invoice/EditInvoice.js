@@ -11,6 +11,7 @@ import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
 import { listLatestReservations } from "../../db/reservation";
+import { products } from "../Expense/ExpenseManager";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -66,8 +67,10 @@ export const EditInvoice = () => {
   const [openPaymentModal, setOpenPaymentModal] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0])
 
+
   const [openEditingItemModal, setOpenEditingItemModal] = useState(false)
   const [editingItem, setEditingItem] = useState(defaultEmptyItem)
+  const [lookupItems, setLookupItems] = useState([])
 
   const [openViewInvModal, setOpenViewInvModal] = useState(false)
 
@@ -400,12 +403,20 @@ export const EditInvoice = () => {
   //================= ITEM NAME ===================//
   const changeItemName = (e) => {
     let iName = e.target.value
-    let eI = {
-      ...editingItem,
-      itemName: iName
+    try {
+      let eI = {
+        ...editingItem,
+        itemName: iName
+      }
+      setEditingItem(eI)
+      let fProducts = products.filter(p => p.name.toLowerCase().includes(iName.toLowerCase()))
+      setLookupItems(fProducts)
+    } catch (e) {
+      console.error(e)
+    } finally {
+
+      setDirty(true)
     }
-    setEditingItem(eI)
-    setDirty(true)
   }
 
   const blurItemName = () => {
@@ -424,6 +435,11 @@ export const EditInvoice = () => {
         setDirty(true)
       })
   }
+
+  const confirmSelectItem = (item) => {
+
+  }
+
 
   //================= UNIT PRICE ===================//
   const changeUnitPrice = (e) => {
@@ -1041,6 +1057,49 @@ export const EditInvoice = () => {
                   onChange={changeItemName}
                   onBlur={blurItemName}
                 />
+                {/* ================= LOOKUP ITEMs=========================== */}
+                <Table hoverable>
+                  {/* <Table.Head>
+                    <Table.HeadCell className="pr-1">
+                      Check In
+                    </Table.HeadCell>
+                    <Table.HeadCell className="pr-1">
+                      Guest Details
+                    </Table.HeadCell>
+                  </Table.Head> */}
+                  <Table.Body className="divide-y">
+                    {lookupItems.map((item) => {
+                      return (
+                        <Table.Row
+                          className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                          key={item.id}
+                        >
+                          <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                            <span>{item.id}</span>
+                          </Table.Cell>
+                          <Table.Cell className="sm:px-1 px-1 py-0.5">
+                            <div className="grid grid-cols-1">
+                              <span
+                                className={"font-medium text-blue-600 hover:underline dark:text-blue-500"}
+                                onClick={() => confirmSelectItem(item)}
+                              >
+                                {item.name}
+                              </span>
+                              <div className="flex flex-row text-[10px] space-x-1">
+                                <div className="w-24">
+                                  <span>{formatVND(item.unitPrice)}</span>
+                                </div>
+                                {/* <span className="font font-mono font-black">{item.channel}</span> */}
+                              </div>
+                            </div>
+                          </Table.Cell>
+                        </Table.Row>
+                      )
+                    })}
+                  </Table.Body>
+                </Table>
+
+
               </div>
               <div className="flex flex-row w-full align-middle">
                 <div className="flex items-center w-2/5">

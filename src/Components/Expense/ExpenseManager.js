@@ -10,6 +10,7 @@ import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
 import { dateToISODate, formatVND } from "../../Service/Utils";
+import { listAllProducts } from "../../db/product";
 
 const defaultEmptExpense = {
   "expenseDate": null,
@@ -46,6 +47,8 @@ const GEN_STATE = {
   SAVING: "SAVING",
   SAVED: "SAVED"
 }
+
+export const products = listAllProducts().then(data=>data)
 
 export const ExpenseManager = () => {
 
