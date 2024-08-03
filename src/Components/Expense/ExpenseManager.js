@@ -9,7 +9,7 @@ import { classifyServiceByItemName } from "../../Service/ItemClassificationServi
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
-import { dateToISODate, formatISODate, formatVND } from "../../Service/Utils";
+import { formatISODate, formatVND } from "../../Service/Utils";
 import { PiBrainThin } from "react-icons/pi";
 import { FaRotate } from "react-icons/fa6";
 
@@ -63,7 +63,7 @@ export const ExpenseManager = () => {
 
 
   const fetchData = (pageNumber, pageSize) => {
-    let byDate = dateToISODate(new Date())
+    let byDate = formatISODate(new Date())
     let expenserId = (initialUser !== null && initialUser !== undefined) ? initialUser.id : null
     return listExpenseByExpenserAndDate(expenserId, byDate, pageNumber, pageSize)
       .then(data => {
@@ -107,14 +107,13 @@ export const ExpenseManager = () => {
         let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
         console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
         var exp = {
-          // ...expense,
           id: null,
           itemName: eE.item,
           quantity: qty,
           unitPrice: uP,
           amount: pr,
           service: eE.service,
-          expenseDate: new Date().toISOString(),
+          expenseDate: formatISODate(new Date()),
           expenserId: currentUser.id,
           expenserName: currentUserFullname()
         }
@@ -289,7 +288,7 @@ export const ExpenseManager = () => {
       console.info("Generated the expense id %s", exp.id)
     }
     if (exp.expenseDate === null) {
-      let expDate = new Date().toISOString()
+      let expDate = formatISODate(new Date())
       exp.expenseDate = expDate
       console.info("Updated expense date to %s", expDate)
     }
@@ -367,7 +366,7 @@ export const ExpenseManager = () => {
               Date
             </Table.HeadCell>
             <Table.HeadCell className="sm:px-1">
-              Item Name
+              Details
             </Table.HeadCell>
 
             <Table.HeadCell>
@@ -379,8 +378,11 @@ export const ExpenseManager = () => {
           <Table.Body className="divide-y" >
             {expenses.map((exp) => {
               return (
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-lg" key={exp.id}>
-                  <Table.Cell className="sm:px-1 py-0.5">
+                <Table.Row
+                  className="bg-white"
+                  key={exp.id}
+                >
+                  <Table.Cell className="sm:px-1 pr-1 py-0.5">
                     <Moment format="DD.MM">{new Date(exp.expenseDate)}</Moment>
                   </Table.Cell>
                   <Table.Cell className="sm:px-1 py-0.5">

@@ -152,12 +152,6 @@ export function InvoiceManager() {
           >
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
           </svg>
-          {/* <span
-            relative="route"
-            className="font-bold text-amber-800"
-          >
-            Add Invoice
-          </span> */}
           <Link
             to="../invoice/new"
             relative="route"
@@ -198,10 +192,10 @@ export function InvoiceManager() {
             {invoices.map((inv) => {
               return (
                 <Table.Row
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  className="bg-white"
                   key={inv.id}
                 >
-                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                  <Table.Cell className="sm:px-1 pr-1 py-0.5">
                     <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
                   </Table.Cell>
                   <Table.Cell className="sm:px-1 px-1 py-0.5">
