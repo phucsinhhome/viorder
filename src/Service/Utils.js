@@ -50,6 +50,14 @@ export const formatISODate = (date) => {
     return date.toISOString().substring(0, 10)
 }
 
+export const formatISODateTime = (date) => {
+    // Format: 2024-07-30
+    // Input: Date('Tue Aug 27 2024 00:00:00 GMT+0700') => Output: 2024-08-26T17:00:00
+    // Input: Date('2024-08-27') => Output: 2024-08-27T00:00:00
+    // Note: this will convert the date time to UTC. So, add the zoned time, so it will keep the same date
+    return date.toISOString().substring(0, 19)
+}
+
 const date2DigitOptions = { year: 'numeric', month: '2-digit', day: 'numeric' }
 export const format2DigitDate = (date) => {
     // Format: 07/30/2024
