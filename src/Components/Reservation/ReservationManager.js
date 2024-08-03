@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { listLatestReservations } from "../../db/reservation";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
+import Moment from "react-moment";
+import { internalRooms } from "../Invoice/EditInvoice";
 
 
 export function ReservationManager() {
@@ -99,53 +101,82 @@ export function ReservationManager() {
 
 
   return (
-    <div>
-      <div className="py-2 px-2 space-x-4 flex flex-wrap space-y-2">
-
-        <div className="space-x-4">
-          {filterOpts.map((opt) => {
-            return (<Link key={opt.days} onClick={() => filterDay(opt.days)} relative="route" className={filterClass(opt.days)}>{opt.label}</Link>)
-          })}
+    <div className="h-full pt-3">
+      <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
+        <div className="flex flex-row items-center mb-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5 text-amber-700 dark:text-white"
+          >
+            <path fillRule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clipRule="evenodd" />
+          </svg>
+          <Link
+            onClick={() => fetchReservations(new Date(), 0, 10)}
+            className="font-bold text-amber-800"
+          >
+            Update
+          </Link>
         </div>
       </div>
-      <Table hoverable={true}>
-        <Table.Head>
-          <Table.HeadCell>
-            Guest Name
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Check In
-          </Table.HeadCell>
-          <Table.HeadCell>
-            Status
-          </Table.HeadCell>
-          <Table.HeadCell>
-            <span className="sr-only">
-              Edit
-            </span>
-          </Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y">
-          {reservations.map((res) => {
-            return (
-              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={res.code}>
-                <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white">
-                  {res.guestName}
-                </Table.Cell>
-                <Table.Cell>
-                  {res.checkInDate}
-                </Table.Cell>
-                <Table.Cell>
-                  {res.canceled === true ? "CAN" : ""}
-                </Table.Cell>
-                <Table.Cell>
-                  <Link to={res.code} className="font-medium text-blue-600 hover:underline dark:text-blue-500">View</Link>
-                </Table.Cell>
-              </Table.Row>
-            )
-          })}
-        </Table.Body>
-      </Table>
+      <div className="flex flex-row space-x-4 px-4">
+        {filterOpts.map((opt) => {
+          return (<Link
+            key={opt.days}
+            onClick={() => filterDay(opt.days)}
+            relative="route"
+            className={filterClass(opt.days)}
+          >
+            {opt.label}
+          </Link>)
+        })}
+      </div>
+      <div className="h-3/5 max-h-fit overflow-hidden">
+        <Table hoverable={true}>
+          <Table.Head>
+            <Table.HeadCell className="pr-1">
+              ChIn
+            </Table.HeadCell>
+            <Table.HeadCell className="px-1">
+              Details
+            </Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y">
+            {reservations.map((res) => {
+              return (
+                <Table.Row
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  key={res.id}
+                >
+                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                    <Moment format="DD.MM">{new Date(res.checkInDate)}</Moment>
+                  </Table.Cell>
+                  <Table.Cell className="sm:px-1 px-1 py-0.5">
+                    <div className="grid grid-cols-1">
+                      <Link
+                        to={res.id}
+                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                        className={!res.canceled ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
+                      >
+                        {res.guestName}
+                      </Link>
+                      <div className="flex flex-row text-sm space-x-1">
+                        <div className="w-24">
+                          <span>{res.code}</span>
+                        </div>
+                        <span className="font font-mono font-black w-8">{res.canceled ? "CAN" : "NEW"}</span>
+                        <span className="font font-mono font-black w-24">{res.channel}</span>
+                        <span className="font font-mono font-black">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
+                      </div>
+                    </div>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })}
+          </Table.Body>
+        </Table>
+      </div>
       <nav className="flex items-center justify-between pt-4" aria-label="Table navigation">
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span>
         <ul className="inline-flex items-center -space-x-px">
