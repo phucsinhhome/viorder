@@ -10,3 +10,7 @@
 
 .lefcol {
 }
+
+[data-testid="right-icon"] {
+  pointer-events: unset;
+}
