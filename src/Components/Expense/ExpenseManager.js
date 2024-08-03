@@ -5,60 +5,44 @@ import { deleteExpense, listExpenseByExpenserAndDate, newExpId } from "../../db/
 import Moment from "react-moment";
 import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
-import { classifyServiceByItemName, SERVICE_NAMES } from "../../Service/ItemClassificationService";
+import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
-import { dateToISODate, formatVND } from "../../Service/Utils";
+import { dateToISODate, formatISODate, formatVND } from "../../Service/Utils";
+import { PiBrainThin } from "react-icons/pi";
+import { FaRotate } from "react-icons/fa6";
 
 const defaultEmptExpense = {
-  "expenseDate": null,
-  "itemName": "",
-  "quantity": 1,
-  "unitPrice": 0,
-  "expenserName": null,
-  "expenserId": null,
-  "service": null,
-  "id": null,
-  "amount": 0
+  id: null,
+  expenseDate: formatISODate(new Date()),
+  itemName: "",
+  quantity: 1,
+  unitPrice: 0,
+  amount: 0,
+  expenserName: () => currentUserFullname(),
+  expenserId: () => currentUser.id,
+  service: ""
 }
 
-const intialExpense = () => {
-  var today = new Date()
-  return ({
-    "expenseDate": today.toISOString(),
-    "itemName": "",
-    "quantity": 1,
-    "unitPrice": 5000,
-    "expenserName": currentUser.first_name + " " + currentUser.last_name,
-    "expenserId": currentUser.id,
-    "service": "FOOD",
-    "id": null,
-    "amount": 5000
-  })
+const defaultEditingExpense = {
+  ...defaultEmptExpense,
+  formattedUnitPrice: "",
+  originItemName: "",
+  itemMessage: ""
 }
 const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
-
-const GEN_STATE = {
-  GENERATION_ERROR: "GENERATION_ERROR",
-  GENERATING: "GENERATING",
-  GENERATED: "GENERATED",
-  SAVING: "SAVING",
-  SAVED: "SAVED"
-}
 
 export const ExpenseManager = () => {
 
   const [expenses, setExpenses] = useState([defaultEmptExpense])
-
-  const [expense, setExpense] = useState(intialExpense())
-  const [genState, setGenState] = useState(undefined); // GENERATING -> GENERATED -> SAVING -> SAVED || GENERATION_ERROR
+  const [pGenState, setPGenState] = useState(false);
 
   const [openDelExpenseModal, setOpenDelExpenseModal] = useState(false)
   const [deletingExpense, setDeletingExpense] = useState(null)
 
   const [openEditingExpenseModal, setOpenEditingExpenseModal] = useState(false)
-  const [editingExpense, setEditingExpense] = useState(defaultEmptExpense)
+  const [editingExpense, setEditingExpense] = useState(defaultEditingExpense)
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -67,10 +51,7 @@ export const ExpenseManager = () => {
     totalPages: 20
   })
 
-  const [expenseMessage, setExpenseMessage] = useState("")
-  const [genError, setGenError] = useState("")
-
-  const inputRef = useRef(null)
+  const expMsgRef = useRef(null)
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
@@ -83,7 +64,7 @@ export const ExpenseManager = () => {
   const fetchData = (pageNumber, pageSize) => {
     let byDate = dateToISODate(new Date())
     let expenserId = (initialUser !== null && initialUser !== undefined) ? initialUser.id : null
-    listExpenseByExpenserAndDate(expenserId, byDate, pageNumber, pageSize)
+    return listExpenseByExpenserAndDate(expenserId, byDate, pageNumber, pageSize)
       .then(data => {
         let sortedExps = data.content
         setExpenses(sortedExps)
@@ -93,13 +74,12 @@ export const ExpenseManager = () => {
           totalElements: data.totalElements,
           totalPages: data.totalPages
         })
-        inputRef.current.focus()
+        return true
       })
   }
 
   useEffect(() => {
     console.log(location)
-    inputRef.current.focus()
     fetchData(location.state.pageNumber, location.state.pageSize)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,97 +92,33 @@ export const ExpenseManager = () => {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
-  const expMsgChange = (e) => {
-    setExpenseMessage(e.target.value)
-  }
-
-  const extractExpense = () => {
-    console.info("Extracting expense from message " + expenseMessage)
-    if (expenseMessage.length < 5) {
-      setGenState(GEN_STATE.GENERATION_ERROR)
-      setGenError("Message must be longer than 5 characters")
-      inputRef.current.focus()
-      return
-    }
-    setGenState(GEN_STATE.GENERATING)
-    run(expenseMessage)
+  const generateExpenseFromMessage = (msg) => {
+    return run(msg)
       .then(data => {
-        try {
-          console.info("Complete extracting expense message");
-          console.info(data);
-          let jsonD = JSON.parse(data)
+        console.info("Complete extracting expense from message %s", msg);
+        console.info(data);
+        let jsonD = JSON.parse(data)
 
-          let eE = jsonD.expenses[0]
+        let eE = jsonD.expenses[0]
 
-          let pr = parseInt(eE.price);
-          let qty = parseInt(eE.quantity);
-          let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
-          console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
-          var exp = {
-            ...expense,
-            id: null,
-            itemName: eE.item,
-            quantity: qty,
-            unitPrice: uP,
-            amount: pr,
-            service: eE.service,
-            expenseDate: new Date().toISOString(),
-            expenserId: currentUser.id,
-            expenserName: currentUserFullname()
-          }
-          if (eE.service === undefined || eE.service === null || !SERVICE_NAMES.includes(eE.service)) {
-            console.info("Re-classify the service...")
-            classifyServiceByItemName(exp.itemName)
-              .then(serv => {
-                exp.service = serv
-              })
-          }
-          setExpense(exp);
-          setGenState(GEN_STATE.GENERATED)
+        let pr = parseInt(eE.price);
+        let qty = parseInt(eE.quantity);
+        let uP = Math.floor(pr / qty); // Use Math.floor() if you prefer rounding down
+        console.info("Price: " + pr + ", Quantity: " + qty + ", Unit Price: " + uP)
+        var exp = {
+          // ...expense,
+          id: null,
+          itemName: eE.item,
+          quantity: qty,
+          unitPrice: uP,
+          amount: pr,
+          service: eE.service,
+          expenseDate: new Date().toISOString(),
+          expenserId: currentUser.id,
+          expenserName: currentUserFullname()
         }
-        catch (e) {
-          console.error(e)
-          setGenState(GEN_STATE.GENERATION_ERROR)
-          setGenError("Cannot generate expense")
-        }
-        finally {
-          // inputRef.current.focus()
-        }
+        return exp
       })
-  }
-
-  const handleCreateExpense = () => {
-    setGenState(GEN_STATE.SAVING)
-    try {
-      let exp = {
-        ...expense
-      }
-      if (expense.id === null || expense.id === "" || expense.id === "new") {
-        exp.id = newExpId()
-        setExpense(exp)
-        console.log("Adding new expense. Id [%s] was generated", exp.id)
-      }
-      console.info("Saving expense")
-      console.log(exp)
-      saveExpense(exp)
-        .then((resp) => {
-          if (resp.ok) {
-            console.log("Save expense %s successully", exp.id)
-            console.log(resp)
-            setExpenseMessage("")
-            fetchData(0, DEFAULT_PAGE_SIZE)
-          } else {
-            console.log("Failed to save expense %s", exp.id)
-            console.error(resp)
-          }
-        })
-    }
-    catch (e) {
-      console.error(e)
-    }
-    finally {
-      setGenState(GEN_STATE.SAVED)
-    }
   }
 
   const handleDeleteExpense = (exp) => {
@@ -248,15 +164,28 @@ export const ExpenseManager = () => {
     let eI = {
       ...exp,
       formattedUnitPrice: uP.formattedAmount,
-      originItemName: exp.itemName
+      originItemName: exp.itemName,
+      itemMessage: ""
     }
     setEditingExpense(eI)
     setOpenEditingExpenseModal(true)
   }
 
   const cancelEditingExpense = () => {
-    setEditingExpense(defaultEmptExpense)
-    setOpenEditingExpenseModal(false)
+    fetchData(0, DEFAULT_PAGE_SIZE)
+      .then(res => {
+        setEditingExpense(defaultEmptExpense)
+        setOpenEditingExpenseModal(false)
+      })
+  }
+
+  const changeItemMessage = (e) => {
+    let iMsg = e.target.value
+    let eI = {
+      ...editingExpense,
+      itemMessage: iMsg
+    }
+    setEditingExpense(eI)
   }
 
   const changeItemName = (e) => {
@@ -306,52 +235,98 @@ export const ExpenseManager = () => {
     setEditingExpense(eI)
   }
 
-  const handleUpdateExpense = () => {
+  const generatePopupExpense = () => {
+    let expMsg = editingExpense.itemMessage
+    console.info("Extracting expense from message %s", expMsg)
+    if (expMsg.length < 5) {
+      console.warn("Message must be longer than 5 characters")
+      return
+    }
+    setPGenState(true)
     try {
-      let exp = {
-        expenseDate: editingExpense.expenseDate,
-        itemName: editingExpense.itemName,
-        quantity: editingExpense.quantity,
-        unitPrice: editingExpense.unitPrice,
-        expenserName: editingExpense.expenserName,
-        expenserId: editingExpense.expenserId,
-        service: editingExpense.service,
-        id: editingExpense.id,
-        amount: editingExpense.amount
-      }
-      if (exp.id === null || exp.id === "" || exp.id === "new") {
-        exp.id = newExpId()
-        console.info("Generated the expense id %s", exp.id)
-      }
-      if (exp.expenseDate === null) {
-        let expDate = new Date().toISOString()
-        exp.expenseDate = expDate
-        console.info("Updated expense date to %s", expDate)
-      }
-      if (exp.expenserId === null) {
-        exp.expenserId = currentUser.id
-        exp.expenserName = currentUserFullname()
-        console.info("Updated expenser to %s", currentUser.id)
-      }
-      console.info("Save expense %s...", exp.id)
-      saveExpense(exp)
-        .then((resp) => {
-          if (resp.ok) {
-            console.log("Save expense %s successully", exp.id)
-            fetchData(0, DEFAULT_PAGE_SIZE)
-            setEditingExpense(defaultEmptExpense)
-          } else {
-            console.log("Failed to save expense %s", exp.id)
-            console.error(resp)
+      generateExpenseFromMessage(expMsg)
+        .then(exp => {
+          let uP = formatMoneyAmount(String(exp.unitPrice))
+          let eI = {
+            ...exp,
+            formattedUnitPrice: uP.formattedAmount,
+            originItemName: exp.itemName,
+            itemMessage: expMsg
           }
+          setEditingExpense(eI)
         })
+        .catch(e => {
+          console.error("Failed to generate expcetion from %s", expMsg, e)
+        })
+    } finally {
+      setPGenState(false)
     }
-    catch (e) {
-      console.error(e)
+  }
+
+  const processSaveExpense = () => {
+    let exp = {
+      expenseDate: editingExpense.expenseDate,
+      itemName: editingExpense.itemName,
+      quantity: editingExpense.quantity,
+      unitPrice: editingExpense.unitPrice,
+      expenserName: editingExpense.expenserName,
+      expenserId: editingExpense.expenserId,
+      service: editingExpense.service,
+      id: editingExpense.id,
+      amount: editingExpense.amount
     }
-    finally {
-      setOpenEditingExpenseModal(false)
+    if (exp.id === null || exp.id === "" || exp.id === "new") {
+      exp.id = newExpId()
+      console.info("Generated the expense id %s", exp.id)
     }
+    if (exp.expenseDate === null) {
+      let expDate = new Date().toISOString()
+      exp.expenseDate = expDate
+      console.info("Updated expense date to %s", expDate)
+    }
+    if (exp.expenserId === null) {
+      exp.expenserId = currentUser.id
+      exp.expenserName = currentUserFullname()
+      console.info("Updated expenser to %s", currentUser.id)
+    }
+    console.info("Save expense %s...", exp.id)
+    return saveExpense(exp)
+      .then((resp) => {
+        if (resp.ok) {
+          console.log("Save expense %s successully", exp.id)
+          return true
+        } else {
+          console.log("Failed to save expense %s", exp.id)
+          console.error(resp)
+          return false
+        }
+      })
+  }
+
+  const handleSaveAndCompleteExpense = () => {
+    processSaveExpense()
+      .then(res => {
+        if (res) {
+          setEditingExpense(defaultEditingExpense)
+          cancelEditingExpense()
+        }
+      })
+      .catch(e => {
+        console.error("Failed to save expense", e)
+      })
+  }
+
+  const handleSaveAndContinueExpense = () => {
+    processSaveExpense()
+      .then(res => {
+        if (res) {
+          setEditingExpense(defaultEditingExpense)
+          expMsgRef.current.focus()
+        }
+      })
+      .catch(e => {
+        console.error("Failed to save expense", e)
+      })
   }
 
   return (
@@ -373,88 +348,6 @@ export const ExpenseManager = () => {
             className="font-bold text-amber-800"
           >
             Add Expense
-          </span>
-        </div>
-      </div>
-      <div>
-        <form className="flex flex-wrap mx-1">
-          <div className="w-full px-1 mb-0">
-            <div className="flex flex-wrap -mx-3">
-              <div className="w-full md:w-1/2 px-3 md:mb-0 dark:text-white">
-                <Label
-                  htmlFor="expense_message"
-                  value="Message contains the expense"
-                  className="font dark:text-white"
-                />
-              </div>
-              <div className="flex flex-row w-full px-3 md:mb-0 space-x-2">
-                <TextInput
-                  id="expense_message"
-                  placeholder="5kg sugar 450k"
-                  required={true}
-                  value={expenseMessage}
-                  onChange={expMsgChange}
-                  className="w-full"
-                  ref={inputRef}
-                />
-                <div className="flex flex-col justify-center w-8">
-                  <svg
-                    className="w-7 h-7 text-blue-800 dark:text-white"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 22 20"
-                    hidden={genState === "GENERATING"}
-                    onClick={extractExpense}
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M11 16.5A2.493 2.493 0 0 1 6.51 18H6.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .921-3.182 2.477 2.477 0 0 1 1.875-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 11 3.5m0 13v-13m0 13a2.492 2.492 0 0 0 4.49 1.5h.01a2.467 2.467 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.479 2.479 0 0 0-1.875-3.344A2.5 2.5 0 0 0 13.5 1 2.5 2.5 0 0 0 11 3.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M19 8.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"
-                    />
-                  </svg>
-                  <Spinner
-                    aria-label="Default status example"
-                    hidden={genState !== "GENERATING"}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-        <div
-          className="flex flex-row w-full text-sm space-x-2 px-2 mb-3 opacity-80 font text-gray-600 dark:text-white"
-        >
-          <span
-            className="text-brown-600 font-bold"
-            hidden={genState === undefined || genState === "GENERATING"}
-          >Gen:
-          </span>
-          <span
-            className="font italic"
-            hidden={genState === undefined || genState === "GENERATING" || genState === "GENERATION_ERROR"}
-          >{expense.quantity + ", " + expense.itemName + ", " + expense.amount + ", " + expense.service}
-          </span>
-          <span
-            className="font italic text-red-700"
-            hidden={genState !== "GENERATION_ERROR"}
-          >{genError}
-          </span>
-          <span
-            onClick={handleCreateExpense}
-            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-            className="text-brown-600 dark:text-white-500 font-bold"
-            hidden={genState !== "GENERATED"}
-          >
-            Save
-          </span>
-          <span
-            state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-            className="text-green-600-600 dark:text-white-500 font-bold"
-            hidden={genState !== "SAVED"}
-          >
-            Saved
           </span>
         </div>
       </div>
@@ -559,18 +452,41 @@ export const ExpenseManager = () => {
         size="md"
         popup={true}
         onClose={cancelEditingExpense}
+        initialFocus={expMsgRef}
       >
         <Modal.Header />
         <Modal.Body>
           <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
-            <div>
+            <div className="flex flex-col w-full">
+              <TextInput
+                id="itemMsg"
+                placeholder="3 ổ bánh mì 6k"
+                required={true}
+                value={editingExpense.itemMessage}
+                onChange={changeItemMessage}
+                className="w-full"
+                rightIcon={() => pGenState ? <Spinner /> : <PiBrainThin
+                  onClick={() => generatePopupExpense()}
+                  className="pointer-events-auto cursor-pointer"
+                  width={16} />}
+                ref={expMsgRef}
+              />
+            </div>
+            <div className="flex flex-row w-full align-middle">
+              <div className="flex items-center w-2/5">
+                <Label
+                  htmlFor="itemName"
+                  value="Item Name"
+                />
+              </div>
               <TextInput
                 id="itemName"
-                placeholder="Item name"
+                placeholder="Bánh mì"
                 required={true}
                 value={editingExpense.itemName}
                 onChange={changeItemName}
                 onBlur={blurItemName}
+                className="w-full"
               />
             </div>
             <div className="flex flex-row w-full align-middle">
@@ -599,15 +515,15 @@ export const ExpenseManager = () => {
                   value="Quantity"
                 />
               </div>
-              <div class="relative flex items-center w-full">
+              <div className="relative flex items-center w-full">
                 <button
                   type="button"
                   id="decrement-button"
                   data-input-counter-decrement="quantity-input"
-                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                   onClick={() => changeQuantity(-1)}
                 >
-                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
                   </svg>
                 </button>
@@ -615,7 +531,7 @@ export const ExpenseManager = () => {
                   type="number"
                   id="quantity-input"
                   data-input-counter aria-describedby="helper-text-explanation"
-                  class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="999"
                   required
                   value={editingExpense.quantity}
@@ -625,10 +541,10 @@ export const ExpenseManager = () => {
                   type="button"
                   id="increment-button"
                   data-input-counter-increment="quantity-input"
-                  class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                  className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                   onClick={() => changeQuantity(1)}
                 >
-                  <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                  <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
                   </svg>
                 </button>
@@ -651,11 +567,24 @@ export const ExpenseManager = () => {
                   value="Service"
                 />
               </div>
-              <span className="w-full">{editingExpense.service}</span>
+              <TextInput
+                id="service"
+                placeholder="STAY TOUR or FOOD"
+                value={editingExpense.service}
+                readOnly
+                rightIcon={() => (<FaRotate
+                  onClick={() => blurItemName()}
+                  className="pointer-events-auto cursor-pointer"
+                  width={16} />)}
+                className="w-full"
+              />
             </div>
             <div className="w-full flex justify-center">
-              <Button onClick={handleUpdateExpense} className="mx-2">
-                Save
+              <Button onClick={handleSaveAndCompleteExpense} className="mx-2">
+                Save & Close
+              </Button>
+              <Button onClick={handleSaveAndContinueExpense} className="mx-2">
+                Save & Continue
               </Button>
               <Button onClick={cancelEditingExpense} className="mx-2">
                 Cancel
