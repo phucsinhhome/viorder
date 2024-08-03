@@ -17,7 +17,7 @@ const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
 }
 
-const internalRooms = (rooms) => {
+export const internalRooms = (rooms) => {
   return rooms.map(r => r.internalRoomName)
 }
 
