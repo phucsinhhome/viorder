@@ -36,7 +36,8 @@ const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 export const ExpenseManager = () => {
 
   const [expenses, setExpenses] = useState([defaultEmptExpense])
-  const [pGenState, setPGenState] = useState(false);
+  const [generatingExp, setGeneratingExp] = useState(false);
+  const [classifyingExp, setClassifyingExp] = useState(false);
 
   const [openDelExpenseModal, setOpenDelExpenseModal] = useState(false)
   const [deletingExpense, setDeletingExpense] = useState(null)
@@ -197,11 +198,21 @@ export const ExpenseManager = () => {
     setEditingExpense(eI)
   }
 
+  const changeService = (e) => {
+    let iName = e.target.value
+    let eI = {
+      ...editingExpense,
+      service: iName
+    }
+    setEditingExpense(eI)
+  }
+
   const blurItemName = () => {
     let nItemName = editingExpense.itemName
-    if (nItemName === null || nItemName === undefined || nItemName === "" || nItemName === editingExpense.originItemName) {
+    if (nItemName === null || nItemName === undefined || nItemName === "") {
       return;
     }
+    setClassifyingExp(true)
     console.log("Classify the service by expense name [%s]", nItemName)
     classifyServiceByItemName(nItemName)
       .then((srv) => {
@@ -210,6 +221,7 @@ export const ExpenseManager = () => {
           service: srv
         }
         setEditingExpense(nexItem)
+        setClassifyingExp(false)
       })
   }
 
@@ -242,25 +254,22 @@ export const ExpenseManager = () => {
       console.warn("Message must be longer than 5 characters")
       return
     }
-    setPGenState(true)
-    try {
-      generateExpenseFromMessage(expMsg)
-        .then(exp => {
-          let uP = formatMoneyAmount(String(exp.unitPrice))
-          let eI = {
-            ...exp,
-            formattedUnitPrice: uP.formattedAmount,
-            originItemName: exp.itemName,
-            itemMessage: expMsg
-          }
-          setEditingExpense(eI)
-        })
-        .catch(e => {
-          console.error("Failed to generate expcetion from %s", expMsg, e)
-        })
-    } finally {
-      setPGenState(false)
-    }
+    setGeneratingExp(true)
+    generateExpenseFromMessage(expMsg)
+      .then(exp => {
+        let uP = formatMoneyAmount(String(exp.unitPrice))
+        let eI = {
+          ...exp,
+          formattedUnitPrice: uP.formattedAmount,
+          originItemName: exp.itemName,
+          itemMessage: expMsg
+        }
+        setEditingExpense(eI)
+        setGeneratingExp(false)
+      })
+      .catch(e => {
+        console.error("Failed to generate expcetion from %s", expMsg, e)
+      })
   }
 
   const processSaveExpense = () => {
@@ -465,10 +474,15 @@ export const ExpenseManager = () => {
                 value={editingExpense.itemMessage}
                 onChange={changeItemMessage}
                 className="w-full"
-                rightIcon={() => pGenState ? <Spinner /> : <PiBrainThin
-                  onClick={() => generatePopupExpense()}
-                  className="pointer-events-auto cursor-pointer"
-                  width={16} />}
+                rightIcon={() => generatingExp ?
+                  <Spinner aria-label="Default status example"
+                    className="w-14 h-10"
+                  />
+                  : <PiBrainThin
+                    onClick={() => generatePopupExpense()}
+                    className="pointer-events-auto cursor-pointer w-14 h-10"
+                  />
+                }
                 ref={expMsgRef}
               />
             </div>
@@ -572,10 +586,17 @@ export const ExpenseManager = () => {
                 placeholder="STAY TOUR or FOOD"
                 value={editingExpense.service}
                 readOnly
-                rightIcon={() => (<FaRotate
-                  onClick={() => blurItemName()}
-                  className="pointer-events-auto cursor-pointer"
-                  width={16} />)}
+                required
+                onChange={changeService}
+                rightIcon={() => classifyingExp ?
+                  <Spinner aria-label="Default status example"
+                    className="w-8 h-8"
+                  /> :
+                  <FaRotate
+                    onClick={blurItemName}
+                    className="pointer-events-auto cursor-pointer w-10 h-8"
+                  />
+                }
                 className="w-full"
               />
             </div>
