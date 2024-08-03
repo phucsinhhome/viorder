@@ -9,13 +9,13 @@ import { classifyServiceByItemName } from "../../Service/ItemClassificationServi
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { formatMoneyAmount } from "../Invoice/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
-import { formatISODate, formatVND } from "../../Service/Utils";
+import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
 import { PiBrainThin } from "react-icons/pi";
 import { FaRotate } from "react-icons/fa6";
 
 const defaultEmptExpense = {
   id: null,
-  expenseDate: formatISODate(new Date()),
+  expenseDate: formatISODateTime(new Date()),
   itemName: "",
   quantity: 1,
   unitPrice: 0,
@@ -113,7 +113,7 @@ export const ExpenseManager = () => {
           unitPrice: uP,
           amount: pr,
           service: eE.service,
-          expenseDate: formatISODate(new Date()),
+          expenseDate: formatISODateTime(new Date()),
           expenserId: currentUser.id,
           expenserName: currentUserFullname()
         }
@@ -288,7 +288,7 @@ export const ExpenseManager = () => {
       console.info("Generated the expense id %s", exp.id)
     }
     if (exp.expenseDate === null) {
-      let expDate = formatISODate(new Date())
+      let expDate = formatISODateTime(new Date())
       exp.expenseDate = expDate
       console.info("Updated expense date to %s", expDate)
     }
