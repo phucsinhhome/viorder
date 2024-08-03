@@ -1,7 +1,3 @@
-export const dateToISODate = (date) => {
-    return new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
-}
-
 export const formatVND = (amount) => {
     return amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })
 }
@@ -48,6 +44,9 @@ export const formatShortDate = (date) => {
 
 export const formatISODate = (date) => {
     // Format: 2024-07-30
+    // Input: Date('Tue Aug 27 2024 00:00:00 GMT+0700') => Output: 2024-08-26
+    // Input: Date('2024-08-27') => Output: 2024-08-27
+    // Note: this will convert the date time to UTC. So, add the zoned time, so it will keep the same date
     return date.toISOString().substring(0, 10)
 }
 

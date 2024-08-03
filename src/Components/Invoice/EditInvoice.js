@@ -6,7 +6,7 @@ import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-rea
 import { getPresignedLink } from "../../Service/FileService";
 import { HiOutlineCash } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { addDays, dateToISODate, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
+import { addDays, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
@@ -40,8 +40,8 @@ export const EditInvoice = () => {
       issuer: currentUserFullname(),
       issuerId: currentUser.id,
       subTotal: 0,
-      checkInDate: dateToISODate(new Date()),
-      checkOutDate: dateToISODate(new Date()),
+      checkInDate: formatISODate(new Date()),
+      checkOutDate: formatISODate(new Date()),
       prepaied: false,
       paymentMethod: null,
       reservationCode: null,
@@ -54,6 +54,7 @@ export const EditInvoice = () => {
 
   const [openGuestNameModal, setOpenGuestNameModal] = useState(false)
   const [editingGuestName, setEditingGuestName] = useState(null)
+  const guestNameTextInput = useRef(null)
 
   const [openEditDateModal, setOpenEditDateModal] = useState(false)
   const [editingDate, setEditingDate] = useState({ dateField: null, value: new Date() })
@@ -79,6 +80,7 @@ export const EditInvoice = () => {
   const [reservations, setReservations] = useState([])
   const [filteredReservations, setFilteredReservations] = useState([])
   const [resFilteredText, setResFilteredText] = useState('')
+  const filteredResText = useRef(null)
 
   const [openRoomModal, setOpenRoomModal] = useState(false)
   const [selectedRooms, setSelectedRooms] = useState([])
@@ -314,25 +316,44 @@ export const EditInvoice = () => {
   }
   //============ CHECK IN-OUT ====================//
   const editDate = (e) => {
-    let dId = e.target.id
-    setEditingDate({ dateField: dId, value: invoice[dId] })
+    let dId = e
+    console.info("ID: %s", dId)
+    let eD = {
+      dateField: dId,
+      value: new Date(invoice[dId])
+    }
+    console.log(eD)
+    setEditingDate(eD)
     setOpenEditDateModal(true)
   }
 
   const changeEditingDate = (date) => {
+    console.info("Selected date")
+    let now = new Date()
+    // Note: set the current time ( >= 07:00) to convert to ISO date does not change the date
+    let selectedDate = new Date(date.setHours(now.getHours(), 0, 0))
+    console.log(selectedDate)
     const nInv = {
       ...invoice,
-      [editingDate.dateField]: dateToISODate(date)
+      [editingDate.dateField]: formatISODate(selectedDate)
     }
     setInvoice(nInv)
-    setEditingDate({ dateField: null, value: new Date() })
+    let eD = {
+      dateField: null,
+      value: new Date()
+    }
+    setEditingDate(eD)
     setOpenEditDateModal(false)
     setDirty(true)
   }
 
 
   const cancelEditDate = () => {
-    setEditingDate({ dateField: null, value: new Date() })
+    let eD = {
+      dateField: null,
+      value: new Date()
+    }
+    setEditingDate(eD)
     setOpenEditDateModal(false)
   }
 
@@ -512,13 +533,6 @@ export const EditInvoice = () => {
   }
 
   //================ ADD INVOICE ==========================//
-  // const chooseRes = () => {
-  //   fetchReservations().then(data => {
-  //     setReservations(data.content)
-  //     setOpenChooseResModal(true)
-  //   })
-  // }
-
   const cancelChooseRes = () => {
     confirmNoRes()
   }
@@ -531,8 +545,8 @@ export const EditInvoice = () => {
         guestName: res.guestName,
         issuer: currentUserFullname(),
         issuerId: currentUser.id,
-        checkInDate: dateToISODate(new Date(res.checkInDate)),
-        checkOutDate: dateToISODate(new Date(res.checkOutDate)),
+        checkInDate: formatISODate(new Date(res.checkInDate)),
+        checkOutDate: formatISODate(new Date(res.checkOutDate)),
         prepaied: false,
         paymentMethod: null,
         paymentPhotos: [],
@@ -568,8 +582,8 @@ export const EditInvoice = () => {
         guestName: config.initialInvoice.guestName,
         issuer: currentUserFullname(),
         issuerId: currentUser.id,
-        checkInDate: dateToISODate(new Date()),
-        checkOutDate: dateToISODate(addDays(new Date(), 1)),
+        checkInDate: formatISODate(new Date()),
+        checkOutDate: formatISODate(addDays(new Date(), 1)),
         prepaied: false,
         paymentMethod: null,
         paymentPhotos: [],
@@ -729,7 +743,7 @@ export const EditInvoice = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                   id="checkInDate"
-                  onClick={editDate}
+                  onClick={() => editDate("checkInDate")}
                 >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
@@ -749,7 +763,7 @@ export const EditInvoice = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                   id="checkOutDate"
-                  onClick={editDate}
+                  onClick={() => editDate("checkOutDate")}
                 >
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
@@ -955,7 +969,7 @@ export const EditInvoice = () => {
           </Table>
         </div>
 
-        <Modal show={openGuestNameModal} onClose={cancelEditGuestName}>
+        <Modal show={openGuestNameModal} onClose={cancelEditGuestName} initialFocus={guestNameTextInput}>
           <Modal.Header>Guest name</Modal.Header>
           <Modal.Body>
             <div className="text-center">
@@ -963,6 +977,7 @@ export const EditInvoice = () => {
                 <TextInput
                   value={editingGuestName}
                   onChange={changeGuestName}
+                  ref={guestNameTextInput}
                 />
               </p>
             </div>
@@ -983,14 +998,14 @@ export const EditInvoice = () => {
           <Modal.Header />
           <Modal.Body>
             <div className="text-center">
-              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <Datepicker
-                  onSelectedDateChanged={(date) => changeEditingDate(date)}
-                  id="checkInDate"
-                  defaultChecked={true}
-                  inline
-                />
-              </p>
+              <div className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                Current value <span className="font font-bold">{editingDate ? formatISODate(editingDate.value) : ""}</span>
+              </div>
+              <Datepicker
+                onSelectedDateChanged={(date) => changeEditingDate(date)}
+                id="checkInDate"
+                inline
+              />
             </div>
           </Modal.Body>
           <Modal.Footer className="flex justify-center gap-4">
@@ -1088,18 +1103,8 @@ export const EditInvoice = () => {
                   required={true}
                   value={editingItem.itemName}
                   onChange={changeItemName}
-                // onBlur={blurItemName}
                 />
-                {/* ================= LOOKUP ITEMs=========================== */}
                 <Table hoverable>
-                  {/* <Table.Head>
-                    <Table.HeadCell className="pr-1">
-                      Check In
-                    </Table.HeadCell>
-                    <Table.HeadCell className="pr-1">
-                      Guest Details
-                    </Table.HeadCell>
-                  </Table.Head> */}
                   <Table.Body className="divide-y">
                     {lookupItems.map((item) => {
                       return (
@@ -1108,9 +1113,6 @@ export const EditInvoice = () => {
                           key={item.id}
                           onClick={() => confirmSelectItem(item)}
                         >
-                          {/* <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
-                            <span>{item.id}</span>
-                          </Table.Cell> */}
                           <Table.Cell className="sm:px-1 px-1 py-0.5">
                             <div className="grid grid-cols-1">
                               <span
@@ -1122,7 +1124,6 @@ export const EditInvoice = () => {
                                 <div className="w-24">
                                   <span>{formatVND(item.unitPrice)}</span>
                                 </div>
-                                {/* <span className="font font-mono font-black">{item.channel}</span> */}
                               </div>
                             </div>
                           </Table.Cell>
@@ -1216,7 +1217,7 @@ export const EditInvoice = () => {
                 <svg xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   className="w-8 h-8"
                   onClick={blurItemName}
@@ -1346,14 +1347,15 @@ export const EditInvoice = () => {
         </Modal.Body>
       </Modal>
 
-      <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible>
-        <Modal.Header></Modal.Header>
+      <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible initialFocus={filteredResText}>
+        <Modal.Header>Choose reservation</Modal.Header>
         <Modal.Body>
           <div className="w-full">
             <TextInput
               value={resFilteredText}
               onChange={changeResFilteredText}
               placeholder="Guest name"
+              ref={filteredResText}
             />
           </div>
           <div className="flex flex-col overflow-scroll w-full">
@@ -1370,10 +1372,10 @@ export const EditInvoice = () => {
                 {filteredReservations.map((res) => {
                   return (
                     <Table.Row
-                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                      className="bg-white"
                       key={res.id}
                     >
-                      <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                      <Table.Cell className=" pr-1 py-0.5">
                         <Moment format="DD.MM">{new Date(res.checkInDate)}</Moment>
                       </Table.Cell>
                       <Table.Cell className="sm:px-1 px-1 py-0.5">
@@ -1388,8 +1390,8 @@ export const EditInvoice = () => {
                             <div className="w-24">
                               <span>{res.code}</span>
                             </div>
-                            <span className="font font-mono font-black">{res.channel}</span>
-                            <span className="font font-mono font-black">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
+                            <span className="font font-mono font-black w-24">{res.channel}</span>
+                            <span className="font font-mono font-black text-amber-700">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
                           </div>
                         </div>
                       </Table.Cell>
@@ -1398,11 +1400,10 @@ export const EditInvoice = () => {
                 })}
               </Table.Body>
             </Table>
-
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmNoRes}>No Book</Button>
+          <Link onClick={confirmNoRes}>No Book</Link>
           <Link to={"../invoice"}>Cancel</Link>
         </Modal.Footer>
       </Modal>

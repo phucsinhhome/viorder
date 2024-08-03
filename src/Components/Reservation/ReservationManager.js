@@ -4,16 +4,19 @@ import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
 import Moment from "react-moment";
 import { internalRooms } from "../Invoice/EditInvoice";
+import { addDays, formatISODate } from "../../Service/Utils";
+import { DEFAULT_PAGE_SIZE } from "../../App";
 
 
 export function ReservationManager() {
   const [reservations, setReservations] = useState([
     {
-      "code": "000000000000000000",
-      "guestName": "",
-      "country": "",
-      "channel": "",
-      "numOfGuest": 0,
+      id: null,
+      code: "000000000000000000",
+      guestName: "",
+      country: "",
+      channel: "",
+      numOfGuest: 0,
       canceled: false,
       checkInDate: "",
       checkOutDate: "",
@@ -28,15 +31,13 @@ export function ReservationManager() {
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZE,
     totalElements: 200,
     totalPages: 20
   })
 
   const filterDay = (numDays) => {
-
-    var newDate = Date.now() + numDays * 86400000
-    var newDD = new Date(newDate)
+    var newDD = addDays(new Date(), numDays)
     console.info("Change filter date to %s", newDD.toISOString())
     setFromDate(newDD)
     setDeltaDays(numDays)
@@ -52,10 +53,9 @@ export function ReservationManager() {
 
   const fetchReservations = (fromDate, pageNumber, pageSize) => {
 
-    var toDate = new Date(new Date(fromDate).getTime() + 20 * 86400000) // 20 days ahead of fromDate
-
-    var fd = fromDate.toISOString().split('T')[0]
-    var td = toDate.toISOString().split('T')[0]
+    var toDate = addDays(fromDate, 20)
+    var fd = formatISODate(fromDate)
+    var td = formatISODate(toDate)
     console.info("Loading reservations from date [%s] to [%s]...", fd, td)
 
     listLatestReservations(fd, td, pageNumber, pageSize)
@@ -72,7 +72,7 @@ export function ReservationManager() {
   }
 
   useEffect(() => {
-    fetchReservations(new Date(), 0, 10);
+    fetchReservations(new Date(), 0, DEFAULT_PAGE_SIZE);
   }, []);
 
   const filterOpts = [
@@ -146,16 +146,15 @@ export function ReservationManager() {
             {reservations.map((res) => {
               return (
                 <Table.Row
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  className="bg-white"
                   key={res.id}
                 >
-                  <Table.Cell className="flex flex-wrap font-medium text-gray-900 dark:text-white pr-1 py-0.5">
+                  <Table.Cell className="sm:px-1 pr-1 py-0.5">
                     <Moment format="DD.MM">{new Date(res.checkInDate)}</Moment>
                   </Table.Cell>
                   <Table.Cell className="sm:px-1 px-1 py-0.5">
                     <div className="grid grid-cols-1">
                       <Link
-                        to={res.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
                         className={!res.canceled ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
                       >
@@ -167,7 +166,7 @@ export function ReservationManager() {
                         </div>
                         <span className="font font-mono font-black w-8">{res.canceled ? "CAN" : "NEW"}</span>
                         <span className="font font-mono font-black w-24">{res.channel}</span>
-                        <span className="font font-mono font-black">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
+                        <span className="font font-mono font-black text-amber-700">{res.rooms ? internalRooms(res.rooms).join(',') : ""}</span>
                       </div>
                     </div>
                   </Table.Cell>
