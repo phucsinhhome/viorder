@@ -398,7 +398,8 @@ export const ExpenseManager = () => {
                           <span>{formatVND(exp.amount)}</span>
                         </div>
 
-                        <span className="font font-mono font-black">{exp.service}</span>
+                        <span className="font font-mono font-black w-20">{exp.service}</span>
+                        <span className="font font-mono font-thin text-gray-320 italic">{(initialUser !== null && initialUser !== undefined)?"":exp.expenserId}</span>
                       </div>
                     </div>
                   </Table.Cell>
