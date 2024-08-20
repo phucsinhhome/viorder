@@ -3,7 +3,7 @@ import { listLatestReservations } from "../../db/reservation";
 import { Link } from "react-router-dom";
 import { Table } from "flowbite-react";
 import Moment from "react-moment";
-import { internalRooms } from "../Invoice/EditInvoice";
+import { Configs, internalRooms } from "../Invoice/EditInvoice";
 import { addDays, formatISODate } from "../../Service/Utils";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 
@@ -53,7 +53,7 @@ export function ReservationManager() {
 
   const fetchReservations = (fromDate, pageNumber, pageSize) => {
 
-    var toDate = addDays(fromDate, 20)
+    var toDate = addDays(fromDate, Configs.reservation.fetchDays)
     var fd = formatISODate(fromDate)
     var td = formatISODate(toDate)
     console.info("Loading reservations from date [%s] to [%s]...", fd, td)
@@ -161,7 +161,7 @@ export function ReservationManager() {
                         {res.guestName}
                       </Link>
                       <div className="flex flex-row text-sm space-x-1">
-                        <div className="w-24">
+                        <div className="w-28">
                           <span>{res.code}</span>
                         </div>
                         <span className="font font-mono font-black w-8">{res.canceled ? "CAN" : "NEW"}</span>

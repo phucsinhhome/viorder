@@ -21,15 +21,20 @@ export const internalRooms = (rooms) => {
   return rooms.map(r => r.internalRoomName)
 }
 
-const config = {
-  initialInvoice: {
-    guestName: 'Guest Name'
+export const Configs = {
+  reservation: {
+    fetchDays: 300
   },
-  fetchedRes: {
-    backwardDays: -3,
-    forwardDays: 20,
-    max: 100
+  invoice: {
+    initialInvoice: {
+      guestName: 'Guest Name'
+    },
+    fetchedReservation: {
+      backwardDays: -3,
+      max: 100
+    }
   }
+
 }
 
 export const EditInvoice = () => {
@@ -126,7 +131,7 @@ export const EditInvoice = () => {
     if (invoice.guestName === null
       || invoice.guestName === undefined
       || invoice.guestName === ""
-      || invoice.guestName === config.initialInvoice.guestName) {
+      || invoice.guestName === Configs.invoice.initialInvoice.guestName) {
       console.warn("Invalid guest name")
       editGuestName()
       return
@@ -579,7 +584,7 @@ export const EditInvoice = () => {
       let invId = currentUser.id + (Date.now() % 10000000)
       let inv = {
         id: currentUser.id + new Date().getTime(),
-        guestName: config.initialInvoice.guestName,
+        guestName: Configs.invoice.initialInvoice.guestName,
         issuer: currentUserFullname(),
         issuerId: currentUser.id,
         checkInDate: formatISODate(new Date()),
@@ -612,15 +617,15 @@ export const EditInvoice = () => {
   }
 
   const fetchReservations = () => {
-    let nextDays = config.fetchedRes.forwardDays
-    let fromDate = addDays(new Date(), config.fetchedRes.backwardDays)
+    let nextDays = Configs.reservation.fetchDays
+    let fromDate = addDays(new Date(), Configs.invoice.fetchedReservation.backwardDays)
     var toDate = addDays(fromDate, nextDays) // 20 days ahead of fromDate
 
     var fD = formatISODate(fromDate)
     var tD = formatISODate(toDate)
     console.info("Loading reservations from %s to next %d days...", fD, nextDays)
 
-    return listLatestReservations(fD, tD, 0, config.fetchedRes.max)
+    return listLatestReservations(fD, tD, 0, Configs.invoice.fetchedReservation.max)
   }
 
   const changeResFilteredText = (e) => {
