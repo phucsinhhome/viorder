@@ -419,6 +419,21 @@ export const EditInvoice = () => {
     }
   }
 
+  //============ PREPAIED CHANGE ====================//
+  const changePrepaied = (e) => {
+    try {
+      let nInv = {
+        ...invoice,
+        prepaied: !invoice.prepaied
+      }
+      setInvoice(nInv)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setDirty(true)
+    }
+  }
+
   //================= EDIT ITEM ===================//
   const editItem = (item) => {
     let uP = formatMoneyAmount(String(item.unitPrice))
@@ -796,7 +811,7 @@ export const EditInvoice = () => {
             </div>
 
             <div className="flex flex-wrap -mx-3 mb-3">
-              <div className="w-1/2 px-3 flex flex-row items-center">
+              <div className="w-1/3 px-3 flex flex-row items-center">
                 <div>{selectedPaymentMethod.src}</div>
                 <Label
                   id="paymentMethod"
@@ -817,7 +832,27 @@ export const EditInvoice = () => {
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
-              <div className="w-1/2 px-3 flex flex-row items-center">
+              <div className="w-1/3 px-3 flex flex-row items-center">
+                <Label
+                  id="prepaied"
+                  value={invoice.prepaied?"TT":"TS"}
+                  className="pr-2"
+                />
+                <svg
+                  className="w-[16px] h-[16px] text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  id="checkOutDate"
+                  onClick={changePrepaied}
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                </svg>
+              </div>
+              <div className="w-1/3 px-3 flex flex-row items-center">
                 <Label
                   id="totalAmount"
                   placeholder="100000"
