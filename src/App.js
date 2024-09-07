@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { ProfitReport } from "./Components/Profit/ProfitReport"
 import { InvoiceManager } from "./Components/Invoice/InvoiceManager"
@@ -8,6 +8,8 @@ import { ExpenseManager } from "./Components/Expense/ExpenseManager";
 import { EditExpense } from "./Components/Expense/EditExpense";
 import { ReservationManager } from "./Components/Reservation/ReservationManager";
 import { EditReservation } from "./Components/Reservation/EditReservation";
+import { Settings } from "./Components/Settings/Settings";
+import { IoMdSettings } from "react-icons/io";
 
 const tele = window.Telegram.WebApp;
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
@@ -26,6 +28,8 @@ export const currentUserFullname = () => {
 
 export default function App() {
 
+  const [syncing, setSyncing] = useState(false)
+
   useEffect(() => {
     document.title = "PMS"
     tele.ready();
@@ -40,10 +44,15 @@ export default function App() {
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
-          <Link to="profit" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link>
-          <Link to="invoice" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
-          <Link to="expenses" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
-          <Link to="reservation" className="w-1/4 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link>
+          <Link to="profit" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link>
+          <Link to="invoice" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
+          <Link to="expenses" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
+          <Link to="reservation" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link>
+          <Link to="settings" className="absolute right-2">
+            <IoMdSettings
+              className="pointer-events-auto cursor-pointer w-14 h-7"
+            />
+          </Link>
         </div>
         <Routes>
           <Route path="profit" element={<ProfitReport />} />
@@ -53,6 +62,7 @@ export default function App() {
           <Route path="expenses/:expenseId" element={<EditExpense />} />
           <Route path="reservation" element={<ReservationManager />} />
           <Route path="reservation/:reservationId" element={<EditReservation />} />
+          <Route path="settings" element={<Settings syncing={syncing} changeSyncing={(n) => setSyncing(n)} />} />
         </Routes>
       </Router>
       <div className="absolute top-0 right-0 flex flex-col mt-10 mr-2 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">

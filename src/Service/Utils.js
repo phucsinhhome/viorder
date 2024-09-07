@@ -58,6 +58,19 @@ export const formatISODateTime = (date) => {
     return date.toISOString().substring(0, 19)
 }
 
+export const formatDatePartition = (date) => {
+    // Format: 2024/07/30
+    var isoDateString = formatISODate(date)
+    return isoDateString.replaceAll("-","/")
+}
+
+export const formatMonthPartition = (date) => {
+    // Format: 2024/07/30
+    var isoDateString = formatISODate(date)
+    var dateString = isoDateString.substring(0, "2024-07".length)
+    return dateString.replaceAll("-","/")
+}
+
 const date2DigitOptions = { year: 'numeric', month: '2-digit', day: 'numeric' }
 export const format2DigitDate = (date) => {
     // Format: 07/30/2024
