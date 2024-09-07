@@ -12,6 +12,7 @@ import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
 import { listLatestReservations } from "../../db/reservation";
 import { listAllProducts } from "../../db/product";
+import html2canvas from "html2canvas";
 
 const getInvDownloadLink = (key, cbF) => {
   getPresignedLink('invoices', key, 300, cbF)
@@ -687,6 +688,35 @@ export const EditInvoice = () => {
     setOpenRoomModal(false)
   }
 
+  //================ SHARED INVOICE ==========================//
+  const sharedInvRef = useRef()
+  const copySharedInv = async () => {
+    const element = sharedInvRef.current;
+    const canvas = await html2canvas(element);
+
+    const { ClipboardItem } = window;
+    // const data = canvas.toBlob(
+    //   ()=>{},
+    //   'image/jpg')
+    canvas.toBlob((blob) => {
+      const clipboardData = new ClipboardItem({ [blob.type]: blob })
+      navigator.clipboard.write([clipboardData])
+    })
+
+    // const link = document.createElement('a');
+
+    // if (typeof link.download === 'string') {
+    //   link.href = data;
+    //   link.download = 'image.jpg';
+
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   document.body.removeChild(link);
+    // } else {
+    //   window.open(data);
+    // }
+  }
+
   return (
     <>
       <div className="h-full pt-3">
@@ -835,7 +865,7 @@ export const EditInvoice = () => {
               <div className="w-1/3 px-3 flex flex-row items-center">
                 <Label
                   id="prepaied"
-                  value={invoice.prepaied?"TT":"TS"}
+                  value={invoice.prepaied ? "TT" : "TS"}
                   className="pr-2"
                 />
                 <svg
@@ -1289,7 +1319,7 @@ export const EditInvoice = () => {
       >
         <Modal.Header />
         <Modal.Body>
-          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
+          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8" ref={sharedInvRef}>
             <div className="flex flex-row pt-2">
               <div className="block w-1/5">
                 <img src="/ps_logo_96.jpg" className="w-25 border border-1 rounded-2xl" alt=""></img>
@@ -1309,7 +1339,7 @@ export const EditInvoice = () => {
                 <span className="text-right text-[12px] from-neutral-400 w-full">{formatShortDate(new Date(invoice.checkOutDate))}</span>
               </div>
             </div>
-            <div className="w-full">
+            <div className="w-full" >
               <Table hoverable>
                 <Table.Head className="my-1">
                   <Table.HeadCell className="py-2 pl-0">
@@ -1383,6 +1413,7 @@ export const EditInvoice = () => {
               </div>
               <span className="text-center font italic font-serif">Thank you so much !</span>
             </div>
+            <div><span onClick={copySharedInv}>Copy</span></div>
           </div>
         </Modal.Body>
       </Modal>
