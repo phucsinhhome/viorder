@@ -4,7 +4,7 @@ import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms,
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
 import { getPresignedLink } from "../../Service/FileService";
-import { HiOutlineCash } from "react-icons/hi";
+import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { addDays, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
@@ -547,6 +547,7 @@ export const EditInvoice = () => {
     if (dirty) {
       handleSaveInvoice()
     }
+    setBtnSharedInvText("Copy")
     setOpenViewInvModal(true)
   }
   const closeViewInv = () => {
@@ -690,7 +691,7 @@ export const EditInvoice = () => {
 
   //================ SHARED INVOICE ==========================//
   const sharedInvRef = useRef()
-
+  const [btnSharedInvText, setBtnSharedInvText] = useState("Copy")
   const copySharedInv = async () => {
     const element = sharedInvRef.current;
     const canvas = await html2canvas(element);
@@ -699,6 +700,7 @@ export const EditInvoice = () => {
     canvas.toBlob((blob) => {
       const clipboardData = new ClipboardItem({ [blob.type]: blob })
       navigator.clipboard.write([clipboardData])
+      setBtnSharedInvText("Copied!")
     },
       "image/png",
       1)
@@ -1400,7 +1402,6 @@ export const EditInvoice = () => {
               </div>
               <span className="text-center font italic font-serif">Thank you so much !</span>
             </div>
-            <div><span onClick={copySharedInv}>Copy</span></div>
           </div>
 
 
@@ -1483,6 +1484,12 @@ export const EditInvoice = () => {
           </div>
 
         </Modal.Body>
+        <Modal.Footer className="flex flex-col items-center py-2">
+          <Button onClick={copySharedInv} >
+            <HiOutlineClipboardCopy className="mr-2 h-5 w-5" />
+            {btnSharedInvText}
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       <Modal show={openChooseResModal} onClose={cancelChooseRes} popup dismissible initialFocus={filteredResText}>
