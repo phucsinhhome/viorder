@@ -701,7 +701,9 @@ export const EditInvoice = () => {
     canvas.toBlob((blob) => {
       const clipboardData = new ClipboardItem({ [blob.type]: blob })
       navigator.clipboard.write([clipboardData])
-    })
+    },
+      "image/png",
+      1)
 
     // const link = document.createElement('a');
 
@@ -1319,7 +1321,7 @@ export const EditInvoice = () => {
       >
         <Modal.Header />
         <Modal.Body>
-          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8" ref={sharedInvRef}>
+          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
             <div className="flex flex-row pt-2">
               <div className="block w-1/5">
                 <img src="/ps_logo_96.jpg" className="w-25 border border-1 rounded-2xl" alt=""></img>
@@ -1353,7 +1355,7 @@ export const EditInvoice = () => {
                   {invoice.items.map((exp) => {
                     return (
                       <Table.Row
-                        className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0 w-full"
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm w-full"
                         key={exp.id}
                       >
                         <Table.Cell className="py-0 pl-0 pr-1">
@@ -1369,34 +1371,34 @@ export const EditInvoice = () => {
                             </div>
                           </div>
                         </Table.Cell>
-                        <Table.Cell className="flex py-0 px-1">
-                          <span className="text-right w-full">{formatVND(exp.amount)}</span>
+                        <Table.Cell className="text-right py-0 px-1">
+                          {formatVND(exp.amount)}
                         </Table.Cell>
                       </Table.Row>
                     )
                   })}
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
-                    <Table.Cell className="py-0 text-center">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0">
                       SUBTOTAL
                     </Table.Cell>
-                    <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right">{formatVND(invoice.subTotal)}</span>
+                    <Table.Cell className="text-right px-1 py-0">
+                      {formatVND(invoice.subTotal)}
                     </Table.Cell>
                   </Table.Row>
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
-                    <Table.Cell className="py-0 text-center">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0">
                       {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
                     </Table.Cell>
-                    <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right">{formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}</span>
+                    <Table.Cell className="text-right py-0 px-1">
+                      {formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}
                     </Table.Cell>
                   </Table.Row>
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0">
-                    <Table.Cell className="py-0 text-center">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0">
                       GRAND TOTAL
                     </Table.Cell>
-                    <Table.Cell className="flex py-0 px-1">
-                      <span className="w-full text-right text-red-800 font-bold">{formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}</span>
+                    <Table.Cell className="text-right text-red-800 py-0 px-1">
+                      {formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}
                     </Table.Cell>
                   </Table.Row>
                 </Table.Body>
@@ -1414,6 +1416,81 @@ export const EditInvoice = () => {
               <span className="text-center font italic font-serif">Thank you so much !</span>
             </div>
             <div><span onClick={copySharedInv}>Copy</span></div>
+          </div>
+
+          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8" ref={sharedInvRef} hidden={true}>
+            <div className="flex flex-row w-full">
+              <div className="flex flex-col w-3/5">
+                <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
+                <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
+              </div>
+              <div className="flex w-2/5">
+                <span className="text-right text-[12px] from-neutral-400 w-full">{formatShortDate(new Date(invoice.checkOutDate))}</span>
+              </div>
+            </div>
+            <div className="w-full" >
+              <Table hoverable>
+                <Table.Head className="my-1">
+                  <Table.HeadCell className="py-2 pl-0">
+                    Item Name
+                  </Table.HeadCell>
+                  <Table.HeadCell className="py-2 text-right px-1">
+                    Amount
+                  </Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y" >
+                  {invoice.items.map((exp) => {
+                    return (
+                      <Table.Row
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0 w-full"
+                        key={exp.id}
+                      >
+                        <Table.Cell className="py-0 pl-0 pr-1">
+                          <div className="grid grid-cols-1 py-0 my-0 pb-3">
+                            <div
+                              className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
+                            >
+                              {exp.itemName}
+                            </div>
+                            <div className="flex flex-row text-[9px] space-x-1">
+                              <span className="w-6">{"x" + exp.quantity}</span>
+                              <span className="w-24">{formatVND(exp.unitPrice)}</span>
+                            </div>
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell className="text-right py-0 px-1 pb-3">
+                          {formatVND(exp.amount)}
+                        </Table.Cell>
+                      </Table.Row>
+                    )
+                  })}
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0 pb-3">
+                      SUBTOTAL
+                    </Table.Cell>
+                    <Table.Cell className="text-right px-1 py-0 pb-3">
+                      {formatVND(invoice.subTotal)}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0 pb-3">
+                      {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
+                    </Table.Cell>
+                    <Table.Cell className="text-right py-0 px-1 pb-3">
+                      {formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                    <Table.Cell className="text-center py-0 pb-3">
+                      GRAND TOTAL
+                    </Table.Cell>
+                    <Table.Cell className="text-right py-0 px-1 pb-3 text-red-800">
+                      {formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+            </div>
           </div>
         </Modal.Body>
       </Modal>
