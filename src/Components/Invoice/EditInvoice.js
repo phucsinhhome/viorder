@@ -720,10 +720,10 @@ export const EditInvoice = () => {
       alert(url)
       setBtnSharedInvText("Copied")
 
-      newImg.onload = () => {
-        // no longer need to read the blob so it's revoked
-        URL.revokeObjectURL(url);
-      };
+      // newImg.onload = () => {
+      //   // no longer need to read the blob so it's revoked
+      //   URL.revokeObjectURL(url);
+      // };
 
       newImg.src = url;
       newImg.alt="sample.jpg"
