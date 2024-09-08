@@ -690,33 +690,18 @@ export const EditInvoice = () => {
 
   //================ SHARED INVOICE ==========================//
   const sharedInvRef = useRef()
+
   const copySharedInv = async () => {
     const element = sharedInvRef.current;
     const canvas = await html2canvas(element);
 
     const { ClipboardItem } = window;
-    // const data = canvas.toBlob(
-    //   ()=>{},
-    //   'image/jpg')
     canvas.toBlob((blob) => {
       const clipboardData = new ClipboardItem({ [blob.type]: blob })
       navigator.clipboard.write([clipboardData])
     },
       "image/png",
       1)
-
-    // const link = document.createElement('a');
-
-    // if (typeof link.download === 'string') {
-    //   link.href = data;
-    //   link.download = 'image.jpg';
-
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   document.body.removeChild(link);
-    // } else {
-    //   window.open(data);
-    // }
   }
 
   return (
@@ -1418,7 +1403,11 @@ export const EditInvoice = () => {
             <div><span onClick={copySharedInv}>Copy</span></div>
           </div>
 
-          <div className="space-y-6 px-0 pb-4 sm:pb-6 lg:px-8 xl:pb-8" ref={sharedInvRef} hidden={true}>
+
+          <div
+            className="absolute z-10 space-y-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8 w-full px-2"
+            ref={sharedInvRef}
+          >
             <div className="flex flex-row w-full">
               <div className="flex flex-col w-3/5">
                 <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
@@ -1492,6 +1481,7 @@ export const EditInvoice = () => {
               </Table>
             </div>
           </div>
+
         </Modal.Body>
       </Modal>
 
