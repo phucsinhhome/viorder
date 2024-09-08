@@ -691,20 +691,61 @@ export const EditInvoice = () => {
 
   //================ SHARED INVOICE ==========================//
   const sharedInvRef = useRef()
+  const sharedInvImg = useRef()
   const [btnSharedInvText, setBtnSharedInvText] = useState("Copy")
-  const copySharedInv = async () => {
+  // const [sharedInvData, setSharedInvData] = useState(undefined)
+  // const copySharedInv = async () => {
+  //   const element = sharedInvRef.current;
+  //   const canvas = await html2canvas(element);
+
+  //   const { ClipboardItem } = window;
+  //   canvas.toBlob((blob) => {
+  //     const clipboardData = new ClipboardItem({ [blob.type]: blob })
+  //     navigator.clipboard.write([clipboardData])
+  //     setBtnSharedInvText("Copied!")
+  //   },
+  //     "image/png",
+  //     1)
+  // }
+
+  const copySharedInv1 = async () => {
     const element = sharedInvRef.current;
+    const invImgEle = sharedInvImg.current;
     const canvas = await html2canvas(element);
 
-    const { ClipboardItem } = window;
     canvas.toBlob((blob) => {
-      const clipboardData = new ClipboardItem({ [blob.type]: blob })
-      navigator.clipboard.write([clipboardData])
-      setBtnSharedInvText("Copied!")
+      const newImg = document.createElement("img");
+      const url = URL.createObjectURL(blob);
+      console.info("URL: "+url)
+      alert(url)
+      setBtnSharedInvText("Copied")
+
+      newImg.onload = () => {
+        // no longer need to read the blob so it's revoked
+        URL.revokeObjectURL(url);
+      };
+
+      newImg.src = url;
+      newImg.alt="sample.jpg"
+      invImgEle.appendChild(newImg);
     },
       "image/png",
       1)
   }
+
+  // const downloadSharedInv = async () => {
+  //   const element = sharedInvRef.current;
+  //   const canvas = await html2canvas(element);
+  //   const data = canvas.toDataURL("image/png")
+  //   setSharedInvData(data)
+  //   // let link = document.createElement('a');
+  //   // link.href = data;
+  //   // link.download = 'downloaded-image.jpg';
+
+  //   // document.body.appendChild(link);
+  //   // link.click();
+  //   // document.body.removeChild(link);
+  // }
 
   return (
     <>
@@ -1406,7 +1447,7 @@ export const EditInvoice = () => {
 
 
           <div
-            className="absolute z-10 space-y-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8 w-full px-2"
+            className="absolute top-1 left-1 z-[-1] space-y-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8 w-full px-2"
             ref={sharedInvRef}
           >
             <div className="flex flex-row w-full">
@@ -1483,9 +1524,17 @@ export const EditInvoice = () => {
             </div>
           </div>
 
+          <div ref={sharedInvImg}>
+            {/* <a href={sharedInvData} >Download</a>
+            <Link to={sharedInvData}>Download 1</Link>
+            <img
+              src={sharedInvData}
+            /> */}
+          </div>
+
         </Modal.Body>
         <Modal.Footer className="flex flex-col items-center py-2">
-          <Button onClick={copySharedInv} >
+          <Button onClick={copySharedInv1} >
             <HiOutlineClipboardCopy className="mr-2 h-5 w-5" />
             {btnSharedInvText}
           </Button>
