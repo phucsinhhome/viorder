@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
-import { getPresignedLink, uploadBlob, uploadBlobToPresignedURL } from "../../Service/FileService";
+import { getPresignedLink, uploadBlobToPresignedURL } from "../../Service/FileService";
 import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { addDays, formatDatePartition, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
@@ -711,62 +711,46 @@ export const EditInvoice = () => {
   //     1)
   // }
 
-  const copySharedInv1 = async () => {
-    const element = sharedInvRef.current;
-    const invImgEle = sharedInvImg.current;
-    const canvas = await html2canvas(element);
+  // const copySharedInv1 = async () => {
+  //   const element = sharedInvRef.current;
+  //   const invImgEle = sharedInvImg.current;
+  //   const canvas = await html2canvas(element);
 
-    canvas.toBlob((blob) => {
-      new File([blob], "sample.jpg")
-      const newImg = document.createElement("img");
-      const url = URL.createObjectURL(blob);
-      console.info("URL: " + url)
-      alert(url)
-      setBtnSharedInvText("Copied")
+  //   canvas.toBlob((blob) => {
+  //     new File([blob], "sample.jpg")
+  //     const newImg = document.createElement("img");
+  //     const url = URL.createObjectURL(blob);
+  //     console.info("URL: " + url)
+  //     alert(url)
+  //     setBtnSharedInvText("Copied")
 
-      // newImg.onload = () => {
-      //   // no longer need to read the blob so it's revoked
-      //   URL.revokeObjectURL(url);
-      // };
+  //     // newImg.onload = () => {
+  //     //   // no longer need to read the blob so it's revoked
+  //     //   URL.revokeObjectURL(url);
+  //     // };
 
-      newImg.src = url;
-      newImg.alt = "sample.jpg"
-      invImgEle.appendChild(newImg);
-    },
-      "image/png",
-      1)
-  }
+  //     newImg.src = url;
+  //     newImg.alt = "sample.jpg"
+  //     invImgEle.appendChild(newImg);
+  //   },
+  //     "image/png",
+  //     1)
+  // }
 
   const downloadSharedInv = async () => {
     const element = sharedInvRef.current;
-    const invImgEle = sharedInvImg.current;
     const canvas = await html2canvas(element);
 
     canvas.toBlob((blob) => {
-      var filename = invoice.id + ".jpg"
+      var filename = invoice.id + ".png"
       var key = formatDatePartition(invoice.checkOutDate()) + "/" + filename
       uploadBlobToPresignedURL(Configs.invoice.editInvoice.bucket, key, blob, filename)
         .then(url => {
-          if(url==null){
+          if (url == null) {
             return
           }
-
           setSharedInvData(url)
         })
-      // const newImg = document.createElement("img");
-      // const url = URL.createObjectURL(blob);
-      // console.info("URL: " + url)
-      // alert(url)
-      // setBtnSharedInvText("Copied")
-
-      // newImg.onload = () => {
-      //   // no longer need to read the blob so it's revoked
-      //   URL.revokeObjectURL(url);
-      // };
-
-      // newImg.src = url;
-      // newImg.alt = "sample.jpg"
-      // invImgEle.appendChild(newImg);
     },
       "image/png",
       1)
