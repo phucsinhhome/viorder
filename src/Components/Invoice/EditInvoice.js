@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
-import { getPresignedLink, uploadBlobToPresignedURL } from "../../Service/FileService";
+import { getPresignedLink, getPresignedLinkWithDefaultDuration, uploadBlob, uploadBlobToPresignedURL } from "../../Service/FileService";
 import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { addDays, formatDatePartition, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
@@ -550,7 +550,6 @@ export const EditInvoice = () => {
     if (dirty) {
       handleSaveInvoice()
     }
-    setBtnSharedInvText("Copy")
     setOpenViewInvModal(true)
   }
   const closeViewInv = () => {
@@ -695,47 +694,8 @@ export const EditInvoice = () => {
   //================ SHARED INVOICE ==========================//
   const sharedInvRef = useRef()
   const sharedInvImg = useRef()
-  const [btnSharedInvText, setBtnSharedInvText] = useState("Copy")
-  const [sharedInvData, setSharedInvData] = useState(undefined)
-  // const copySharedInv = async () => {
-  //   const element = sharedInvRef.current;
-  //   const canvas = await html2canvas(element);
-
-  //   const { ClipboardItem } = window;
-  //   canvas.toBlob((blob) => {
-  //     const clipboardData = new ClipboardItem({ [blob.type]: blob })
-  //     navigator.clipboard.write([clipboardData])
-  //     setBtnSharedInvText("Copied!")
-  //   },
-  //     "image/png",
-  //     1)
-  // }
-
-  // const copySharedInv1 = async () => {
-  //   const element = sharedInvRef.current;
-  //   const invImgEle = sharedInvImg.current;
-  //   const canvas = await html2canvas(element);
-
-  //   canvas.toBlob((blob) => {
-  //     new File([blob], "sample.jpg")
-  //     const newImg = document.createElement("img");
-  //     const url = URL.createObjectURL(blob);
-  //     console.info("URL: " + url)
-  //     alert(url)
-  //     setBtnSharedInvText("Copied")
-
-  //     // newImg.onload = () => {
-  //     //   // no longer need to read the blob so it's revoked
-  //     //   URL.revokeObjectURL(url);
-  //     // };
-
-  //     newImg.src = url;
-  //     newImg.alt = "sample.jpg"
-  //     invImgEle.appendChild(newImg);
-  //   },
-  //     "image/png",
-  //     1)
-  // }
+  // const [btnSharedInvText, setBtnSharedInvText] = useState("Copy")
+  const [sharedInvData, setSharedInvData] = useState(null)
 
   const downloadSharedInv = async () => {
     const element = sharedInvRef.current;
@@ -745,31 +705,20 @@ export const EditInvoice = () => {
       var filename = invoice.id + ".png"
       var key = formatDatePartition(new Date()) + "/" + filename
       uploadBlobToPresignedURL(Configs.invoice.editInvoice.bucket, key, blob, filename)
-        .then(url => {
-          if (url == null) {
+        .then(res => {
+          if (res == null) {
+            console.error("Failed to upload exported invoice to file service")
             return
           }
-          alert(url)
-          setSharedInvData(url)
+          getPresignedLinkWithDefaultDuration(Configs.invoice.editInvoice.bucket, key, (error, url) => {
+            setSharedInvData(url)
+            sharedInvImg.current.scrollIntoView()
+          })
         })
     },
       "image/png",
       1)
   }
-
-  // const downloadSharedInv = async () => {
-  //   const element = sharedInvRef.current;
-  //   const canvas = await html2canvas(element);
-  //   const data = canvas.toDataURL("image/png")
-  //   setSharedInvData(data)
-  //   // let link = document.createElement('a');
-  //   // link.href = data;
-  //   // link.download = 'downloaded-image.jpg';
-
-  //   // document.body.appendChild(link);
-  //   // link.click();
-  //   // document.body.removeChild(link);
-  // }
 
   return (
     <>
@@ -1486,10 +1435,10 @@ export const EditInvoice = () => {
             <div className="w-full" >
               <Table hoverable>
                 <Table.Head className="my-1">
-                  <Table.HeadCell className="py-2 pl-0">
+                  <Table.HeadCell className="py-0 pl-0 pb-3">
                     Item Name
                   </Table.HeadCell>
-                  <Table.HeadCell className="py-2 text-right px-1">
+                  <Table.HeadCell className="py-0 text-right px-1 pb-3">
                     Amount
                   </Table.HeadCell>
                 </Table.Head>
@@ -1548,23 +1497,27 @@ export const EditInvoice = () => {
             </div>
           </div>
 
-          <div ref={sharedInvImg}>
-            {/* <a href={sharedInvData} >Download</a>
-            <Link to={sharedInvData}>Download 1</Link>
-            <img
-              src={sharedInvData}
-            /> */}
-            <img
-              src={sharedInvData}
-              alt=""
-            />
+          <div ref={sharedInvImg} >
+            <div className="w-full text-center" hidden={sharedInvData == null}>
+              <span
+                className="font-sans italic pb-2 text-amber-700"
+              >Touch then <span className="text font-bold">Download</span>
+              </span>
+            </div>
+            <div className="flex flex-col items-center" hidden={sharedInvData == null}>
+              <img
+                src={sharedInvData}
+                alt=""
+                className="h-40 rounded-sm shadow-xl"
+              />
+            </div>
           </div>
 
         </Modal.Body>
         <Modal.Footer className="flex flex-col items-center py-2">
           <Button onClick={downloadSharedInv} >
             <HiOutlineClipboardCopy className="mr-2 h-5 w-5" />
-            {btnSharedInvText}
+            Create shared invoice
           </Button>
         </Modal.Footer>
       </Modal>

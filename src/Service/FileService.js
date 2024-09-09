@@ -1,3 +1,4 @@
+import * as Fs from 'fs';
 import * as minio from "minio";
 
 var minioClient = new minio.Client({
@@ -17,13 +18,14 @@ export function getPresignedLinkWithDefaultDuration(bucket, key, fnCallback) {
 }
 
 export const uploadBlob = (bucket, key, blob, filename) => {
-    var file = new File([blob], filename)
-    return minioClient.putObject(bucket, key, file.stream(), file.size)
+    var file = new File([blob], filename);
+    var fs = Fs.createReadStream(file);
+    return minioClient.putObject(bucket, key, fs, file.size);
 }
 
 export const uploadBlobToPresignedURL = (bucket, key, blob, filename) => {
     var file = new File([blob], filename)
-    return minioClient.presignedGetObject(bucket, key, 300)
+    return minioClient.presignedPutObject(bucket, key, 300)
         .then((url) => {
             return fetch(url, {
                 method: 'PUT',

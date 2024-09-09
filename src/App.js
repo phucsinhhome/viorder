@@ -44,10 +44,10 @@ export default function App() {
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
-          <Link to="profit" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link>
-          <Link to="invoice" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
-          <Link to="expenses" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
-          <Link to="reservation" className="w-1/5 px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link>
+          <Link to="profit" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link>
+          <Link to="invoice" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Invoice</Link>
+          <Link to="expenses" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Expense</Link>
+          <Link to="reservation" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link>
           <Link to="settings" className="absolute right-2">
             <IoMdSettings
               className="pointer-events-auto cursor-pointer w-14 h-7"
