@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
-import { getPresignedLink, getPresignedLinkWithDefaultDuration, uploadBlob, uploadBlobToPresignedURL } from "../../Service/FileService";
+import { getPresignedLink, getPresignedLinkWithDefaultDuration, uploadBlobToPresignedURL } from "../../Service/FileService";
 import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { addDays, formatDatePartition, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
