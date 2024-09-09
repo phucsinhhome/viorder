@@ -83,9 +83,14 @@ export function ReservationManager() {
     {
       days: -1,
       label: 'Yesterday'
-    }, {
+    },
+    {
       days: -5,
       label: 'Last 5 days'
+    },
+    {
+      days: -1 * new Date().getDate(),
+      label: 'From 1st'
     }]
   const filterClass = (days) => {
     var classNamePattern = "font-bold text-amber-800 rounded px-2 py-1"
