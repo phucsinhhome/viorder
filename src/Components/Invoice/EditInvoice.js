@@ -3,10 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
-import { getPresignedLink } from "../../Service/FileService";
+import { getPresignedLink, uploadBlobToPresignedURL } from "../../Service/FileService";
 import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
-import { addDays, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
+import { addDays, formatDatePartition, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
@@ -33,6 +33,9 @@ export const Configs = {
     fetchedReservation: {
       backwardDays: -3,
       max: 100
+    },
+    editInvoice: {
+      bucket: 'invoices'
     }
   }
 
@@ -693,7 +696,7 @@ export const EditInvoice = () => {
   const sharedInvRef = useRef()
   const sharedInvImg = useRef()
   const [btnSharedInvText, setBtnSharedInvText] = useState("Copy")
-  // const [sharedInvData, setSharedInvData] = useState(undefined)
+  const [sharedInvData, setSharedInvData] = useState(undefined)
   // const copySharedInv = async () => {
   //   const element = sharedInvRef.current;
   //   const canvas = await html2canvas(element);
@@ -708,26 +711,46 @@ export const EditInvoice = () => {
   //     1)
   // }
 
-  const copySharedInv1 = async () => {
+  // const copySharedInv1 = async () => {
+  //   const element = sharedInvRef.current;
+  //   const invImgEle = sharedInvImg.current;
+  //   const canvas = await html2canvas(element);
+
+  //   canvas.toBlob((blob) => {
+  //     new File([blob], "sample.jpg")
+  //     const newImg = document.createElement("img");
+  //     const url = URL.createObjectURL(blob);
+  //     console.info("URL: " + url)
+  //     alert(url)
+  //     setBtnSharedInvText("Copied")
+
+  //     // newImg.onload = () => {
+  //     //   // no longer need to read the blob so it's revoked
+  //     //   URL.revokeObjectURL(url);
+  //     // };
+
+  //     newImg.src = url;
+  //     newImg.alt = "sample.jpg"
+  //     invImgEle.appendChild(newImg);
+  //   },
+  //     "image/png",
+  //     1)
+  // }
+
+  const downloadSharedInv = async () => {
     const element = sharedInvRef.current;
-    const invImgEle = sharedInvImg.current;
     const canvas = await html2canvas(element);
 
     canvas.toBlob((blob) => {
-      const newImg = document.createElement("img");
-      const url = URL.createObjectURL(blob);
-      console.info("URL: "+url)
-      alert(url)
-      setBtnSharedInvText("Copied")
-
-      // newImg.onload = () => {
-      //   // no longer need to read the blob so it's revoked
-      //   URL.revokeObjectURL(url);
-      // };
-
-      newImg.src = url;
-      newImg.alt="sample.jpg"
-      invImgEle.appendChild(newImg);
+      var filename = invoice.id + ".png"
+      var key = formatDatePartition(invoice.checkOutDate()) + "/" + filename
+      uploadBlobToPresignedURL(Configs.invoice.editInvoice.bucket, key, blob, filename)
+        .then(url => {
+          if (url == null) {
+            return
+          }
+          setSharedInvData(url)
+        })
     },
       "image/png",
       1)
@@ -1530,11 +1553,14 @@ export const EditInvoice = () => {
             <img
               src={sharedInvData}
             /> */}
+            <img
+              src={sharedInvData}
+            />
           </div>
 
         </Modal.Body>
         <Modal.Footer className="flex flex-col items-center py-2">
-          <Button onClick={copySharedInv1} >
+          <Button onClick={downloadSharedInv} >
             <HiOutlineClipboardCopy className="mr-2 h-5 w-5" />
             {btnSharedInvText}
           </Button>
