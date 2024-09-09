@@ -1555,6 +1555,7 @@ export const EditInvoice = () => {
             /> */}
             <img
               src={sharedInvData}
+              alt=""
             />
           </div>
 
