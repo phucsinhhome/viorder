@@ -1419,81 +1419,83 @@ export const EditInvoice = () => {
           </div>
 
 
-          <div
-            className="absolute top-1 left-1 z-[-1] space-y-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8 w-full px-2"
-            ref={sharedInvRef}
-          >
-            <div className="flex flex-row w-full">
-              <div className="flex flex-col w-3/5">
-                <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
-                <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
+          <div className="absolute z-[-1] top-0 left-0 w-full h-44 overflow-y-scroll">
+            <div
+              className="space-y-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8 w-full px-4 py-4"
+              ref={sharedInvRef}
+            >
+              <div className="flex flex-row w-full">
+                <div className="flex flex-col w-3/5">
+                  <span className="font uppercase font-serif text-sm font-bold">{invoice.guestName}</span>
+                  <span className="font text-gray-400 text-[8px]">{"No: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}</span>
+                </div>
+                <div className="flex w-2/5">
+                  <span className="text-right text-[12px] from-neutral-400 w-full">{formatShortDate(new Date(invoice.checkOutDate))}</span>
+                </div>
               </div>
-              <div className="flex w-2/5">
-                <span className="text-right text-[12px] from-neutral-400 w-full">{formatShortDate(new Date(invoice.checkOutDate))}</span>
+              <div className="w-full" >
+                <Table hoverable>
+                  <Table.Head className="my-1">
+                    <Table.HeadCell className="py-0 pl-0 pb-3">
+                      Item Name
+                    </Table.HeadCell>
+                    <Table.HeadCell className="py-0 text-right px-1 pb-3">
+                      Amount
+                    </Table.HeadCell>
+                  </Table.Head>
+                  <Table.Body className="divide-y" >
+                    {invoice.items.map((exp) => {
+                      return (
+                        <Table.Row
+                          className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0 w-full"
+                          key={exp.id}
+                        >
+                          <Table.Cell className="py-0 pl-0 pr-1">
+                            <div className="grid grid-cols-1 py-0 my-0 pb-3">
+                              <div
+                                className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
+                              >
+                                {exp.itemName}
+                              </div>
+                              <div className="flex flex-row text-[9px] space-x-1">
+                                <span className="w-6">{"x" + exp.quantity}</span>
+                                <span className="w-24">{formatVND(exp.unitPrice)}</span>
+                              </div>
+                            </div>
+                          </Table.Cell>
+                          <Table.Cell className="text-right py-0 px-1 pb-3">
+                            {formatVND(exp.amount)}
+                          </Table.Cell>
+                        </Table.Row>
+                      )
+                    })}
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                      <Table.Cell className="text-center py-0 pb-3">
+                        SUBTOTAL
+                      </Table.Cell>
+                      <Table.Cell className="text-right px-1 py-0 pb-3">
+                        {formatVND(invoice.subTotal)}
+                      </Table.Cell>
+                    </Table.Row>
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                      <Table.Cell className="text-center py-0 pb-3">
+                        {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
+                      </Table.Cell>
+                      <Table.Cell className="text-right py-0 px-1 pb-3">
+                        {formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}
+                      </Table.Cell>
+                    </Table.Row>
+                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
+                      <Table.Cell className="text-center py-0 pb-3">
+                        GRAND TOTAL
+                      </Table.Cell>
+                      <Table.Cell className="text-right py-0 px-1 pb-3 text-red-800">
+                        {formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}
+                      </Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
               </div>
-            </div>
-            <div className="w-full" >
-              <Table hoverable>
-                <Table.Head className="my-1">
-                  <Table.HeadCell className="py-0 pl-0 pb-3">
-                    Item Name
-                  </Table.HeadCell>
-                  <Table.HeadCell className="py-0 text-right px-1 pb-3">
-                    Amount
-                  </Table.HeadCell>
-                </Table.Head>
-                <Table.Body className="divide-y" >
-                  {invoice.items.map((exp) => {
-                    return (
-                      <Table.Row
-                        className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm my-1 py-0 w-full"
-                        key={exp.id}
-                      >
-                        <Table.Cell className="py-0 pl-0 pr-1">
-                          <div className="grid grid-cols-1 py-0 my-0 pb-3">
-                            <div
-                              className="font text-sm text-blue-600 font-sans font-semibold hover:underline dark:text-blue-500"
-                            >
-                              {exp.itemName}
-                            </div>
-                            <div className="flex flex-row text-[9px] space-x-1">
-                              <span className="w-6">{"x" + exp.quantity}</span>
-                              <span className="w-24">{formatVND(exp.unitPrice)}</span>
-                            </div>
-                          </div>
-                        </Table.Cell>
-                        <Table.Cell className="text-right py-0 px-1 pb-3">
-                          {formatVND(exp.amount)}
-                        </Table.Cell>
-                      </Table.Row>
-                    )
-                  })}
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
-                    <Table.Cell className="text-center py-0 pb-3">
-                      SUBTOTAL
-                    </Table.Cell>
-                    <Table.Cell className="text-right px-1 py-0 pb-3">
-                      {formatVND(invoice.subTotal)}
-                    </Table.Cell>
-                  </Table.Row>
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
-                    <Table.Cell className="text-center py-0 pb-3">
-                      {"FEE (" + selectedPaymentMethod.feeRate * 100 + "%)"}
-                    </Table.Cell>
-                    <Table.Cell className="text-right py-0 px-1 pb-3">
-                      {formatVND(invoice.subTotal * selectedPaymentMethod.feeRate)}
-                    </Table.Cell>
-                  </Table.Row>
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 text-sm">
-                    <Table.Cell className="text-center py-0 pb-3">
-                      GRAND TOTAL
-                    </Table.Cell>
-                    <Table.Cell className="text-right py-0 px-1 pb-3 text-red-800">
-                      {formatVND(invoice.subTotal + invoice.subTotal * selectedPaymentMethod.feeRate)}
-                    </Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              </Table>
             </div>
           </div>
 
