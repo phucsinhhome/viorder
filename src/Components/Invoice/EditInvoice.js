@@ -743,12 +743,13 @@ export const EditInvoice = () => {
 
     canvas.toBlob((blob) => {
       var filename = invoice.id + ".png"
-      var key = formatDatePartition(invoice.checkOutDate()) + "/" + filename
+      var key = formatDatePartition(invoice.checkOutDate) + "/" + filename
       uploadBlobToPresignedURL(Configs.invoice.editInvoice.bucket, key, blob, filename)
         .then(url => {
           if (url == null) {
             return
           }
+          alert(url)
           setSharedInvData(url)
         })
     },
