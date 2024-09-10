@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { listStayingAndComingInvoices } from "../../db/invoice";
+import { deleteInvoice, listStayingAndComingInvoices } from "../../db/invoice";
 import { Link } from "react-router-dom";
 import { Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
@@ -123,6 +123,16 @@ export function InvoiceManager() {
         return;
       }
       console.warn("Delete invoice %s...", deletingInv.id)
+      deleteInvoice(deletingInv)
+        .then(rsp => {
+          if (rsp.ok) {
+            console.info("Delete invoice %s successfully", deletingInv.id)
+          }
+        })
+        .catch(err => {
+          console.error("Failed to delete invoice %s", deletingInv.id)
+          console.log(err)
+        })
     } catch (e) {
       console.error(e)
     } finally {

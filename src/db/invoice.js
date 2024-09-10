@@ -20,7 +20,7 @@ export const exportInvoice = (invoice) => {
 }
 
 export const updateInvoice = (invoice) => {
-  console.info("Call API to export invoice");
+  console.info("Call API to update invoice");
   const opts = {
     method: 'POST',
     headers: {
@@ -30,6 +30,19 @@ export const updateInvoice = (invoice) => {
   }
 
   return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/update`, opts);
+}
+
+export const deleteInvoice = (invoice) => {
+  console.info("Call API to delete invoice");
+  const opts = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: new Blob([JSON.stringify(invoice)])
+  }
+
+  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/delete`, opts);
 }
 
 export const listLatestInvoices = (pageNumber, pageSize) => {
