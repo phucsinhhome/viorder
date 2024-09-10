@@ -5,7 +5,7 @@ import { Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { formatVND } from "../../Service/Utils";
+import { formatISODate, formatVND } from "../../Service/Utils";
 
 
 export function InvoiceManager() {
@@ -53,7 +53,7 @@ export function InvoiceManager() {
 
   const fetchInvoices = (fromDate, pageNumber, pageSize) => {
 
-    var fd = fromDate.toISOString().split('T')[0]
+    var fd = formatISODate(fromDate)
     console.info("Loading invoices from date %s...", fd)
 
     listStayingAndComingInvoices(fd, pageNumber, pageSize)
@@ -127,6 +127,7 @@ export function InvoiceManager() {
         .then(rsp => {
           if (rsp.ok) {
             console.info("Delete invoice %s successfully", deletingInv.id)
+            fetchInvoices(fromDate, pagination.pageNumber, pagination.pageSize)
           }
         })
         .catch(err => {
