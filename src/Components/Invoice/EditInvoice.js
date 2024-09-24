@@ -100,6 +100,9 @@ export const EditInvoice = () => {
 
   const location = useLocation()
   useEffect(() => {
+    if (location === null || location.state === null) {
+      return
+    }
     var newLocation = {
       pageNumber: location.state.pageNumber,
       pageSize: location.state.pageSize
