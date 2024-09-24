@@ -172,7 +172,7 @@ export const ExpenseManager = () => {
   }
 
   const cancelEditingExpense = () => {
-    fetchData(0, DEFAULT_PAGE_SIZE)
+    fetchData(pagination.pageNumber, pagination.pageSize)
       .then(res => {
         setEditingExpense(defaultEmptExpense)
         setOpenEditingExpenseModal(false)
