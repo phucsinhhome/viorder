@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
@@ -7,7 +7,7 @@ import { getPresignedLink, getPresignedLinkWithDefaultDuration, uploadBlobToPres
 import { HiOutlineCash, HiOutlineClipboardCopy } from "react-icons/hi";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { addDays, formatDatePartition, formatISODate, formatShortDate, formatVND } from "../../Service/Utils";
-import { currentUser, currentUserFullname, initialUser } from "../../App";
+import { currentUser, currentUserFullname, DEFAULT_PAGE_SIZE, initialUser } from "../../App";
 import { getUsers as issuers } from "../../db/users";
 import Moment from "react-moment";
 import { listLatestReservations } from "../../db/reservation";
@@ -54,7 +54,8 @@ export const EditInvoice = () => {
       prepaied: false,
       paymentMethod: null,
       reservationCode: null,
-      items: []
+      items: [],
+      creatorId: currentUser.id
     }
   )
 
@@ -95,6 +96,17 @@ export const EditInvoice = () => {
   const [selectedRooms, setSelectedRooms] = useState([])
 
   const [dirty, setDirty] = useState(false)
+  const [loc, setLoc] = useState({ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE })
+
+  const location = useLocation()
+  useEffect(() => {
+    var newLocation = {
+      pageNumber: location.state.pageNumber,
+      pageSize: location.state.pageSize
+    }
+    setLoc(newLocation)
+  }, [location])
+
 
   useEffect(() => {
     console.info("Editing invoice %s", invoiceId)
@@ -724,18 +736,23 @@ export const EditInvoice = () => {
     <>
       <div className="h-full pt-3">
         <form className="flex flex-wrap mx-1">
-          <div className="w-full md:w-1/2 px-1 mb-1">
+          <div className="w-full px-1 mb-1">
             <div className="flex flex-wrap -mx-3 mb-1">
-              <div className="w-full md:w-1/2 px-3 mb-1 md:mb-0">
-                <div className="flex justify-between w-full space-x-4 mb-1">
+              <div className="w-full px-3 mb-1">
+                <div className="flex w-full space-x-4 mb-1">
                   <Label
                     id="reservationCode"
                     value={"Code: " + (invoice.reservationCode === null ? "" : invoice.reservationCode)}
                     className="outline-none font-mono text-[10px] italic text-gray-700"
                   />
+                  <Label
+                    id="creatorId"
+                    value={"Created by: " + (invoice.creatorId)}
+                    className="outline-none font-mono text-[10px] italic text-gray-700"
+                  />
                 </div>
                 <div className="flex flex-row w-full items-center">
-                  <div className="flex flex-row items-center w-2/3">
+                  <div className="flex flex-row flex-auto items-center">
                     <Label
                       id="guestName"
                       required={true}
@@ -755,7 +772,7 @@ export const EditInvoice = () => {
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                     </svg>
                   </div>
-                  <div className="flex flex-row w-1/3 justify-end" >
+                  <div className="flex flex-row flex-auto justify-end" >
                     {selectedIssuer.imgSrc}
                     <Label
                       id="issuerId"
@@ -782,7 +799,7 @@ export const EditInvoice = () => {
               </div>
             </div>
             <div className="flex flex-wrap -mx-3 mb-1">
-              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-center">
+              <div className="flex flex-row w-36 px-3 mb-1 items-center">
                 <Label
                   value={String(invoice.checkInDate)}
                   className="pr-2"
@@ -802,7 +819,7 @@ export const EditInvoice = () => {
                 </svg>
               </div>
 
-              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-center">
+              <div className="flex flex-row w-36 px-3 mb-1 items-center">
                 <Label
                   value={String(invoice.checkOutDate)}
                   className="pr-2"
@@ -822,7 +839,7 @@ export const EditInvoice = () => {
                 </svg>
               </div>
 
-              <div className="w-1/3 px-3 mb-1 md:mb-0 flex flex-row items-end">
+              <div className="flex flex-row px-3 mb-1 items-center">
                 <Label
                   value={invoice.rooms ? invoice.rooms.join('.') : "[]"}
                   className="pr-2 w-full text-right"
@@ -844,7 +861,7 @@ export const EditInvoice = () => {
             </div>
 
             <div className="flex flex-wrap -mx-3 mb-3">
-              <div className="w-1/3 px-3 flex flex-row items-center">
+              <div className="flex flex-row px-3 items-center">
                 <div>{selectedPaymentMethod.src}</div>
                 <Label
                   id="paymentMethod"
@@ -865,7 +882,7 @@ export const EditInvoice = () => {
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
-              <div className="w-1/3 px-3 flex flex-row items-center">
+              <div className="flex flex-row px-3 items-center">
                 <Label
                   id="prepaied"
                   value={invoice.prepaied ? "TT" : "TS"}
@@ -885,14 +902,14 @@ export const EditInvoice = () => {
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
               </div>
-              <div className="w-1/3 px-3 flex flex-row items-center">
+              <div className="flex flex-row px-3 items-center">
                 <Label
                   id="totalAmount"
                   placeholder="100000"
                   required={true}
                   value={formatVND(invoice.subTotal)}
                   readOnly={true}
-                  className="font-mono font-bold text-red-900"
+                  className="font-bold text-red-900"
                 />
               </div>
             </div>
@@ -977,7 +994,10 @@ export const EditInvoice = () => {
             >
               <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6ZM5.78 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06-1.06l-1.72-1.72H15a.75.75 0 0 0 0-1.5H4.06l1.72-1.72a.75.75 0 0 0 0-1.06Z" clipRule="evenodd" />
             </svg>
-            <Link to=".." relative="path" className="px-1 font-sans font-bold text-amber-800">Back</Link>
+            <Link to=".."
+              relative="path"
+              state={{ pageNumber: loc.pageNumber, pageSize: loc.pageSize }}
+              className="px-1 font-sans font-bold text-amber-800">Back</Link>
           </div>
           <Link
             to={invoiceUrl.presignedUrl}

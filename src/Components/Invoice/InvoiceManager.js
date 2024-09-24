@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { deleteInvoice, listStayingAndComingInvoices } from "../../db/invoice";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
@@ -8,7 +8,7 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { formatISODate, formatVND } from "../../Service/Utils";
 
 
-export function InvoiceManager() {
+export const InvoiceManager = () => {
   const [invoices, setInvoices] = useState([
     {
       "id": "000000000000000000",
@@ -32,7 +32,7 @@ export function InvoiceManager() {
   const [openModal, setOpenModal] = useState(false)
   const [deletingInv, setDeletingInv] = useState(null)
 
-
+  const location = useLocation()
 
   const filterDay = (numDays) => {
 
@@ -70,8 +70,8 @@ export function InvoiceManager() {
   }
 
   useEffect(() => {
-    fetchInvoices(new Date(), 0, DEFAULT_PAGE_SIZE);
-  }, []);
+    fetchInvoices(new Date(), location.state.pageNumber, location.state.pageSize);
+  }, [location]);
 
   const filterOpts = [
     {
