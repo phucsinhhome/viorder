@@ -70,6 +70,10 @@ export const InvoiceManager = () => {
   }
 
   useEffect(() => {
+    if (location == null || location.state == null) {
+      console.warn("Invalid prop location!")
+      return
+    }
     fetchInvoices(new Date(), location.state.pageNumber, location.state.pageSize);
   }, [location]);
 
