@@ -4,9 +4,23 @@ import { useState } from "react";
 import { Label, Spinner, TextInput } from "flowbite-react";
 import { IoIosSync } from "react-icons/io";
 
+const syncedResOptions = [
+  {
+    nextDays: 0,
+    displayName: 'Today'
+  }, {
+    nextDays: 1,
+    displayName: 'Tomorrow'
+  }, {
+    nextDays: 5,
+    displayName: 'Next 5 days'
+  }
+]
+
 export function Settings({ syncing, changeSyncing }) {
 
   const [datePartition, setDatePartition] = useState(formatDatePartition(new Date()))
+  const [syncedResNextDays, setSyncedResNextDays] = useState(0)
 
   const syncStatus = () => {
     changeSyncing(true)
@@ -35,7 +49,7 @@ export function Settings({ syncing, changeSyncing }) {
         <div className="flex flex-col w-full py-2 px-2">
           <div className="flex flex-row items-center mb-2">
             <Label
-            className="w-32"
+              className="w-32"
             >
               {"Sync data"}
             </Label>
@@ -58,7 +72,7 @@ export function Settings({ syncing, changeSyncing }) {
           </div>
           <div className="flex flex-row items-center mb-2">
             <Label
-            className="w-32"
+              className="w-32"
             >
               {"Sync reservation"}
             </Label>
@@ -68,6 +82,7 @@ export function Settings({ syncing, changeSyncing }) {
               required={true}
               value={datePartition}
               onChange={changePartition}
+              type="number"
 
               rightIcon={() => syncing ?
                 <Spinner aria-label="Default status example"
@@ -79,6 +94,11 @@ export function Settings({ syncing, changeSyncing }) {
                 />
               }
             />
+            <Label
+              className="w-32"
+            >
+              {"reservation"}
+            </Label>
           </div>
         </div>
 
