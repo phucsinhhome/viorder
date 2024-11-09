@@ -29,6 +29,7 @@ export const currentUserFullname = () => {
 export default function App() {
 
   const [syncing, setSyncing] = useState(false)
+  const [syncingRes, setSyncingRes] = useState(false)
 
   useEffect(() => {
     document.title = "PMS"
@@ -62,7 +63,10 @@ export default function App() {
           <Route path="expenses/:expenseId" element={<EditExpense />} />
           <Route path="reservation" element={<ReservationManager />} />
           <Route path="reservation/:reservationId" element={<EditReservation />} />
-          <Route path="settings" element={<Settings syncing={syncing} changeSyncing={(n) => setSyncing(n)} />} />
+          <Route path="settings" element={<Settings
+            syncing={syncing} changeSyncing={(n) => setSyncing(n)}
+            syncingRes={syncingRes} changeResSyncing={(n) => setSyncingRes(n)}
+          />} />
         </Routes>
       </Router>
       <div className="absolute top-0 right-0 flex flex-col mt-10 mr-2 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">

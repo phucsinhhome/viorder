@@ -3,24 +3,25 @@ import { syncStatusOfMonth } from "../../Service/StatusSyncingService";
 import { useState } from "react";
 import { Label, Spinner, TextInput } from "flowbite-react";
 import { IoIosSync } from "react-icons/io";
+import { collectRes } from "../../db/reservation_extractor";
 
-const syncedResOptions = [
-  {
-    nextDays: 0,
-    displayName: 'Today'
-  }, {
-    nextDays: 1,
-    displayName: 'Tomorrow'
-  }, {
-    nextDays: 5,
-    displayName: 'Next 5 days'
-  }
-]
+// const syncedResOptions = [
+//   {
+//     nextDays: 0,
+//     displayName: 'Today'
+//   }, {
+//     nextDays: 1,
+//     displayName: 'Tomorrow'
+//   }, {
+//     nextDays: 5,
+//     displayName: 'Next 5 days'
+//   }
+// ]
 
-export function Settings({ syncing, changeSyncing }) {
+export function Settings({ syncing, changeSyncing, syncingRes, changeResSyncing }) {
 
   const [datePartition, setDatePartition] = useState(formatDatePartition(new Date()))
-  const [syncedResNextDays, setSyncedResNextDays] = useState(0)
+  const [syncedResNextDays, setSyncedResNextDays] = useState(formatDatePartition(new Date()))
 
   const syncStatus = () => {
     changeSyncing(true)
@@ -35,6 +36,24 @@ export function Settings({ syncing, changeSyncing }) {
         console.error(e)
       }).finally(() => {
         changeSyncing(false)
+      })
+  }
+
+  const syncResStatus = () => {
+    changeResSyncing(true)
+    console.info("Sync reservation...")
+    let fromDate = formatDatePartition(new Date())
+    let toDate = formatDatePartition(new Date())
+    collectRes(fromDate, toDate)
+      .then(rsp => {
+        if (rsp.ok) {
+          console.info("Collect reservations from %s to %s successfully", fromDate, toDate)
+        }
+        console.log(rsp)
+      }).catch(e => {
+        console.error(e)
+      }).finally(() => {
+        changeResSyncing(false)
       })
   }
 
@@ -78,27 +97,27 @@ export function Settings({ syncing, changeSyncing }) {
             </Label>
             <TextInput
               id="itemMsg"
-              placeholder="2024/09 or 2024/09/01"
+              placeholder="2024/09/01"
               required={true}
-              value={datePartition}
-              onChange={changePartition}
+              value={syncedResNextDays}
+              onChange={(e) => setSyncedResNextDays(e.target.value)}
               type="number"
 
-              rightIcon={() => syncing ?
+              rightIcon={() => syncingRes ?
                 <Spinner aria-label="Default status example"
                   className="w-14 h-10"
                 />
                 : <IoIosSync
-                  onClick={() => syncStatus()}
+                  onClick={() => syncResStatus()}
                   className="pointer-events-auto cursor-pointer w-14 h-10"
                 />
               }
             />
-            <Label
+            {/* <Label
               className="w-32"
             >
               {"reservation"}
-            </Label>
+            </Label> */}
           </div>
         </div>
 
