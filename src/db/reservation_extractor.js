@@ -1,7 +1,3 @@
-const requestOptions = {
-  method: 'GET'
-}
-
 export const collectRes = (fromDate, toDate) => {
   console.info("Call API to collect reservations");
   const opts = {
