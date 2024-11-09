@@ -133,6 +133,10 @@ export function ProfitReport() {
     setParams(nParam)
   }
 
+  const profitMargin = (profit, revenue) => {
+    return revenue <= 0 ? 0 : Math.floor(profit * 100 / revenue)
+  }
+
   return (
     <>
       <div className="bg-slate-50 px-2">
@@ -201,7 +205,7 @@ export function ProfitReport() {
           </div>
           <div className="w-full py-1 flex flex-row justify-items-center pt-3">
             <span className="w-1/2 text-right font font-bold text-gray-500 pr-1">Profit:</span>
-            <span className="w-1/2 text-left pl-1">{formatVND(report.overall.profit)}</span>
+            <span className="w-1/2 text-left pl-1">{formatVND(report.overall.profit) + " (" + profitMargin(report.overall.profit, report.overall.revenue) + "%)"}</span>
           </div>
         </div>
 
@@ -230,7 +234,7 @@ export function ProfitReport() {
                   <span
                     className="px-2 text-right font-sans w-1/3 text-sm font-semibold text-gray-500"
                   >
-                    {formatVND(item.profit)}
+                    {formatVND(item.profit) + " (" + profitMargin(item.profit, item.revenue) + "%)"}
                   </span>
                 </div>
               </div>
