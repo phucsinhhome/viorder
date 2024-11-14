@@ -113,9 +113,7 @@ export const ExpenseManager = () => {
           unitPrice: uP,
           amount: pr,
           service: eE.service,
-          expenseDate: formatISODateTime(new Date()),
-          expenserId: currentUser.id,
-          expenserName: currentUserFullname()
+          expenseDate: formatISODateTime(new Date())
         }
         return exp
       })
@@ -269,6 +267,9 @@ export const ExpenseManager = () => {
       .catch(e => {
         console.error("Failed to generate expcetion from %s", expMsg, e)
       })
+      .finally(() => {
+        setGeneratingExp(false)
+      })
   }
 
   const processSaveExpense = () => {
@@ -277,8 +278,8 @@ export const ExpenseManager = () => {
       itemName: editingExpense.itemName,
       quantity: editingExpense.quantity,
       unitPrice: editingExpense.unitPrice,
-      expenserName: editingExpense.expenserName,
-      expenserId: editingExpense.expenserId,
+      expenserId: currentUser.id,
+      expenserName: currentUserFullname(),
       service: editingExpense.service,
       id: editingExpense.id,
       amount: editingExpense.amount
@@ -399,7 +400,7 @@ export const ExpenseManager = () => {
                         </div>
 
                         <span className="font font-mono font-black w-20">{exp.service}</span>
-                        <span className="font font-mono font-thin text-gray-320 italic">{(initialUser !== null && initialUser !== undefined)?"":exp.expenserId}</span>
+                        <span className="font font-mono font-thin text-gray-320 italic">{(initialUser !== null && initialUser !== undefined) ? "" : exp.expenserId}</span>
                       </div>
                     </div>
                   </Table.Cell>
