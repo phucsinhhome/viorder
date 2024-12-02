@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import { deleteInvoice, listStayingAndComingInvoices } from "../../db/invoice";
+import { deleteInvoice, listAllFoods as listAllFoods } from "../../db/food";
 import { Link, useLocation } from "react-router-dom";
-import { Button, Modal, Table } from "flowbite-react";
+import { Avatar, Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { formatISODate, formatVND } from "../../Service/Utils";
 
 
-export const InvoiceManager = () => {
-  const [invoices, setInvoices] = useState([
+export const Foods = () => {
+  const [foods, setFoods] = useState([
     {
       "id": "000000000000000000",
-      "guestName": "",
-      "issuer": "",
-      "issuerId": "",
-      "subTotal": 0
+      "name": "",
+      "createdAt": "",
+      "nameInVN": "",
+      "price": 0
     }
   ])
 
@@ -41,31 +41,23 @@ export const InvoiceManager = () => {
     console.info("Change filter date to %s", newDD.toISOString())
     setFromDate(newDD)
     setDeltaDays(numDays)
-    fetchInvoices(newDD, pagination.pageNumber, pagination.pageSize)
+    fetchFoods(newDD, pagination.pageNumber, pagination.pageSize)
   }
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
     var pSize = pagination.pageSize
-    fetchInvoices(fromDate, pNum, pSize)
+    fetchFoods(fromDate, pNum, pSize)
   }
 
-  const fetchInvoices = (fromDate, pageNumber, pageSize) => {
+  const fetchFoods = (fromDate, pageNumber, pageSize) => {
+    console.info("Loading foods from date %s...", fd)
 
-    var fd = formatISODate(fromDate)
-    console.info("Loading invoices from date %s...", fd)
-
-    listStayingAndComingInvoices(fd, pageNumber, pageSize)
+    listAllFoods()
       .then(data => {
-        setInvoices(data.content)
-        var page = {
-          pageNumber: data.number,
-          pageSize: data.size,
-          totalElements: data.totalElements,
-          totalPages: data.totalPages
-        }
-        setPagination(page)
+        console.log(data)
+        setFoods(data)
       })
   }
 
@@ -74,7 +66,7 @@ export const InvoiceManager = () => {
       console.warn("Invalid prop location!")
       return
     }
-    fetchInvoices(new Date(), location.state.pageNumber, location.state.pageSize);
+    fetchFoods(new Date(), location.state.pageNumber, location.state.pageSize);
   }, [location]);
 
   const filterOpts = [
@@ -131,7 +123,7 @@ export const InvoiceManager = () => {
         .then(rsp => {
           if (rsp.ok) {
             console.info("Delete invoice %s successfully", deletingInv.id)
-            fetchInvoices(fromDate, pagination.pageNumber, pagination.pageSize)
+            fetchFoods(fromDate, pagination.pageNumber, pagination.pageSize)
           }
         })
         .catch(err => {
@@ -158,7 +150,7 @@ export const InvoiceManager = () => {
 
   return (
     <div className="h-full pt-3">
-      <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
+      {/* <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
         <div className="flex flex-row items-center pl-4"
         // onClick={chooseRes}
         >
@@ -180,8 +172,8 @@ export const InvoiceManager = () => {
             Add Invoice
           </Link>
         </div>
-      </div>
-      <div className="flex flex-row space-x-4 px-4">
+      </div> */}
+      {/* <div className="flex flex-row space-x-4 px-4">
         {filterOpts.map((opt) => {
           return (<Link
             key={opt.days}
@@ -192,10 +184,10 @@ export const InvoiceManager = () => {
             {opt.label}
           </Link>)
         })}
-      </div>
+      </div> */}
       <div className="h-3/5 max-h-fit overflow-hidden">
         <Table hoverable={true}>
-          <Table.Head>
+          {/* <Table.Head>
             <Table.HeadCell className="pr-1">
               ChOut
             </Table.HeadCell>
@@ -207,39 +199,40 @@ export const InvoiceManager = () => {
                 Delete
               </span>
             </Table.HeadCell>
-          </Table.Head>
+          </Table.Head> */}
           <Table.Body className="divide-y">
-            {invoices.map((inv) => {
+            {foods.map((food) => {
               return (
                 <Table.Row
                   className="bg-white"
-                  key={inv.id}
+                  key={food.id}
                 >
-                  <Table.Cell className="sm:px-1 pr-1 py-0.5">
-                    <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment>
+                  <Table.Cell className="sm:px-1 pr-1 py-0">
+                    {/* <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment> */}
+                    <Avatar img="/images/pizza.png" alt="avatar of Jese" rounded />
                   </Table.Cell>
                   <Table.Cell className="sm:px-1 px-1 py-0.5">
                     <div className="grid grid-cols-1">
                       <Link
-                        to={inv.id}
+                        to={food.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className={isDeleteable(inv) ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
+                        className={isDeleteable(food) ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
                       >
-                        {inv.guestName}
+                        {food.name}
                       </Link>
                       <div className="flex flex-row text-sm space-x-1">
                         <div className="w-24">
-                          <span>{formatVND(inv.subTotal)}</span>
+                          {/* <span>{formatVND(food.price)}</span> */}
                         </div>
-                        <span className="font font-mono font-black w-8">{inv.prepaied ? "TT" : "TS"}</span>
-                        <span className="font font-mono font-black">{inv.issuer}</span>
+                        {/* <span className="font font-mono font-black w-8">{food.prepaied ? "TT" : "TS"}</span>
+                        <span className="font font-mono font-black">{food.issuer}</span> */}
                       </div>
                     </div>
                   </Table.Cell>
 
 
                   <Table.Cell className="py-0.5">
-                    <svg
+                    {/* <svg
                       className={isDeleteable(inv) ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
@@ -248,8 +241,17 @@ export const InvoiceManager = () => {
                       onClick={() => handleDeleteInvoice(inv)}
                     >
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg> */}
+                    <svg
+                      className="w-5 h-5 text-amber-700 dark:text-white"
+                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
                     </svg>
-
                   </Table.Cell>
                 </Table.Row>
               )

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/invoice";
+import { exportInvoice, getInvoice, listPaymentMethods as paymentMethods, rooms, updateInvoice } from "../../db/food";
 import { defaultEmptyItem, formatMoneyAmount } from "./EditItem";
 import { Table, TextInput, Label, Datepicker, Modal, Button } from 'flowbite-react';
 import { getPresignedLink, getPresignedLinkWithDefaultDuration, uploadBlobToPresignedURL } from "../../Service/FileService";

@@ -340,7 +340,7 @@ export const ExpenseManager = () => {
 
   return (
     <div className="h-full pt-3">
-      <div className="flex flex-row px-2">
+      {/* <div className="flex flex-row px-2">
         <div className="flex flex-row items-center pl-4 pb-2">
           <svg
             className="w-5 h-5 text-amber-700 dark:text-white"
@@ -359,10 +359,10 @@ export const ExpenseManager = () => {
             Add Expense
           </span>
         </div>
-      </div>
+      </div> */}
       <div className="h-3/5 max-h-fit overflow-hidden">
         <Table hoverable={true}>
-          <Table.Head>
+          {/* <Table.Head>
             <Table.HeadCell className="sm:px-1">
               Date
             </Table.HeadCell>
@@ -375,7 +375,7 @@ export const ExpenseManager = () => {
                 Delete
               </span>
             </Table.HeadCell>
-          </Table.Head>
+          </Table.Head> */}
           <Table.Body className="divide-y" >
             {expenses.map((exp) => {
               return (

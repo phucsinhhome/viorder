@@ -16,7 +16,7 @@ export const exportInvoice = (invoice) => {
     body: new Blob([JSON.stringify(invoice)])
   }
 
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/export`, opts);
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}/export`, opts);
 }
 
 export const updateInvoice = (invoice) => {
@@ -29,7 +29,7 @@ export const updateInvoice = (invoice) => {
     body: new Blob([JSON.stringify(invoice)])
   }
 
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/update`, opts);
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}/update`, opts);
 }
 
 export const deleteInvoice = (invoice) => {
@@ -42,29 +42,29 @@ export const deleteInvoice = (invoice) => {
     body: new Blob([JSON.stringify(invoice)])
   }
 
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/delete`, opts);
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}/delete`, opts);
 }
 
 export const listLatestInvoices = (pageNumber, pageSize) => {
   console.info("Fetching invoices from backend")
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}/list/recent?page=${pageNumber}&size=${pageSize}`, requestOptions)
     .then(response => response.json())
 }
 
-export const listStayingAndComingInvoices = (fromDate, pageNumber, pageSize) => {
-  console.info("Fetching invoices from backend")
+export const listAllFoods = () => {
+  console.info("Fetching foods from backend")
 
   var opts = {
     method: 'GET'
   }
 
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/upcoming?fromDate=${fromDate}&page=${pageNumber}&size=${pageSize}`, opts)
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}`, opts)
     .then(response => response.json())
 }
 
 export function getInvoice(invoiceId) {
   console.info("Fetching invoice from backend")
-  return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/${invoiceId}`, requestOptions)
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}/${invoiceId}`, requestOptions)
     .then(response => response.json())
 }
 
