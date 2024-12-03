@@ -54,10 +54,9 @@ export const Foods = () => {
   const fetchFoods = (fromDate, pageNumber, pageSize) => {
     console.info("Loading foods")
 
-    listAllFoods()
+    listAllFoods(pageNumber, pageSize)
       .then(data => {
-        console.log(data)
-        setFoods(data)
+        setFoods(data.content)
       })
   }
 
@@ -209,7 +208,7 @@ export const Foods = () => {
                 >
                   <Table.Cell className="sm:px-1 pr-1 py-0">
                     {/* <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment> */}
-                    <Avatar img="/images/pizza.png" alt="avatar of Jese" rounded />
+                    <Avatar img={"/images/" + food.image_url + ".png"} alt="dish image" rounded />
                   </Table.Cell>
                   <Table.Cell className="sm:px-1 px-1 py-0.5">
                     <div className="grid grid-cols-1">

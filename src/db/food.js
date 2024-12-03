@@ -51,14 +51,17 @@ export const listLatestInvoices = (pageNumber, pageSize) => {
     .then(response => response.json())
 }
 
-export const listAllFoods = () => {
+export const listAllFoods = (pageNumber, pageSize) => {
   console.info("Fetching foods from backend")
 
   var opts = {
-    method: 'GET'
+    method: 'GET',
+    headers: {
+      'X-API-Key': 'c3d605d0'
+    }
   }
 
-  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}`, opts)
+  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}?page=${pageNumber}&size=${pageSize}`, opts)
     .then(response => response.json())
 }
 
