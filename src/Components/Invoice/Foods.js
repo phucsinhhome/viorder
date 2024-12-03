@@ -52,7 +52,7 @@ export const Foods = () => {
   }
 
   const fetchFoods = (fromDate, pageNumber, pageSize) => {
-    console.info("Loading foods from date %s...", fd)
+    console.info("Loading foods")
 
     listAllFoods()
       .then(data => {
