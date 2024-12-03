@@ -7,7 +7,7 @@ import run from "../../Service/ExpenseExtractionService";
 import { saveExpense } from "../../db/expense";
 import { classifyServiceByItemName } from "../../Service/ItemClassificationService";
 import { currentUser, currentUserFullname, initialUser } from "../../App";
-import { formatMoneyAmount } from "../Invoice/EditItem";
+import { formatMoneyAmount } from "../Food/EditItem";
 import { HiOutlineCash } from "react-icons/hi";
 import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
 import { PiBrainThin } from "react-icons/pi";

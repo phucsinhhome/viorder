@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { ProfitReport } from "./Components/Profit/ProfitReport"
-import { Foods } from "./Components/Invoice/Foods"
-import { EditInvoice } from "./Components/Invoice/EditInvoice"
+import { Foods } from "./Components/Food/Foods"
+import { EditInvoice } from "./Components/Food/EditInvoice"
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
 import { ExpenseManager } from "./Components/Expense/ExpenseManager";
 import { EditExpense } from "./Components/Expense/EditExpense";
