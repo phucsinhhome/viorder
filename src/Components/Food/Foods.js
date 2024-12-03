@@ -184,53 +184,40 @@ export const Foods = () => {
           </Link>)
         })}
       </div> */}
-      <div className="h-3/5 max-h-fit overflow-hidden">
-        <Table hoverable={true}>
-          {/* <Table.Head>
-            <Table.HeadCell className="pr-1">
-              ChOut
-            </Table.HeadCell>
-            <Table.HeadCell className="px-1">
-              Details
-            </Table.HeadCell>
-            <Table.HeadCell>
-              <span className="sr-only">
-                Delete
-              </span>
-            </Table.HeadCell>
-          </Table.Head> */}
-          <Table.Body className="divide-y">
+      <div className="max-h-fit overflow-hidden">
+        <div className="flex flex-col">
             {foods.map((food) => {
               return (
-                <Table.Row
-                  className="bg-white"
+                <div
+                  className="flex flex-row border border-gray-300 shadow-2xl rounded-2xl bg-white dark:bg-slate-500 "
                   key={food.id}
                 >
-                  <Table.Cell className="sm:px-1 pr-1 py-0">
-                    {/* <Moment format="DD.MM">{new Date(inv.checkOutDate)}</Moment> */}
+                  <div className="pl-0.5 pr-0.5 py-1">
                     <Avatar img={"/images/" + food.image_url + ".png"} alt="dish image" rounded />
-                  </Table.Cell>
-                  <Table.Cell className="sm:px-1 px-1 py-0.5">
-                    <div className="grid grid-cols-1">
-                      <Link
-                        to={food.id}
-                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className={isDeleteable(food) ? "font-medium text-blue-600 hover:underline dark:text-blue-500" : "font-medium text-gray-600 hover:underline dark:text-white-500"}
-                      >
-                        {food.name}
-                      </Link>
+                  </div>
+                  <div className="px-0 py-1">
+                    <div className="grid grid-cols-1 w-full">
+                      <div className="flex flex-row">
+                        <Link
+                          to={food.id}
+                          state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                          className={isDeleteable(food)
+                            ? "font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                            : "font-medium text-gray-600 hover:underline dark:text-white-500 overflow-hidden"}
+                        >
+                          {food.name}
+                        </Link>
+                        {/* <span className="w-1/4 text-right font-mono text-red-700 font-semibold">{formatVND(food.price)}</span> */}
+                      </div>
                       <div className="flex flex-row text-sm space-x-1">
-                        <div className="w-24">
-                          {/* <span>{formatVND(food.price)}</span> */}
-                        </div>
-                        {/* <span className="font font-mono font-black w-8">{food.prepaied ? "TT" : "TS"}</span>
-                        <span className="font font-mono font-black">{food.issuer}</span> */}
+                        {/* <div className="w-18 font-mono text-red-700 font-medium">
+                          <span>{formatVND(food.price)}</span>
+                        </div> */}
+                        <span className="font font-mono font-black text-[10px]">{food.description}</span>
                       </div>
                     </div>
-                  </Table.Cell>
-
-
-                  <Table.Cell className="py-0.5">
+                  </div>
+                  <div className="flex flex-col pl-0.2 pr-0.5 py-1">
                     {/* <svg
                       className={isDeleteable(inv) ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
@@ -241,43 +228,63 @@ export const Foods = () => {
                     >
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg> */}
-                    <svg
-                      className="w-5 h-5 text-amber-700 dark:text-white"
-                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-                    </svg>
-                  </Table.Cell>
-                </Table.Row>
+                    <div>
+                      <span className="w-full text-center font-mono text-red-700 font-semibold">{formatVND(food.price)}</span>
+                    </div>
+                    <div className="flex flex-row space-x-3 pt-1">
+                      <svg
+                        className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
+                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
+                      </svg>
+                      <span>5</span>
+                      <svg
+                        className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
+                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
+                      </svg>
+                    </div>
+                  </div>
+
+                </div>
               )
             })}
-          </Table.Body>
-        </Table>
+        </div>
       </div>
-      <nav className="flex items-center justify-between pt-4" aria-label="Table navigation">
-        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span>
-        <ul className="inline-flex items-center -space-x-px">
-          <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-          </li>
-          <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
-            1
-          </li>
-          <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
-            {pagination.pageNumber + 1}
-          </li>
-          <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
-            {pagination.totalPages}
-          </li>
-          <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-            <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
-          </li>
-        </ul>
-      </nav>
+      <div className="flex flex-row items-center justify-between">
+        <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
+          {/* <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span> */}
+          <ul className="inline-flex items-center -space-x-px">
+            <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
+            </li>
+            <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
+              1
+            </li>
+            <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
+              {pagination.pageNumber + 1}
+            </li>
+            <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
+              {pagination.totalPages}
+            </li>
+            <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+              <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+            </li>
+          </ul>
+        </nav>
+
+        <Button className="px-3 py-2 mt-2 mx-3 h-9">Order</Button>
+      </div>
       <Modal show={openModal} onClose={cancelDeletion}>
         <Modal.Header>Confirm</Modal.Header>
         <Modal.Body>
