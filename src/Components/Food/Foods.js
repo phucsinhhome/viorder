@@ -23,6 +23,7 @@ export const Foods = () => {
 
   const [openModal, setOpenModal] = useState(false)
   const [deletingInv, setDeletingInv] = useState(null)
+  const [order, setOrder] = useState({})
 
   const location = useLocation()
 
@@ -145,43 +146,10 @@ export const Foods = () => {
     return false
   }
 
+  const changeQuantity = (food, delta) => { }
+
   return (
     <div className="h-full pt-3">
-      {/* <div className="flex flex-wrap pb-4 px-2 space-x-4 space-y-2">
-        <div className="flex flex-row items-center pl-4"
-        // onClick={chooseRes}
-        >
-          <svg
-            className="w-5 h-5 text-amber-700 dark:text-white"
-            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-          </svg>
-          <Link
-            to="../invoice/new"
-            relative="route"
-            className="font-bold text-amber-800"
-          >
-            Add Invoice
-          </Link>
-        </div>
-      </div> */}
-      {/* <div className="flex flex-row space-x-4 px-4">
-        {filterOpts.map((opt) => {
-          return (<Link
-            key={opt.days}
-            onClick={() => filterDay(opt.days)}
-            relative="route"
-            className={filterClass(opt.days)}
-          >
-            {opt.label}
-          </Link>)
-        })}
-      </div> */}
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1">
           {foods.map((food) => {
@@ -211,11 +179,46 @@ export const Foods = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col pl-0.2 pr-0.5 ">
+                <div className="flex flex-col pl-0.2 pr-2">
                   <div>
                     <span className="w-full text text-center font-mono text-red-700 font-semibold">{formatVND(food.unitPrice)}</span>
                   </div>
-                  <div className="flex flex-row space-x-3 pt-1 place-items-center">
+                  <div className="relative flex items-center w-full mb-2">
+                    <button
+                      type="button"
+                      id="decrement-button"
+                      data-input-counter-decrement="quantity-input"
+                      className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                      onClick={() => changeQuantity(food, -1)}
+                    >
+                      <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
+                      </svg>
+                    </button>
+                    <input
+                      type="number"
+                      id="quantity-input"
+                      data-input-counter aria-describedby="helper-text-explanation"
+                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="999"
+                      required
+                      value={order[food.id] ? order[food.id].quantity : 0}
+                      readOnly
+                    />
+                    <button
+                      type="button"
+                      id="increment-button"
+                      data-input-counter-increment="quantity-input"
+                      className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                      onClick={() => changeQuantity(food, 1)}
+                    >
+                      <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  {/* <div className="flex flex-row space-x-3 pt-1 place-items-center">
+                    
                     <svg
                       className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
                       aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +240,7 @@ export const Foods = () => {
                     >
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
 
               </div>
