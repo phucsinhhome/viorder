@@ -1,3 +1,5 @@
+import { listProductByGroup } from "./product";
+
 export const Configs = {
   logo: process.env.REACT_APP_PS_LOGO
 }
@@ -54,14 +56,7 @@ export const listLatestInvoices = (pageNumber, pageSize) => {
 export const listAllFoods = (pageNumber, pageSize) => {
   console.info("Fetching foods from backend")
 
-  var opts = {
-    method: 'GET',
-    headers: {
-      'X-API-Key': 'c3d605d0'
-    }
-  }
-
-  return fetch(`${process.env.REACT_APP_MENU_FOOD_ENDPOINT}?page=${pageNumber}&size=${pageSize}`, opts)
+  return listProductByGroup('food', pageNumber, pageSize)
     .then(response => response.json())
 }
 

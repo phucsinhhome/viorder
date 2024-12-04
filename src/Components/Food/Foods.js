@@ -9,15 +9,7 @@ import { formatISODate, formatVND } from "../../Service/Utils";
 
 
 export const Foods = () => {
-  const [foods, setFoods] = useState([
-    {
-      "id": "000000000000000000",
-      "name": "",
-      "createdAt": "",
-      "nameInVN": "",
-      "price": 0
-    }
-  ])
+  const [foods, setFoods] = useState([])
 
   const [fromDate, setFromDate] = useState(new Date());
   const [deltaDays, setDeltaDays] = useState(0)
@@ -185,40 +177,40 @@ export const Foods = () => {
         })}
       </div> */}
       <div className="max-h-fit overflow-hidden">
-        <div className="flex flex-col">
-            {foods.map((food) => {
-              return (
-                <div
-                  className="flex flex-row border border-gray-300 shadow-2xl rounded-2xl bg-white dark:bg-slate-500 "
-                  key={food.id}
-                >
-                  <div className="pl-0.5 pr-0.5 py-1">
-                    <Avatar img={"/images/" + food.image_url + ".png"} alt="dish image" rounded />
-                  </div>
-                  <div className="px-0 py-1">
-                    <div className="grid grid-cols-1 w-full">
-                      <div className="flex flex-row">
-                        <Link
-                          to={food.id}
-                          state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                          className={isDeleteable(food)
-                            ? "font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
-                            : "font-medium text-gray-600 hover:underline dark:text-white-500 overflow-hidden"}
-                        >
-                          {food.name}
-                        </Link>
-                        {/* <span className="w-1/4 text-right font-mono text-red-700 font-semibold">{formatVND(food.price)}</span> */}
-                      </div>
-                      <div className="flex flex-row text-sm space-x-1">
-                        {/* <div className="w-18 font-mono text-red-700 font-medium">
+        <div className="flex flex-col space-y-1">
+          {foods.map((food) => {
+            return (
+              <div
+                className="flex flex-row border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
+                key={food.id}
+              >
+                <div className="pl-0.5 pr-1 py-1">
+                  <Avatar img={food.featureImgUrl} alt="dish image" rounded />
+                </div>
+                <div className="px-0 py-1">
+                  <div className="grid grid-cols-1 w-full">
+                    <div className="flex flex-row">
+                      <Link
+                        to={food.id}
+                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                        className={isDeleteable(food)
+                          ? "font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                          : "font-medium text-gray-600 hover:underline dark:text-white-500 overflow-hidden"}
+                      >
+                        {food.name}
+                      </Link>
+                      {/* <span className="w-1/4 text-right font-mono text-red-700 font-semibold">{formatVND(food.price)}</span> */}
+                    </div>
+                    <div className="flex flex-row text-sm space-x-1">
+                      {/* <div className="w-18 font-mono text-red-700 font-medium">
                           <span>{formatVND(food.price)}</span>
                         </div> */}
-                        <span className="font font-mono font-black text-[10px]">{food.description}</span>
-                      </div>
+                      <span className="font font-mono font-black text-[10px]">{food.description}</span>
                     </div>
                   </div>
-                  <div className="flex flex-col pl-0.2 pr-0.5 py-1">
-                    {/* <svg
+                </div>
+                <div className="flex flex-col pl-0.2 pr-0.5 py-1">
+                  {/* <svg
                       className={isDeleteable(inv) ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
@@ -228,37 +220,37 @@ export const Foods = () => {
                     >
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                     </svg> */}
-                    <div>
-                      <span className="w-full text-center font-mono text-red-700 font-semibold">{formatVND(food.price)}</span>
-                    </div>
-                    <div className="flex flex-row space-x-3 pt-1">
-                      <svg
-                        className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
-                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-                      </svg>
-                      <span>5</span>
-                      <svg
-                        className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
-                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-                      </svg>
-                    </div>
+                  <div>
+                    <span className="w-full text-center font-mono text-red-700 font-semibold">{formatVND(food.unitPrice)}</span>
                   </div>
-
+                  <div className="flex flex-row space-x-3 pt-1 place-items-center">
+                    <svg
+                      className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
+                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
+                    </svg>
+                    <span>5</span>
+                    <svg
+                      className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
+                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
+                    </svg>
+                  </div>
                 </div>
-              )
-            })}
+
+              </div>
+            )
+          })}
         </div>
       </div>
       <div className="flex flex-row items-center justify-between">
