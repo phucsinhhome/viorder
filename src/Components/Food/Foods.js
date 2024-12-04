@@ -49,6 +49,12 @@ export const Foods = () => {
     listAllFoods(pageNumber, pageSize)
       .then(data => {
         setFoods(data.content)
+        setPagination({
+          pageNumber: data.number,
+          pageSize: data.size,
+          totalElements: data.totalElements,
+          totalPages: data.totalPages
+        })
       })
   }
 
@@ -181,14 +187,14 @@ export const Foods = () => {
           {foods.map((food) => {
             return (
               <div
-                className="flex flex-row border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
+                className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
                 key={food.id}
               >
-                <div className="pl-0.5 pr-1 py-1">
-                  <Avatar img={food.featureImgUrl} alt="dish image" rounded />
+                <div className="pl-0.5 pr-1">
+                  <Avatar img={food.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
-                <div className="px-0 py-1">
-                  <div className="grid grid-cols-1 w-full">
+                <div className="px-0 w-full">
+                  <div className="grid grid-cols-1">
                     <div className="flex flex-row">
                       <Link
                         to={food.id}
@@ -199,29 +205,15 @@ export const Foods = () => {
                       >
                         {food.name}
                       </Link>
-                      {/* <span className="w-1/4 text-right font-mono text-red-700 font-semibold">{formatVND(food.price)}</span> */}
                     </div>
                     <div className="flex flex-row text-sm space-x-1">
-                      {/* <div className="w-18 font-mono text-red-700 font-medium">
-                          <span>{formatVND(food.price)}</span>
-                        </div> */}
-                      <span className="font font-mono font-black text-[10px]">{food.description}</span>
+                      <span className="font font-mono text-gray-500 text-[10px]">{food.description}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col pl-0.2 pr-0.5 py-1">
-                  {/* <svg
-                      className={isDeleteable(inv) ? "w-6 h-6 text-red-800 dark:text-white" : "w-6 h-6 text-gray-800 dark:text-white"}
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24" fill="none" viewBox="0 0 24 24"
-                      onClick={() => handleDeleteInvoice(inv)}
-                    >
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-                    </svg> */}
+                <div className="flex flex-col pl-0.2 pr-0.5 ">
                   <div>
-                    <span className="w-full text-center font-mono text-red-700 font-semibold">{formatVND(food.unitPrice)}</span>
+                    <span className="w-full text text-center font-mono text-red-700 font-semibold">{formatVND(food.unitPrice)}</span>
                   </div>
                   <div className="flex flex-row space-x-3 pt-1 place-items-center">
                     <svg
@@ -255,7 +247,6 @@ export const Foods = () => {
       </div>
       <div className="flex flex-row items-center justify-between">
         <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
-          {/* <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span className="font-semibold text-gray-900 dark:text-white">{pagination.pageSize * pagination.pageNumber + 1}-{pagination.pageSize * pagination.pageNumber + pagination.pageSize}</span> of <span className="font-semibold text-gray-900 dark:text-white">{pagination.totalElements}</span></span> */}
           <ul className="inline-flex items-center -space-x-px">
             <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
               <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
