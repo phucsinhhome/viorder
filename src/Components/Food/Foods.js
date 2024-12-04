@@ -146,7 +146,18 @@ export const Foods = () => {
     return false
   }
 
-  const changeQuantity = (food, delta) => { }
+  const changeQuantity = (food, delta) => {
+    var oF = {
+      ...food,
+      quantity: order[food.id] ? (order[food.id].quantity + delta) < 0 ? 0 : (order[food.id].quantity + delta) : delta
+    }
+    let ords = {
+      ...order,
+      [food.id]: oF
+    }
+    setOrder(ords)
+
+  }
 
   return (
     <div className="h-full pt-3">
