@@ -5,8 +5,7 @@ export const startOrder = (resolverId, startTime) => {
   var opts = {
     method: 'GET'
   }
-  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/start?resolverId=${resolverId}&startTime=${startTime}`, opts)
-    .then(response => response.json())
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/start?resolverId=${resolverId}&startTime=${startTime}`, opts);
 }
 
 export const addOrderItem = (orderId, item) => {
@@ -15,5 +14,5 @@ export const addOrderItem = (orderId, item) => {
     method: 'POST',
     data: item
   }
-  return fetch(`${process.env.REACT_APP_INVENTORY_ENDPOINT}/${orderId}/product/add`, opts);
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/product/add`, opts);
 }

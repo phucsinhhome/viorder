@@ -5,7 +5,8 @@ import { Avatar, Button, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { formatISODate, formatVND } from "../../Service/Utils";
+import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
+import { addOrderItem, startOrder } from "../../db/order";
 
 
 export const Foods = () => {
@@ -59,12 +60,24 @@ export const Foods = () => {
       })
   }
 
+  const registerOrder = () => {
+    var startTime = formatISODateTime(new Date())
+    startOrder('R1', startTime)
+      .then(rsp => {
+        if (rsp.ok) {
+          var body = rsp.json()
+          setOrder(body)
+        }
+      })
+  }
+
   useEffect(() => {
     if (location == null || location.state == null) {
       console.warn("Invalid prop location!")
       return
     }
     fetchFoods(new Date(), location.state.pageNumber, location.state.pageSize);
+    registerOrder();
   }, [location]);
 
   const filterOpts = [
@@ -147,6 +160,21 @@ export const Foods = () => {
   }
 
   const changeQuantity = (food, delta) => {
+
+    var item = {
+      ...food,
+      quantity: 1
+    }
+    addOrderItem(order.orderId, item)
+      .then(rsp => {
+        if (rsp.ok) {
+          var result = rsp.body
+          if (result === true) {
+
+          }
+        }
+      })
+
     var oF = {
       ...food,
       quantity: order[food.id] ? (order[food.id].quantity + delta) < 0 ? 0 : (order[food.id].quantity + delta) : delta
@@ -213,7 +241,7 @@ export const Foods = () => {
                       className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="999"
                       required
-                      value={order[food.id] ? order[food.id].quantity : 0}
+                      value={order.products[food.id] ? order.products[food.id].quantity : 0}
                       readOnly
                     />
                     <button
