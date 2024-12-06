@@ -71,17 +71,18 @@ export const Foods = () => {
               console.info('Started order %s', data.orderId)
               indexOrder(data)
               return data
-            }).then(o => {
-              getPotentialInvoices(o.orderId)
-                // .then(rsp => {
-                //   if (rsp.ok) {
-                //     rsp.json()
-                //       .then(data => {
-                //         setPotentialInvoices(data)
-                //       })
-                //   }
-                // })
             })
+            // .then(o => {
+            //   getPotentialInvoices(o.orderId)
+            //   // .then(rsp => {
+            //   //   if (rsp.ok) {
+            //   //     rsp.json()
+            //   //       .then(data => {
+            //   //         setPotentialInvoices(data)
+            //   //       })
+            //   //   }
+            //   // })
+            // })
 
         }
       })
@@ -193,8 +194,24 @@ export const Foods = () => {
   }
 
   const comfirmOrderInvoice = () => {
-    setShowPotentialGuestModal(true)
-    setChoosenGuest({})
+
+    getPotentialInvoices(order.orderId)
+      .then(rsp => {
+        if (rsp.ok) {
+          rsp.json()
+            .then(data => {
+              console.info('Fetch invoices successfully')
+              console.log(data);
+              
+              // setPotentialInvoices(data)
+              var da=[]
+              data.forEach(inv=>da.push(inv))
+              setPotentialInvoices(da)
+              setShowPotentialGuestModal(true)
+              setChoosenGuest({})
+            })
+        }
+      })
   }
 
   return (
