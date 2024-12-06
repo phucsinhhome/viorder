@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { deleteInvoice, listAllFoods as listAllFoods } from "../../db/food";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, Button, Modal, Table } from "flowbite-react";
+import { Avatar, Button, Label, Modal, Table } from "flowbite-react";
 import Moment from "react-moment";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
-import { addOrderItem, startOrder } from "../../db/order";
+import { addOrderItem, commitOrder, getPotentialInvoices, startOrder } from "../../db/order";
 
 
 export const Foods = () => {
@@ -22,9 +22,10 @@ export const Foods = () => {
     totalPages: 20
   })
 
-  const [openModal, setOpenModal] = useState(false)
-  const [deletingInv, setDeletingInv] = useState(null)
+  const [showPotentialGuestModal, setShowPotentialGuestModal] = useState(false)
   const [order, setOrder] = useState({})
+  const [potentialInvoices, setPotentialInvoices] = useState([])
+  const [choosenGuest, setChoosenGuest] = useState({})
 
   const location = useLocation()
 
@@ -69,6 +70,17 @@ export const Foods = () => {
             .then(data => {
               console.info('Started order %s', data.orderId)
               indexOrder(data)
+              return data
+            }).then(o => {
+              getPotentialInvoices(o.orderId)
+                // .then(rsp => {
+                //   if (rsp.ok) {
+                //     rsp.json()
+                //       .then(data => {
+                //         setPotentialInvoices(data)
+                //       })
+                //   }
+                // })
             })
 
         }
@@ -113,54 +125,40 @@ export const Foods = () => {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
-  //================ DELETE INVOICE ==========================//
-  const handleDeleteInvoice = (inv) => {
-    if (!isDeleteable(inv)) {
-      console.warn("Can not delete the paid invoice")
-      return
-    }
-    setDeletingInv(inv);
-    setOpenModal(true)
+  //================ ORDER ==========================//
+  const handleInvSelection = (inv) => {
+    setChoosenGuest(inv)
   }
 
-  const cancelDeletion = () => {
-    setOpenModal(false)
-    setDeletingInv(null)
+  const cancelOrder = () => {
+    setShowPotentialGuestModal(false)
   }
 
-  const confirmDeletion = () => {
+  const confirmOrder = () => {
     try {
-      if (deletingInv === undefined || deletingInv === null) {
-        return;
+      if (choosenGuest === null) {
+        return
       }
-      console.warn("Delete invoice %s...", deletingInv.id)
-      deleteInvoice(deletingInv)
+      var cOrder = {
+        ...order,
+        invoiceId: choosenGuest.id
+      }
+      setOrder(cOrder)
+      commitOrder(cOrder)
         .then(rsp => {
           if (rsp.ok) {
-            console.info("Delete invoice %s successfully", deletingInv.id)
-            fetchFoods(fromDate, pagination.pageNumber, pagination.pageSize)
+            rsp.json()
+              .then(data => {
+                console.info("Comfirm order %s successfully", cOrder.orderId)
+              })
           }
         })
-        .catch(err => {
-          console.error("Failed to delete invoice %s", deletingInv.id)
-          console.log(err)
-        })
+
     } catch (e) {
       console.error(e)
     } finally {
-      setOpenModal(false)
-      setDeletingInv(null)
+      setShowPotentialGuestModal(false)
     }
-  }
-
-  const isDeleteable = (inv) => {
-    if (inv.prepaied) {
-      return false
-    }
-    if (inv.paymentMethod === null || inv.paymentMethod === undefined || inv.paymentMethod === "") {
-      return true
-    }
-    return false
   }
 
   const changeQuantity = (food, delta) => {
@@ -191,9 +189,12 @@ export const Foods = () => {
       products: order.products
         .reduce((map, p) => { map[p.id] = p; return map }, {})
     }
-    console.log(iO);
-
     setOrder(iO)
+  }
+
+  const comfirmOrderInvoice = () => {
+    setShowPotentialGuestModal(true)
+    setChoosenGuest({})
   }
 
   return (
@@ -215,9 +216,7 @@ export const Foods = () => {
                       <Link
                         to={food.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className={isDeleteable(food)
-                          ? "font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
-                          : "font-medium text-gray-600 hover:underline dark:text-white-500 overflow-hidden"}
+                        className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
                       >
                         {food.name}
                       </Link>
@@ -317,21 +316,37 @@ export const Foods = () => {
           </ul>
         </nav>
 
-        <Button className="px-3 py-2 mt-2 mx-3 h-9">Order</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice}>Order</Button>
       </div>
-      <Modal show={openModal} onClose={cancelDeletion}>
-        <Modal.Header>Confirm</Modal.Header>
+      <Modal
+        show={showPotentialGuestModal}
+        onClose={cancelOrder}
+        popup={true}
+      >
+        <Modal.Header>Your Name</Modal.Header>
         <Modal.Body>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              {deletingInv !== null && deletingInv !== undefined ? "Delete invoice of " + deletingInv.guestName + " ?" : "You need to choose the invoice to delete"}
-            </p>
+          <div className="w-full">
+            {potentialInvoices.forEach(inv => {
+              <div
+                key={inv.id}
+                onSelect={handleInvSelection(inv)}
+                className={choosenGuest.id === inv.id
+                  ? "flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-amber-600 dark:bg-slate-500"
+                  : "flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500"
+                }
+              >
+                <Label
+                  className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                >
+                  {inv.guestName}
+                </Label>
+              </div>
+            })}
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmDeletion}>Delete</Button>
-          <Button color="gray" onClick={cancelDeletion}>
+          <Button onClick={confirmOrder}>Confirm</Button>
+          <Button color="gray" onClick={cancelOrder}>
             Cancel
           </Button>
         </Modal.Footer>

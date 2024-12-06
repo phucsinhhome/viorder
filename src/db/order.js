@@ -27,3 +27,11 @@ export const commitOrder = (order) => {
   }
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/commit`, opts);
 }
+
+export const  getPotentialInvoices = (orderId) => {
+  console.info("Fetch the potential invoices of the order")
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/guests`, opts);
+}
