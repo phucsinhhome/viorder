@@ -12,7 +12,8 @@ export const addOrderItem = (orderId, item) => {
   console.info("Add item into order")
   var opts = {
     method: 'POST',
-    data: item
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(item)
   }
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/product/add`, opts);
 }

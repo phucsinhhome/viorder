@@ -65,8 +65,12 @@ export const Foods = () => {
     startOrder('R1', startTime)
       .then(rsp => {
         if (rsp.ok) {
-          var body = rsp.json()
-          setOrder(body)
+          rsp.json()
+            .then(data => {
+              console.info('Started order %s', data.orderId)
+              indexOrder(data)
+            })
+
         }
       })
   }
@@ -163,28 +167,33 @@ export const Foods = () => {
 
     var item = {
       ...food,
-      quantity: 1
+      quantity: delta
     }
     addOrderItem(order.orderId, item)
       .then(rsp => {
         if (rsp.ok) {
-          var result = rsp.body
-          if (result === true) {
-
-          }
+          rsp.json()
+            .then(data => {
+              indexOrder(data)
+              console.info("Change item %s with quantity %s order successfully", item.id, item.quantity)
+            })
+        } else if (rsp.status === 400) {
+          console.warn('The item %s does not exist', item.id)
+        } else if (rsp.status === 304) {
+          console.warn('The item %s ran out', item.id)
         }
       })
+  }
 
-    var oF = {
-      ...food,
-      quantity: order[food.id] ? (order[food.id].quantity + delta) < 0 ? 0 : (order[food.id].quantity + delta) : delta
-    }
-    let ords = {
+  const indexOrder = (order) => {
+    var iO = {
       ...order,
-      [food.id]: oF
+      products: order.products
+        .reduce((map, p) => { map[p.id] = p; return map }, {})
     }
-    setOrder(ords)
+    console.log(iO);
 
+    setOrder(iO)
   }
 
   return (
@@ -241,7 +250,7 @@ export const Foods = () => {
                       className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="999"
                       required
-                      value={order.products[food.id] ? order.products[food.id].quantity : 0}
+                      value={order.products && order.products[food.id] ? order.products[food.id].quantity : 0}
                       readOnly
                     />
                     <button
