@@ -17,3 +17,13 @@ export const addOrderItem = (orderId, item) => {
   }
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/product/add`, opts);
 }
+
+export const commitOrder = (order) => {
+  console.info("Commit the order")
+  var opts = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/commit`, opts);
+}
