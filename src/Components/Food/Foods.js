@@ -72,18 +72,6 @@ export const Foods = () => {
               indexOrder(data)
               return data
             })
-            // .then(o => {
-            //   getPotentialInvoices(o.orderId)
-            //   // .then(rsp => {
-            //   //   if (rsp.ok) {
-            //   //     rsp.json()
-            //   //       .then(data => {
-            //   //         setPotentialInvoices(data)
-            //   //       })
-            //   //   }
-            //   // })
-            // })
-
         }
       })
   }
@@ -95,6 +83,8 @@ export const Foods = () => {
     }
     fetchFoods(new Date(), location.state.pageNumber, location.state.pageSize);
     registerOrder();
+
+    // eslint-disable-next-line
   }, [location]);
 
   const filterOpts = [
@@ -140,11 +130,13 @@ export const Foods = () => {
       if (choosenGuest === null) {
         return
       }
+      
       var cOrder = {
         ...order,
-        invoiceId: choosenGuest.id
+        invoiceId: choosenGuest.id,
+        products: Object.values(order.products),
+        status: 'CONFIRMED'
       }
-      setOrder(cOrder)
       commitOrder(cOrder)
         .then(rsp => {
           if (rsp.ok) {
@@ -202,11 +194,8 @@ export const Foods = () => {
             .then(data => {
               console.info('Fetch invoices successfully')
               console.log(data);
-              
-              // setPotentialInvoices(data)
-              var da=[]
-              data.forEach(inv=>da.push(inv))
-              setPotentialInvoices(da)
+
+              setPotentialInvoices(data)
               setShowPotentialGuestModal(true)
               setChoosenGuest({})
             })
@@ -342,23 +331,29 @@ export const Foods = () => {
       >
         <Modal.Header>Your Name</Modal.Header>
         <Modal.Body>
-          <div className="w-full">
-            {potentialInvoices.forEach(inv => {
+          <div className="flex flex-col space-y-2">
+            {potentialInvoices.map(inv =>
               <div
                 key={inv.id}
-                onSelect={handleInvSelection(inv)}
+                // onSelect={handleInvSelection(inv)}
                 className={choosenGuest.id === inv.id
-                  ? "flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-amber-600 dark:bg-slate-500"
-                  : "flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500"
+                  ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
+                  : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
                 }
+                onClick={()=>handleInvSelection(inv)}
               >
                 <Label
-                  className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                  className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
                 >
                   {inv.guestName}
                 </Label>
+                <Label
+                  className="font-mono text-sm text-left text-gray-500 overflow-hidden"
+                >
+                  {inv.checkInDate}
+                </Label>
               </div>
-            })}
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
