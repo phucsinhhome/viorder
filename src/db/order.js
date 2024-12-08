@@ -35,3 +35,27 @@ export const  getPotentialInvoices = (orderId) => {
   }
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/guests`, opts);
 }
+
+export const  fetchOrder = (orderId) => {
+  console.info("Fetch the order")
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}`, opts);
+}
+
+export const  confirmOrder = (orderId) => {
+  console.info("Confirm the order")
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/confirm?id=${orderId}`, opts);
+}
+
+export const  rejectOrder = (orderId) => {
+  console.info("Reject the order")
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/reject?id=${orderId}`, opts);
+}
