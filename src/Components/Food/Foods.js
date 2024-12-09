@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { deleteInvoice, listAllFoods as listAllFoods } from "../../db/food";
+import { listAllFoods as listAllFoods } from "../../db/food";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, Button, Label, Modal, Table } from "flowbite-react";
-import Moment from "react-moment";
+import { Avatar, Button, Label, Modal } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
+import { formatISODateTime, formatVND } from "../../Service/Utils";
 import { addOrderItem, commitOrder, getPotentialInvoices, startOrder } from "../../db/order";
 
 
@@ -27,17 +25,10 @@ export const Foods = () => {
   const [potentialInvoices, setPotentialInvoices] = useState([])
   const [choosenGuest, setChoosenGuest] = useState({})
 
+  const [showOrderSentModal, setShowOrderSentModal] = useState(false)
+
   const location = useLocation()
 
-  const filterDay = (numDays) => {
-
-    var newDate = Date.now() + numDays * 86400000
-    var newDD = new Date(newDate)
-    console.info("Change filter date to %s", newDD.toISOString())
-    setFromDate(newDD)
-    setDeltaDays(numDays)
-    fetchFoods(newDD, pagination.pageNumber, pagination.pageSize)
-  }
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
@@ -87,27 +78,6 @@ export const Foods = () => {
     // eslint-disable-next-line
   }, [location]);
 
-  const filterOpts = [
-    {
-      days: 0,
-      label: 'Today'
-    },
-    {
-      days: -1,
-      label: 'Yesterday'
-    },
-    {
-      days: -5,
-      label: 'Last 5 days'
-    },
-    {
-      days: -1 * new Date().getDate(),
-      label: 'From 1st'
-    }]
-  const filterClass = (days) => {
-    var classNamePattern = "font-bold text-amber-800 rounded px-2 py-0.5"
-    return classNamePattern + " " + (deltaDays === days ? "bg-slate-400" : "bg-slate-200");
-  }
 
   const pageClass = (pageNum) => {
     var noHighlight = "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -130,7 +100,7 @@ export const Foods = () => {
       if (choosenGuest === null) {
         return
       }
-      
+
       var cOrder = {
         ...order,
         invoiceId: choosenGuest.id,
@@ -141,8 +111,9 @@ export const Foods = () => {
         .then(rsp => {
           if (rsp.ok) {
             rsp.json()
-              .then(data => {
+              .then(() => {
                 console.info("Comfirm order %s successfully", cOrder.orderId)
+                setShowOrderSentModal(true)
               })
           }
         })
@@ -201,6 +172,12 @@ export const Foods = () => {
             })
         }
       })
+  }
+
+  const finishOrder = () => {
+    setShowOrderSentModal(false)
+    console.info("The order has been done successfully.")
+    setOrder({})
   }
 
   return (
@@ -300,6 +277,7 @@ export const Foods = () => {
 
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice}>Order</Button>
       </div>
+
       <Modal
         show={showPotentialGuestModal}
         onClose={cancelOrder}
@@ -316,7 +294,7 @@ export const Foods = () => {
                   ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
                   : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
                 }
-                onClick={()=>handleInvSelection(inv)}
+                onClick={() => handleInvSelection(inv)}
               >
                 <Label
                   className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
@@ -340,6 +318,19 @@ export const Foods = () => {
         </Modal.Footer>
       </Modal>
 
+
+      <Modal
+        show={showOrderSentModal}
+        onClose={finishOrder}
+        popup={true}
+      >
+        <Modal.Header>Order Sent</Modal.Header>
+        <Modal.Body>
+          <div className="flex flex-col space-y-2">
+            Thank so much! I have received the order. I will come to confirm with you shortly
+          </div>
+        </Modal.Body>
+      </Modal>
 
     </div >
   );
