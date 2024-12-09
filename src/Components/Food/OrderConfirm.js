@@ -11,10 +11,8 @@ import { addOrderItem, commitOrder, confirmOrder, fetchOrder, getPotentialInvoic
 
 export const OrderConfirm = () => {
 
-  const [showPotentialGuestModal, setShowPotentialGuestModal] = useState(false)
   const [order, setOrder] = useState({})
-  const [potentialInvoices, setPotentialInvoices] = useState([])
-  const [choosenGuest, setChoosenGuest] = useState({})
+  const [message, setMessage] = useState('No item')
 
   const { orderId, staffId } = useParams()
   const readOrder = () => {
@@ -38,13 +36,7 @@ export const OrderConfirm = () => {
   }, [orderId]);
 
   //================ ORDER ==========================//
-  const handleInvSelection = (inv) => {
-    setChoosenGuest(inv)
-  }
 
-  const cancelOrder = () => {
-    setShowPotentialGuestModal(false)
-  }
 
   const sendToPreparation = () => {
 
@@ -54,6 +46,8 @@ export const OrderConfirm = () => {
           rsp.json()
             .then(data => {
               console.info("Send oder to preparation %s successfully", data.orderId)
+              setOrder({})
+              setMessage("Confirmed successfully")
             })
         }
       })
@@ -66,7 +60,9 @@ export const OrderConfirm = () => {
         if (rsp.ok) {
           rsp.json()
             .then(data => {
-              console.info("Comfirm order %s successfully", data.orderId)
+              console.info("Order %s has been rejected", data.orderId)
+              setOrder({})
+              setMessage("Order has been rejected")
             })
         }
       })
@@ -141,12 +137,12 @@ export const OrderConfirm = () => {
 
               </div>
             )
-          }) : <>No item</>}
+          }) : <>{message}</>}
         </div>
       </div>
       <div className="flex flex-row items-center justify-between">
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation}>Reject</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation}>Confirm</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={order.products === undefined}>Confirm</Button>
       </div>
     </div >
   );
