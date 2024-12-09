@@ -207,34 +207,34 @@ export const Foods = () => {
     <div className="h-full pt-3">
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1">
-          {foods.map((food) => {
+          {foods.map((product) => {
             return (
               <div
                 className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
-                key={food.id}
+                key={product.id}
               >
                 <div className="pl-0.5 pr-1">
-                  <Avatar img={food.featureImgUrl} alt="dish image" rounded className="w-12" />
+                  <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
                 <div className="px-0 w-full">
                   <div className="grid grid-cols-1">
                     <div className="flex flex-row">
                       <Link
-                        to={food.id}
+                        to={product.id}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
                         className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
                       >
-                        {food.name}
+                        {product.name}
                       </Link>
                     </div>
                     <div className="flex flex-row text-sm space-x-1">
-                      <span className="font font-mono text-gray-500 text-[10px]">{food.description}</span>
+                      <span className="font font-mono text-gray-500 text-[10px]">{product.description}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col pl-0.2 pr-2">
                   <div>
-                    <span className="w-full text text-center font-mono text-red-700 font-semibold">{formatVND(food.unitPrice)}</span>
+                    <span className="w-full text text-center font-mono text-red-700 font-semibold">{formatVND(product.unitPrice)}</span>
                   </div>
                   <div className="relative flex items-center w-full mb-2">
                     <button
@@ -242,7 +242,7 @@ export const Foods = () => {
                       id="decrement-button"
                       data-input-counter-decrement="quantity-input"
                       className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                      onClick={() => changeQuantity(food, -1)}
+                      onClick={() => changeQuantity(product, -1)}
                     >
                       <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
@@ -252,10 +252,10 @@ export const Foods = () => {
                       type="number"
                       id="quantity-input"
                       data-input-counter aria-describedby="helper-text-explanation"
-                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="999"
+                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 pr-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="9"
                       required
-                      value={order.products && order.products[food.id] ? order.products[food.id].quantity : 0}
+                      value={order.products && order.products[product.id] ? order.products[product.id].quantity : 0}
                       readOnly
                     />
                     <button
@@ -263,37 +263,13 @@ export const Foods = () => {
                       id="increment-button"
                       data-input-counter-increment="quantity-input"
                       className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                      onClick={() => changeQuantity(food, 1)}
+                      onClick={() => changeQuantity(product, 1)}
                     >
                       <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
                       </svg>
                     </button>
                   </div>
-                  {/* <div className="flex flex-row space-x-3 pt-1 place-items-center">
-                    
-                    <svg
-                      className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
-                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-                    </svg>
-                    <span>5</span>
-                    <svg
-                      className="w-7 h-5 font-bold text-lime-600 bg-slate-200 dark:text-white rounded px-1"
-                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5" />
-                    </svg>
-                  </div> */}
                 </div>
 
               </div>
