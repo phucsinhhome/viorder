@@ -16,7 +16,7 @@ export const OrderConfirm = () => {
   const [potentialInvoices, setPotentialInvoices] = useState([])
   const [choosenGuest, setChoosenGuest] = useState({})
 
-  const { orderId } = useParams()
+  const { orderId, staffId } = useParams()
   const readOrder = () => {
     console.info("Loading the order")
 
@@ -48,7 +48,7 @@ export const OrderConfirm = () => {
 
   const sendToPreparation = () => {
 
-    confirmOrder(orderId)
+    confirmOrder(orderId, staffId)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -61,7 +61,7 @@ export const OrderConfirm = () => {
 
   const stopPreparation = () => {
 
-    rejectOrder(orderId)
+    rejectOrder(orderId, staffId)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -145,7 +145,7 @@ export const OrderConfirm = () => {
         </div>
       </div>
       <div className="flex flex-row items-center justify-between">
-      <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation}>Reject</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation}>Reject</Button>
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation}>Confirm</Button>
       </div>
     </div >

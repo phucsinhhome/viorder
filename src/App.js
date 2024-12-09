@@ -60,7 +60,7 @@ export default function App() {
           <Route path="profit" element={<ProfitReport />} />
           <Route path="foods" element={<Foods />} />
           <Route path="foods/:invoiceId" element={<EditInvoice />} />
-          <Route path="order/:orderId" element={<OrderConfirm />} />
+          <Route path="order/:orderId/:staffId" element={<OrderConfirm />} />
           <Route path="expenses" element={<ExpenseManager />} />
           <Route path="expenses/:expenseId" element={<EditExpense />} />
           <Route path="reservation" element={<ReservationManager />} />
