@@ -102,9 +102,8 @@ export const Foods = () => {
       }
 
       var cOrder = {
-        ...order,
+        ...order.origin,
         invoiceId: choosenGuest.id,
-        products: Object.values(order.products),
         status: 'CONFIRMED'
       }
       commitOrder(cOrder)
@@ -131,7 +130,7 @@ export const Foods = () => {
       ...food,
       quantity: delta
     }
-    addOrderItem(order.orderId, item)
+    addOrderItem(order.origin.orderId, item)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -149,16 +148,17 @@ export const Foods = () => {
 
   const indexOrder = (order) => {
     var iO = {
-      ...order,
-      products: order.products
-        .reduce((map, p) => { map[p.id] = p; return map }, {})
+      origin: order,
+      indexedProducts: order.products ? order.products
+        .reduce((map, p) => { map[p.id] = p; return map }, {}) : {},
+      totalOrder: order.products ? order.products.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
     }
     setOrder(iO)
   }
 
   const comfirmOrderInvoice = () => {
 
-    getPotentialInvoices(order.orderId)
+    getPotentialInvoices(order.origin.orderId)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -232,7 +232,7 @@ export const Foods = () => {
                       className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 pr-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="9"
                       required
-                      value={order.products && order.products[product.id] ? order.products[product.id].quantity : 0}
+                      value={order.indexedProducts && order.indexedProducts[product.id] ? order.indexedProducts[product.id].quantity : 0}
                       readOnly
                     />
                     <button
@@ -275,7 +275,7 @@ export const Foods = () => {
           </ul>
         </nav>
 
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice}>Order</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={order.totalOrder <= 0}>Order</Button>
       </div>
 
       <Modal
