@@ -1,17 +1,13 @@
 import { useState, useEffect } from "react";
-import { listAllFoods as listAllFoods } from "../../db/food";
 import { Link, useLocation } from "react-router-dom";
 import { Avatar, Button, Label, Modal } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { formatISODateTime, formatVND } from "../../Service/Utils";
-import { addOrderItem, commitOrder, getPotentialInvoices, startOrder } from "../../db/order";
+import { addOrderItem, commitOrder, fetchItems, getPotentialInvoices, startOrder } from "../../db/order";
 
 
 export const Foods = () => {
   const [foods, setFoods] = useState([])
-
-  const [fromDate, setFromDate] = useState(new Date());
-  const [deltaDays, setDeltaDays] = useState(0)
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -34,21 +30,26 @@ export const Foods = () => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
     var pSize = pagination.pageSize
-    fetchFoods(fromDate, pNum, pSize)
+    fetchFoods(pNum, pSize)
   }
 
-  const fetchFoods = (fromDate, pageNumber, pageSize) => {
+  const fetchFoods = (pageNumber, pageSize) => {
     console.info("Loading foods")
 
-    listAllFoods(pageNumber, pageSize)
-      .then(data => {
-        setFoods(data.content)
-        setPagination({
-          pageNumber: data.number,
-          pageSize: data.size,
-          totalElements: data.totalElements,
-          totalPages: data.totalPages
-        })
+    fetchItems('food', pageNumber, pageSize)
+      .then(rsp => {
+        if (rsp.ok) {
+          rsp.json().then(data => {
+            var availables = data.content.filter(i => i.quantity > 0)
+            setFoods(availables)
+            setPagination({
+              pageNumber: data.number,
+              pageSize: data.size,
+              totalElements: data.totalElements,
+              totalPages: data.totalPages
+            })
+          })
+        }
       })
   }
 
