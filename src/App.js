@@ -9,7 +9,6 @@ import { EditExpense } from "./Components/Expense/EditExpense";
 import { ReservationManager } from "./Components/Reservation/ReservationManager";
 import { EditReservation } from "./Components/Reservation/EditReservation";
 import { Settings } from "./Components/Settings/Settings";
-import { IoMdSettings } from "react-icons/io";
 import { OrderConfirm } from "./Components/Food/OrderConfirm";
 
 const tele = window.Telegram.WebApp;

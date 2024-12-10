@@ -83,7 +83,7 @@ export const OrderConfirm = () => {
   const fetchInvoices = (page, size) => {
 
     var fromDate = formatISODate(new Date())
-
+    console.log('Fetching invoices from date %s page %d size %d', fromDate, page, size)
     listStayingAndComingInvoices(fromDate, page, size)
       .then(rsp => {
         if (rsp.ok) {
@@ -233,7 +233,7 @@ export const OrderConfirm = () => {
       </div>
       <div className="flex flex-row items-center justify-between">
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={fetchInvoices(0, DEFAULT_PAGE_SIZE)}>Link invoice</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)}>Link invoice</Button>
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={readToConfirm === false}>Confirm</Button>
       </div>
 
@@ -294,7 +294,7 @@ export const OrderConfirm = () => {
                 </div>
               </div>
               : <div className="flex flex-wrap -mx-3 mb-6">
-                <span className="text-red-800">There is no invoice! Please create invoice from Invoice Managenent first.</span>
+                <span className="text-red-800 text-center">There is no invoice! Please create invoice from Invoice Managenent first.</span>
               </div>
             }
           </div>
