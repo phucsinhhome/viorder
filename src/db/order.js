@@ -54,6 +54,14 @@ export const getPotentialInvoices = (orderId) => {
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/guests`, opts);
 }
 
+export const resolveInvoiceId = (resolverId) => {
+  console.info("Resolve the invoice id from the id {}", resolverId)
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/resolve?resolverId=${resolverId}`, opts);
+}
+
 export const fetchOrder = (orderId) => {
   console.info("Fetch the order")
   var opts = {

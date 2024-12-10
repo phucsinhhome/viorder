@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { formatISODateTime, formatVND } from "../../Service/Utils";
-import { addOrderItem, commitOrder, fetchItems, getPotentialInvoices, startOrder } from "../../db/order";
+import { addOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolveInvoiceId, startOrder } from "../../db/order";
 
 
-export const Foods = () => {
-  const [foods, setFoods] = useState([])
+export const Menu = () => {
+  const [menuItems, setMenuItems] = useState([])
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -24,6 +24,7 @@ export const Foods = () => {
   const [showOrderSentModal, setShowOrderSentModal] = useState(false)
   const [guestName, setGuestName] = useState('')
 
+  const { group, resolverId } = useParams()
   const location = useLocation()
 
 
@@ -37,12 +38,12 @@ export const Foods = () => {
   const fetchFoods = (pageNumber, pageSize) => {
     console.info("Loading foods")
 
-    fetchItems('food', pageNumber, pageSize)
+    fetchItems(group, pageNumber, pageSize)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json().then(data => {
             var availables = data.content.filter(i => i.quantity > 0)
-            setFoods(availables)
+            setMenuItems(availables)
             setPagination({
               pageNumber: data.number,
               pageSize: data.size,
@@ -56,7 +57,7 @@ export const Foods = () => {
 
   const registerOrder = () => {
     var startTime = formatISODateTime(new Date())
-    startOrder('R1', startTime)
+    startOrder(resolverId, startTime)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -162,20 +163,37 @@ export const Foods = () => {
 
   const comfirmOrderInvoice = () => {
 
-    getPotentialInvoices(order.origin.orderId)
-      .then(rsp => {
-        if (rsp.ok) {
-          rsp.json()
-            .then(data => {
-              console.info('Fetch invoices successfully')
-              console.log(data);
+    if (resolverId !== null && resolverId !== undefined) {
+      resolveInvoiceId(resolverId)
+        .then(rsp => {
+          if (rsp.ok) {
+            rsp.json()
+              .then(data => {
+                if (data !== null) {
+                  setPotentialInvoices([data])
+                  setShowPotentialGuestModal(true)
+                  setChoosenGuest({})
+                } else {
+                  getPotentialInvoices(order.origin.orderId)
+                    .then(rsp => {
+                      if (rsp.ok) {
+                        rsp.json()
+                          .then(data => {
+                            console.info('Fetch invoices successfully')
+                            console.log(data);
 
-              setPotentialInvoices(data)
-              setShowPotentialGuestModal(true)
-              setChoosenGuest({})
-            })
-        }
-      })
+                            setPotentialInvoices(data)
+                            setShowPotentialGuestModal(true)
+                            setChoosenGuest({})
+                          })
+                      }
+                    })
+                }
+              })
+          }
+        })
+    }
+
   }
 
   const finishOrder = () => {
@@ -193,7 +211,7 @@ export const Foods = () => {
     <div className="h-full pt-3">
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1">
-          {foods.map((product) => {
+          {menuItems.map((product) => {
             return (
               <div
                 className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
