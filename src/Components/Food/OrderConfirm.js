@@ -154,14 +154,19 @@ export const OrderConfirm = () => {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
-  const readToConfirm = () => {
-    return order.products === undefined || order.invoiceId === undefined
+  const disableConfirm = () => {
+    return order.products === undefined || order.invoiceId === null
   }
 
   return (
     <div className="h-full pt-3">
-      <div className="max-h-fit overflow-hidden">
+      <div className="flex flex-col max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1">
+          <Label>{'Order Id: ' + order.orderId}</Label>
+          <Label>{'Guest Name: ' + order.guestName}</Label>
+          <Label>{'Invoice Id: ' + order.invoiceId}</Label>
+        </div>
+        <div className="flex flex-col space-y-1 pt-2">
           {order.products ? order.products.map((item) => {
             return (
               <div
@@ -234,7 +239,7 @@ export const OrderConfirm = () => {
       <div className="flex flex-row items-center justify-between">
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)}>Link invoice</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={readToConfirm === false}>Confirm</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={disableConfirm}>Confirm</Button>
       </div>
 
 
