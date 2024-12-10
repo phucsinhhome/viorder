@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, Button, Label, Modal } from "flowbite-react";
+import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { formatISODateTime, formatVND } from "../../Service/Utils";
 import { addOrderItem, commitOrder, fetchItems, getPotentialInvoices, startOrder } from "../../db/order";
@@ -22,6 +22,7 @@ export const Foods = () => {
   const [choosenGuest, setChoosenGuest] = useState({})
 
   const [showOrderSentModal, setShowOrderSentModal] = useState(false)
+  const [guestName, setGuestName] = useState('')
 
   const location = useLocation()
 
@@ -90,6 +91,7 @@ export const Foods = () => {
   //================ ORDER ==========================//
   const handleInvSelection = (inv) => {
     setChoosenGuest(inv)
+    setGuestName(inv.guestName)
   }
 
   const cancelOrder = () => {
@@ -105,7 +107,8 @@ export const Foods = () => {
       var cOrder = {
         ...order.origin,
         invoiceId: choosenGuest.id,
-        status: 'CONFIRMED'
+        status: 'CONFIRMED',
+        guestName: guestName
       }
       commitOrder(cOrder)
         .then(rsp => {
@@ -179,6 +182,11 @@ export const Foods = () => {
     setShowOrderSentModal(false)
     console.info("The order has been done successfully.")
     setOrder({})
+  }
+
+  const changeGuestName = (e) => {
+    var gN = e.target.value
+    setGuestName(gN)
   }
 
   return (
@@ -284,13 +292,11 @@ export const Foods = () => {
         onClose={cancelOrder}
         popup={true}
       >
-        <Modal.Header>Your Name</Modal.Header>
         <Modal.Body>
           <div className="flex flex-col space-y-2">
-            {potentialInvoices.map(inv =>
+            {potentialInvoices && potentialInvoices.length > 0 ? potentialInvoices.map(inv =>
               <div
                 key={inv.id}
-                // onSelect={handleInvSelection(inv)}
                 className={choosenGuest.id === inv.id
                   ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
                   : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
@@ -308,7 +314,24 @@ export const Foods = () => {
                   {inv.checkInDate}
                 </Label>
               </div>
-            )}
+            ) : <div className="flex flex-wrap -mx-3 mb-6">
+              <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="guestName"
+                    value="Please enter your name"
+                  />
+                </div>
+                <TextInput
+                  id="guestName"
+                  placeholder="John"
+                  required={true}
+                  value={guestName}
+                  onChange={(e) => changeGuestName(e)}
+                />
+              </div>
+            </div>
+            }
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">

@@ -1,18 +1,26 @@
 import { useState, useEffect } from "react";
-import { deleteInvoice, listAllFoods as listAllFoods } from "../../db/food";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { Avatar, Button, Label, Modal, Table } from "flowbite-react";
-import Moment from "react-moment";
+import { Link, useParams } from "react-router-dom";
+import { Avatar, Button, Label, Modal } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
-import { addOrderItem, commitOrder, confirmOrder, fetchOrder, getPotentialInvoices, rejectOrder, startOrder } from "../../db/order";
+import { formatISODate, formatVND } from "../../Service/Utils";
+import { confirmOrder, fetchOrder, rejectOrder } from "../../db/order";
+import { listStayingAndComingInvoices } from "../../db/invoice";
 
 
 export const OrderConfirm = () => {
 
+  const [pagination, setPagination] = useState({
+    pageNumber: 0,
+    pageSize: DEFAULT_PAGE_SIZE,
+    totalElements: 200,
+    totalPages: 20
+  })
   const [order, setOrder] = useState({})
   const [message, setMessage] = useState('No item')
+
+  const [showPotentialInvoices, setShowPotentialInvoices] = useState(false)
+  const [potentialInvoices, setPotentialInvoices] = useState([])
+  const [choosenGuest, setChoosenGuest] = useState({})
 
   const { orderId, staffId } = useParams()
   const readOrder = () => {
@@ -34,9 +42,6 @@ export const OrderConfirm = () => {
 
     // eslint-disable-next-line
   }, [orderId]);
-
-  //================ ORDER ==========================//
-
 
   const sendToPreparation = () => {
 
@@ -68,6 +73,90 @@ export const OrderConfirm = () => {
       })
   }
 
+  const handlePaginationClick = (pageNumber) => {
+    console.log("Pagination nav bar click to page %s", pageNumber)
+    var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
+    var pSize = pagination.pageSize
+    fetchInvoices(pNum, pSize)
+  }
+
+  const fetchInvoices = (page, size) => {
+
+    var fromDate = formatISODate(new Date())
+
+    listStayingAndComingInvoices(fromDate, page, size)
+      .then(rsp => {
+        if (rsp.ok) {
+          rsp.json()
+            .then(data => {
+              setPotentialInvoices(data.content)
+              setShowPotentialInvoices(true)
+              var page = {
+                pageNumber: data.number,
+                pageSize: data.size,
+                totalElements: data.totalElements,
+                totalPages: data.totalPages
+              }
+              setPagination(page)
+            })
+        }
+      })
+  }
+
+  const cancelLinkInvoice = () => {
+    setShowPotentialInvoices(false)
+  }
+
+  const handleInvSelection = (inv) => {
+    setChoosenGuest(inv)
+  }
+
+  const confirmChangeInvoice = () => {
+    try {
+      if (order === undefined || order === null) {
+        return
+      }
+      if (choosenGuest === undefined || choosenGuest === null) {
+        return
+      }
+      if (order.invoiceId === choosenGuest.id) {
+        return
+      }
+      var o = {
+        ...order,
+        invoiceId: choosenGuest.id
+      }
+      setOrder(o)
+      console.info("Changed linked invoice to %s", order.invoiceId)
+    } catch (e) {
+      console.error(e)
+    }
+    finally {
+      setShowPotentialInvoices(false)
+    }
+  }
+
+  const cancelChangeInvoice = () => {
+    try {
+      setChoosenGuest({})
+    } catch (e) {
+      console.error(e)
+    }
+    finally {
+      setShowPotentialInvoices(false)
+    }
+  }
+
+  const pageClass = (pageNum) => {
+    var noHighlight = "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+    var highlight = "px-3 py-2 leading-tight text-bold text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+
+    return pagination.pageNumber === pageNum ? highlight : noHighlight
+  }
+
+  const readToConfirm = () => {
+    return order.products === undefined || order.invoiceId === undefined
+  }
 
   return (
     <div className="h-full pt-3">
@@ -144,8 +233,79 @@ export const OrderConfirm = () => {
       </div>
       <div className="flex flex-row items-center justify-between">
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={order.products === undefined}>Confirm</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={fetchInvoices(0, DEFAULT_PAGE_SIZE)}>Link invoice</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={readToConfirm === false}>Confirm</Button>
       </div>
+
+
+      <Modal
+        show={showPotentialInvoices}
+        onClose={cancelLinkInvoice}
+        popup={true}
+      >
+        <Modal.Body>
+          <div className="flex flex-col">
+            {potentialInvoices && potentialInvoices.length > 0 ?
+              <div>
+                <div><span className="font italic">Choose to link the order with an invoice</span></div>
+                <div className="flex flex-col space-y-2">
+                  {potentialInvoices.map(inv =>
+                    <div
+                      key={inv.id}
+                      className={choosenGuest.id === inv.id
+                        ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
+                        : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
+                      }
+                      onClick={() => handleInvSelection(inv)}
+                    >
+                      <Label
+                        className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
+                      >
+                        {inv.guestName}
+                      </Label>
+                      <Label
+                        className="font-mono text-sm text-left text-gray-500 overflow-hidden"
+                      >
+                        {inv.checkInDate}
+                      </Label>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-row items-center justify-between">
+                  <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
+                    <ul className="inline-flex items-center -space-x-px">
+                      <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                        <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
+                      </li>
+                      <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
+                        1
+                      </li>
+                      <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
+                        {pagination.pageNumber + 1}
+                      </li>
+                      <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
+                        {pagination.totalPages}
+                      </li>
+                      <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                        <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+              : <div className="flex flex-wrap -mx-3 mb-6">
+                <span className="text-red-800">There is no invoice! Please create invoice from Invoice Managenent first.</span>
+              </div>
+            }
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={confirmChangeInvoice}>Confirm</Button>
+          <Button color="gray" onClick={cancelChangeInvoice}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div >
   );
 }
