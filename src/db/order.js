@@ -70,12 +70,14 @@ export const fetchOrder = (orderId) => {
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}`, opts);
 }
 
-export const confirmOrder = (orderId, staffId) => {
+export const confirmOrder = (order) => {
   console.info("Confirm the order")
   var opts = {
-    method: 'GET'
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
   }
-  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/confirm?orderId=${orderId}&staffId=${staffId}`, opts);
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/confirm`, opts);
 }
 
 export const rejectOrder = (orderId, staffId) => {

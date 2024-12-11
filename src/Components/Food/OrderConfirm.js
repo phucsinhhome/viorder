@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
-import { formatISODate, formatVND } from "../../Service/Utils";
+import { formatISODate, formatISODateTime, formatVND } from "../../Service/Utils";
 import { confirmOrder, fetchOrder, rejectOrder } from "../../db/order";
 import { listStayingAndComingInvoices } from "../../db/invoice";
 
@@ -44,8 +44,14 @@ export const OrderConfirm = () => {
   }, [orderId]);
 
   const sendToPreparation = () => {
+    var confirmedAt = formatISODateTime(new Date())
+    var confirmedOrder = {
+      ...order,
+      confirmedAt: confirmedAt,
+      confirmedBy: staffId
+    }
 
-    confirmOrder(orderId, staffId)
+    confirmOrder(confirmedOrder)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -154,10 +160,6 @@ export const OrderConfirm = () => {
     return pagination.pageNumber === pageNum ? highlight : noHighlight
   }
 
-  const disableConfirm = () => {
-    return order.products === undefined || order.invoiceId === null
-  }
-
   return (
     <div className="h-full pt-3">
       <div className="flex flex-col max-h-fit overflow-hidden">
@@ -238,8 +240,8 @@ export const OrderConfirm = () => {
       </div>
       <div className="flex flex-row items-center justify-between">
         <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)}>Link invoice</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={disableConfirm}>Confirm</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)} disabled={order.products === undefined}>Link invoice</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={order.invoiceId === null || order.products === undefined}>Confirm</Button>
       </div>
 
 

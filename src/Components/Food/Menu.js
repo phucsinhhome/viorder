@@ -169,11 +169,13 @@ export const Menu = () => {
           if (rsp.ok) {
             rsp.text()
               .then(data => {
-                if (data !== null && data !== undefined) {
+                if (data !== null && data !== undefined && data !== '') {
+                  console.info("Resolved invoice id %s", data)
                   setPotentialInvoices([data])
                   setShowPotentialGuestModal(true)
                   setChoosenGuest({})
                 } else {
+                  console.info("No invoice resolved")
                   getPotentialInvoices(order.origin.orderId)
                     .then(rsp => {
                       if (rsp.ok) {
@@ -310,45 +312,72 @@ export const Menu = () => {
         onClose={cancelOrder}
         popup={true}
       >
+        <Modal.Header>
+
+        </Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col space-y-2">
-            {potentialInvoices && potentialInvoices.length > 0 ? potentialInvoices.map(inv =>
-              <div
-                key={inv.id}
-                className={choosenGuest.id === inv.id
-                  ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
-                  : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
-                }
-                onClick={() => handleInvSelection(inv)}
-              >
-                <Label
-                  className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
-                >
-                  {inv.guestName}
-                </Label>
-                <Label
-                  className="font-mono text-sm text-left text-gray-500 overflow-hidden"
-                >
-                  {inv.checkInDate}
-                </Label>
+          <div className="flex flex-col">
+            {potentialInvoices && potentialInvoices.length > 0 ?
+              <div>
+                <div><span className="font italic">Please choose your name</span></div>
+                <div className="flex flex-col space-y-2">
+                  {potentialInvoices.map(inv =>
+                    <div
+                      key={inv.id}
+                      className={choosenGuest.id === inv.id
+                        ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
+                        : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
+                      }
+                      onClick={() => handleInvSelection(inv)}
+                    >
+                      <Label
+                        className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
+                      >
+                        {inv.guestName}
+                      </Label>
+                      <Label
+                        className="font-mono text-sm text-left text-gray-500 overflow-hidden"
+                      >
+                        {inv.checkInDate}
+                      </Label>
+                    </div>
+                  )}
+                </div>
+                <div className="pt-4"><span className="font italic">Could not find your name in above list</span>
+                  <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    {/* <div className="mb-2 block">
+                      <Label
+                        htmlFor="guestName"
+                        value="Please enter your name"
+                      />
+                    </div> */}
+                    <TextInput
+                      id="guestName"
+                      placeholder="John"
+                      required={true}
+                      value={guestName}
+                      onChange={(e) => changeGuestName(e)}
+                    />
+                  </div>
+                </div>
               </div>
-            ) : <div className="flex flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <div className="mb-2 block">
-                  <Label
-                    htmlFor="guestName"
-                    value="Please enter your name"
+              : <div className="flex flex-wrap -mx-3 mb-6">
+                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                  <div className="mb-2 block">
+                    <Label
+                      htmlFor="guestName"
+                      value="Please enter your name"
+                    />
+                  </div>
+                  <TextInput
+                    id="guestName"
+                    placeholder="John"
+                    required={true}
+                    value={guestName}
+                    onChange={(e) => changeGuestName(e)}
                   />
                 </div>
-                <TextInput
-                  id="guestName"
-                  placeholder="John"
-                  required={true}
-                  value={guestName}
-                  onChange={(e) => changeGuestName(e)}
-                />
               </div>
-            </div>
             }
           </div>
         </Modal.Body>
