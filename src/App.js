@@ -46,7 +46,7 @@ export default function App() {
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {/* <Link to="profit" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link> */}
-          <Link to="menu/food" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Food</Link>
+          <Link to="menu/food/r1" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Food</Link>
           <Link to="menu/baverage" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Baverage</Link>
           {/* <Link to="reservation" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link> */}
           {/* <Link to="settings" className="absolute right-2">

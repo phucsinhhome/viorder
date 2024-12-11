@@ -167,9 +167,9 @@ export const Menu = () => {
       resolveInvoiceId(resolverId)
         .then(rsp => {
           if (rsp.ok) {
-            rsp.json()
+            rsp.text()
               .then(data => {
-                if (data !== null) {
+                if (data !== null && data !== undefined) {
                   setPotentialInvoices([data])
                   setShowPotentialGuestModal(true)
                   setChoosenGuest({})
