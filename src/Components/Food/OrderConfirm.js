@@ -57,7 +57,7 @@ export const OrderConfirm = () => {
           rsp.json()
             .then(data => {
               console.info("Send oder to preparation %s successfully", data.orderId)
-              setOrder({})
+              setOrder(data)
               setMessage("Confirmed successfully")
             })
         }
@@ -72,7 +72,7 @@ export const OrderConfirm = () => {
           rsp.json()
             .then(data => {
               console.info("Order %s has been rejected", data.orderId)
-              setOrder({})
+              setOrder(data)
               setMessage("Order has been rejected")
             })
         }
@@ -167,9 +167,10 @@ export const OrderConfirm = () => {
           <Label>{'Order Id: ' + order.orderId}</Label>
           <Label>{'Guest Name: ' + order.guestName}</Label>
           <Label>{'Invoice Id: ' + order.invoiceId}</Label>
+          <Label>{'Status: ' + order.status}</Label>
         </div>
         <div className="flex flex-col space-y-1 pt-2">
-          {order.products ? order.products.map((item) => {
+          {order.items ? order.items.map((item) => {
             return (
               <div
                 className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
@@ -239,9 +240,9 @@ export const OrderConfirm = () => {
         </div>
       </div>
       <div className="flex flex-row items-center justify-between">
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.products === undefined}>Reject</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)} disabled={order.products === undefined}>Link invoice</Button>
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={order.invoiceId === null || order.products === undefined}>Confirm</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={stopPreparation} disabled={order.items === undefined || order.status !== 'SENT'}>Reject</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={() => fetchInvoices(0, DEFAULT_PAGE_SIZE)} disabled={order.items === undefined}>Link invoice</Button>
+        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={sendToPreparation} disabled={order.invoiceId === null || order.items === undefined || order.status !== 'SENT'}>Confirm</Button>
       </div>
 
 

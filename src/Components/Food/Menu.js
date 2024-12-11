@@ -32,25 +32,26 @@ export const Menu = () => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
     var pSize = pagination.pageSize
-    fetchFoods(pNum, pSize)
+    fetchMenuItems(pNum, pSize)
   }
 
-  const fetchFoods = (pageNumber, pageSize) => {
+  const fetchMenuItems = (pageNumber, pageSize) => {
     console.info("Loading foods")
 
     fetchItems(group, pageNumber, pageSize)
       .then(rsp => {
         if (rsp.ok) {
-          rsp.json().then(data => {
-            var availables = data.content.filter(i => i.quantity > 0)
-            setMenuItems(availables)
-            setPagination({
-              pageNumber: data.number,
-              pageSize: data.size,
-              totalElements: data.totalElements,
-              totalPages: data.totalPages
+          rsp.json()
+            .then(data => {
+              var availables = data.content.filter(i => i.quantity > 0)
+              setMenuItems(availables)
+              setPagination({
+                pageNumber: data.number,
+                pageSize: data.size,
+                totalElements: data.totalElements,
+                totalPages: data.totalPages
+              })
             })
-          })
         }
       })
   }
@@ -75,7 +76,7 @@ export const Menu = () => {
       console.warn("Invalid prop location!")
       return
     }
-    fetchFoods(new Date(), location.state.pageNumber, location.state.pageSize);
+    fetchMenuItems(location.state.pageNumber, location.state.pageSize);
     registerOrder();
 
     // eslint-disable-next-line
@@ -108,7 +109,7 @@ export const Menu = () => {
       var cOrder = {
         ...order.origin,
         invoiceId: choosenGuest.id,
-        status: 'CONFIRMED',
+        status: 'SENT',
         guestName: guestName
       }
       commitOrder(cOrder)
@@ -154,9 +155,9 @@ export const Menu = () => {
   const indexOrder = (order) => {
     var iO = {
       origin: order,
-      indexedProducts: order.products ? order.products
+      indexedProducts: order.items ? order.items
         .reduce((map, p) => { map[p.id] = p; return map }, {}) : {},
-      totalOrder: order.products ? order.products.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
+      totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
     }
     setOrder(iO)
   }
