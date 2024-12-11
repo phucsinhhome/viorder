@@ -1,4 +1,11 @@
 
+export const fetchOrders = (fromTime, page, size) => {
+  console.info("Fetch upcoming orders")
+  var opts = {
+    method: 'GET'
+  }
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}?fromTime=${fromTime}&page=${page}&size=${size}`, opts);
+}
 
 export const startOrder = (resolverId, startTime) => {
   console.info("Start an order")

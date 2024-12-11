@@ -10,6 +10,7 @@ import { ReservationManager } from "./Components/Reservation/ReservationManager"
 import { EditReservation } from "./Components/Reservation/EditReservation";
 import { Settings } from "./Components/Settings/Settings";
 import { OrderConfirm } from "./Components/Food/OrderConfirm";
+import { Order } from "./Components/Food/Order";
 
 const tele = window.Telegram.WebApp;
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="profit" element={<ProfitReport />} />
           <Route path="menu/:group/:resolverId" element={<Menu />} />
           <Route path="foods/:invoiceId" element={<EditInvoice />} />
+          <Route path="order" element={<Order />} />
           <Route path="order/:orderId/:staffId" element={<OrderConfirm />} />
           <Route path="expenses" element={<ExpenseManager />} />
           <Route path="expenses/:expenseId" element={<EditExpense />} />

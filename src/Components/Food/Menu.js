@@ -207,6 +207,7 @@ export const Menu = () => {
 
   const changeGuestName = (e) => {
     var gN = e.target.value
+    setChoosenGuest({})
     setGuestName(gN)
   }
 
@@ -346,12 +347,6 @@ export const Menu = () => {
                 </div>
                 <div className="pt-4"><span className="font italic">Could not find your name in above list</span>
                   <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                    {/* <div className="mb-2 block">
-                      <Label
-                        htmlFor="guestName"
-                        value="Please enter your name"
-                      />
-                    </div> */}
                     <TextInput
                       id="guestName"
                       placeholder="John"
@@ -383,10 +378,8 @@ export const Menu = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmOrder}>Confirm</Button>
-          <Button color="gray" onClick={cancelOrder}>
-            Cancel
-          </Button>
+          <Button onClick={confirmOrder} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
+          <Button color="gray" onClick={cancelOrder}>Cancel</Button>
         </Modal.Footer>
       </Modal>
 
