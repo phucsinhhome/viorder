@@ -28,7 +28,6 @@ export const Menu = () => {
   const { group, resolverId } = useParams()
   const location = useLocation()
 
-
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
@@ -119,22 +118,29 @@ export const Menu = () => {
             rsp.json()
               .then(() => {
                 console.info("Submit order %s successfully", cOrder.orderId)
-                setOrderSentMessage('Thank so much! I have received the order. I will come to confirm with you shortly')
+                var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
+                setOrderSentMessage(successMsg)
                 setShowOrderSentModal(true)
               })
           } else {
             console.info("Failed to submit order %s", cOrder.orderId)
-            var errorMessage = 'Oh, sorry ' + guestName + '! There is some error recently. Please help to inform me via WhatsApp (+84 328 944 788) or come directly to me. Thank for your understanding'
-            setOrderSentMessage(errorMessage)
+            var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE)
+            setOrderSentMessage(failedMsg)
             setShowOrderSentModal(true)
           }
         })
-
     } catch (e) {
       console.error(e)
     } finally {
       setShowPotentialGuestModal(false)
     }
+  }
+
+  const processMessageAnnotation = (template) => {
+    console.info(template)
+    var result = template.replace('GUEST_NAME', guestName)
+    console.info(result)
+    return result
   }
 
   const changeQuantity = (product, delta) => {
@@ -199,8 +205,6 @@ export const Menu = () => {
                         rsp.json()
                           .then(data => {
                             console.info('Fetch invoices successfully')
-                            console.log(data);
-
                             setPotentialInvoices(data)
                             setShowPotentialGuestModal(true)
                             setChoosenGuest({})
@@ -220,7 +224,7 @@ export const Menu = () => {
   }
 
   const showCommonErrorMessage = (msg) => {
-    var errorMessage = msg ? msg : 'Oh, sorry ! There is some error recently. Please help to inform me via WhatsApp (+84 328 944 788) or come directly to me. Thank for your understanding'
+    var errorMessage = msg ? msg : process.env.REACT_APP_ORDER_COMMON_ERROR_MESSAGE
     setOrderSentMessage(errorMessage)
     setShowOrderSentModal(true)
   }
