@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { formatISODateTime, formatVND } from "../../Service/Utils";
-import { addOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolveInvoiceId, startOrder } from "../../db/order";
+import { adjustOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolveInvoiceId, startOrder } from "../../db/order";
 
 
 export const Menu = () => {
@@ -130,13 +130,15 @@ export const Menu = () => {
     }
   }
 
-  const changeQuantity = (food, delta) => {
+  const changeQuantity = (product, delta) => {
 
     var item = {
-      ...food,
+      id: product.id,
+      name: product.name,
+      unitPrice: product.unitPrice,
       quantity: delta
     }
-    addOrderItem(order.origin.orderId, item)
+    adjustOrderItem(order.origin.orderId, item)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()

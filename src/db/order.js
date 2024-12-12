@@ -15,14 +15,14 @@ export const startOrder = (resolverId, startTime) => {
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/start?resolverId=${resolverId}&startTime=${startTime}`, opts);
 }
 
-export const addOrderItem = (orderId, item) => {
+export const adjustOrderItem = (orderId, item) => {
   console.info("Add item into order")
   var opts = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(item)
   }
-  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/product/add`, opts);
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/${orderId}/product/adjust`, opts);
 }
 
 export const fetchAvailability = (itemIds) => {
