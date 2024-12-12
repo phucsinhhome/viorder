@@ -205,14 +205,24 @@ export const Menu = () => {
                             setShowPotentialGuestModal(true)
                             setChoosenGuest({})
                           })
+                      } else {
+                        showCommonErrorMessage()
                       }
                     })
                 }
               })
+          } else {
+            showCommonErrorMessage()
           }
         })
     }
 
+  }
+
+  const showCommonErrorMessage = (msg) => {
+    var errorMessage = msg ? msg : 'Oh, sorry ! There is some error recently. Please help to inform me via WhatsApp (+84 328 944 788) or come directly to me. Thank for your understanding'
+    setOrderSentMessage(errorMessage)
+    setShowOrderSentModal(true)
   }
 
   const finishOrder = () => {
