@@ -7,6 +7,7 @@ import { fetchOrders } from "../../db/order";
 
 export const Order = () => {
   const [orders, setOrders] = useState([])
+  const showedStatuses = process.env.REACT_APP_ORDER_SHOW_STATUSES
 
   const [fromDate, setFromDate] = useState(new Date());
   const [deltaDays, setDeltaDays] = useState(0)
@@ -124,36 +125,37 @@ export const Order = () => {
       </div>
       <div className="h-3/5 overflow-hidden">
         <div className="flex flex-col space-y-1">
-          {orders.map((order) => {
-            return (
-              <div
-                className="flex flex-row border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
-                key={order.orderId}
-              >
-                <div className="pl-0.5 pr-0 py-2 w-full">
-                  <div className="grid grid-cols-1">
-                    <div className="flex flex-row">
-                      <Link
-                        to={order.id + "/" + currentUser.id}
-                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
-                      >
-                        {order.guestName}
-                      </Link>
+          {orders.filter(order => showedStatuses.includes(order.status))
+            .map((order) => {
+              return (
+                <div
+                  className="flex flex-row border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
+                  key={order.orderId}
+                >
+                  <div className="pl-0.5 pr-0 py-2 w-full">
+                    <div className="grid grid-cols-1">
+                      <div className="flex flex-row">
+                        <Link
+                          to={order.id + "/" + currentUser.id}
+                          state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                          className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                        >
+                          {order.guestName}
+                        </Link>
+                      </div>
+                      <div className="flex flex-row text-sm space-x-1">
+                        <span className="font font-mono text-gray-500 text-[10px]">{order.startTime}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-row text-sm space-x-1">
-                      <span className="font font-mono text-gray-500 text-[10px]">{order.startTime}</span>
+                  </div>
+                  <div className="pl-0.2 pr-2 py-2 items-center">
+                    <div className="bg-zinc-200 rounded-md py-0.5 w-24 text-center font-bold text-green-700">
+                      <span>{order.status}</span>
                     </div>
                   </div>
                 </div>
-                <div className="pl-0.2 pr-2 py-2 items-center">
-                  <div className="bg-zinc-200 rounded-md py-0.5 w-24 text-center font-bold text-green-700">
-                    <span>{order.status}</span>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+              )
+            })}
         </div>
       </div>
       <nav className="flex items-center justify-between pt-4" aria-label="Table navigation">

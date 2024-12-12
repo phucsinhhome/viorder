@@ -7,6 +7,9 @@ import { adjustOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolve
 
 
 export const Menu = () => {
+  const OrderStatus = {
+    sent: 'SENT'
+  }
   const [menuItems, setMenuItems] = useState([])
 
   const [pagination, setPagination] = useState({
@@ -109,14 +112,15 @@ export const Menu = () => {
       var cOrder = {
         ...order.origin,
         invoiceId: choosenGuest.id,
-        status: 'SENT',
+        status: OrderStatus.sent,
         guestName: guestName
       }
       commitOrder(cOrder)
         .then(rsp => {
           if (rsp.ok) {
             rsp.json()
-              .then(() => {
+              .then((data) => {
+                indexOrder(data)
                 console.info("Submit order %s successfully", cOrder.orderId)
                 var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
                 setOrderSentMessage(successMsg)
@@ -231,8 +235,9 @@ export const Menu = () => {
 
   const finishOrder = () => {
     setShowOrderSentModal(false)
-    console.info("The order has been done successfully.")
-    setOrder({})
+    if(order.origin.status === OrderStatus.sent){
+      setOrder({})
+    }
   }
 
   const changeGuestName = (e) => {
