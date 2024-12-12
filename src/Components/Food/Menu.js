@@ -132,6 +132,11 @@ export const Menu = () => {
 
   const changeQuantity = (product, delta) => {
 
+    var existedItem = order.indexedItems[product.id]
+    if (existedItem !== null && existedItem.quantity <= 0) {
+      return
+    }
+
     var item = {
       id: product.id,
       name: product.name,
@@ -157,7 +162,7 @@ export const Menu = () => {
   const indexOrder = (order) => {
     var iO = {
       origin: order,
-      indexedProducts: order.items ? order.items
+      indexedItems: order.items ? order.items
         .reduce((map, p) => { map[p.id] = p; return map }, {}) : {},
       totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
     }
@@ -265,7 +270,7 @@ export const Menu = () => {
                       className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 pr-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="9"
                       required
-                      value={order.indexedProducts && order.indexedProducts[product.id] ? order.indexedProducts[product.id].quantity : 0}
+                      value={order.indexedItems && order.indexedItems[product.id] ? order.indexedItems[product.id].quantity : 0}
                       readOnly
                     />
                     <button
