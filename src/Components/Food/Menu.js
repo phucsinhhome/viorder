@@ -132,9 +132,11 @@ export const Menu = () => {
 
   const changeQuantity = (product, delta) => {
 
-    var existedItem = order.indexedItems[product.id]
-    if (existedItem !== null && existedItem.quantity <= 0) {
-      return
+    if (delta <= 0) {
+      var existedItem = order.indexedItems[product.id]
+      if (existedItem !== undefined && existedItem.quantity <= 0) {
+        return
+      }
     }
 
     var item = {
@@ -163,7 +165,7 @@ export const Menu = () => {
     var iO = {
       origin: order,
       indexedItems: order.items ? order.items
-        .reduce((map, p) => { map[p.id] = p; return map }, {}) : {},
+        .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
       totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
     }
     setOrder(iO)
