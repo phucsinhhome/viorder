@@ -22,6 +22,7 @@ export const Menu = () => {
   const [choosenGuest, setChoosenGuest] = useState({})
 
   const [showOrderSentModal, setShowOrderSentModal] = useState(false)
+  const [orderSentMessage, setOrderSentMessage] = useState('')
   const [guestName, setGuestName] = useState('')
 
   const { group, resolverId } = useParams()
@@ -100,7 +101,7 @@ export const Menu = () => {
     setShowPotentialGuestModal(false)
   }
 
-  const confirmOrder = () => {
+  const submitOrder = () => {
     try {
       if (choosenGuest === null) {
         return
@@ -117,9 +118,15 @@ export const Menu = () => {
           if (rsp.ok) {
             rsp.json()
               .then(() => {
-                console.info("Comfirm order %s successfully", cOrder.orderId)
+                console.info("Submit order %s successfully", cOrder.orderId)
+                setOrderSentMessage('Thank so much! I have received the order. I will come to confirm with you shortly')
                 setShowOrderSentModal(true)
               })
+          } else {
+            console.info("Failed to submit order %s", cOrder.orderId)
+            var errorMessage = 'Oh, sorry ' + guestName + '! There is some error recently. Please help to inform me via WhatsApp (+84 328 944 788) or come directly to me. Thank for your understanding'
+            setOrderSentMessage(errorMessage)
+            setShowOrderSentModal(true)
           }
         })
 
@@ -387,7 +394,7 @@ export const Menu = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={confirmOrder} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
+          <Button onClick={submitOrder} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
           <Button color="gray" onClick={cancelOrder}>Cancel</Button>
         </Modal.Footer>
       </Modal>
@@ -400,8 +407,8 @@ export const Menu = () => {
       >
         <Modal.Header>Order Sent</Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col space-y-2">
-            Thank so much! I have received the order. I will come to confirm with you shortly
+          <div className="flex flex-col space-y-2 text-center py-2">
+            {orderSentMessage}
           </div>
         </Modal.Body>
       </Modal>

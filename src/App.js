@@ -33,7 +33,7 @@ export default function App() {
   const [syncingRes, setSyncingRes] = useState(false)
 
   useEffect(() => {
-    document.title = "PMS"
+    document.title = "PSO"
     tele.ready();
     tele.expand();
     tele.disableVerticalSwipes();
