@@ -24,14 +24,14 @@ export const Order = () => {
     console.info("Change filter date to %s", newDD.toISOString())
     setFromDate(newDD)
     setDeltaDays(numDays)
-    fetchUpcomingOrders(newDD, pagination.pageNumber, pagination.pageSize)
+    fetchUpcomingOrders(pagination.pageNumber, pagination.pageSize)
   }
 
   const handlePaginationClick = (pageNumber) => {
     console.log("Pagination nav bar click to page %s", pageNumber)
     var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
     var pSize = pagination.pageSize
-    fetchUpcomingOrders(fromDate, pNum, pSize)
+    fetchUpcomingOrders(pNum, pSize)
   }
 
   const fetchUpcomingOrders = (pageNumber, pageSize) => {
