@@ -4,7 +4,7 @@ export const fetchOrders = (fromTime, page, size) => {
   var opts = {
     method: 'GET'
   }
-  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/coming?fromTime=${fromTime}&page=${page}&size=${size}`, opts);
+  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/list/coming?fromTime=${fromTime}&page=${page}&size=${size}`, opts);
 }
 
 export const startOrder = (resolverId, startTime) => {
@@ -90,7 +90,7 @@ export const confirmOrder = (order) => {
 export const rejectOrder = (orderId, staffId) => {
   console.info("Reject the order")
   var opts = {
-    method: 'GET'
+    method: 'POST'
   }
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/reject?orderId=${orderId}&staffId=${staffId}`, opts);
 }
