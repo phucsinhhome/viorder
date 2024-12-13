@@ -274,7 +274,7 @@ export const Menu = () => {
                   <div className="grid grid-cols-1">
                     <div className="flex flex-row">
                       <Link
-                        onClick={()=>viewProductDetail(product)}
+                        onClick={() => viewProductDetail(product)}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
                         className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
                       >
@@ -454,7 +454,10 @@ export const Menu = () => {
         <Modal.Body>
           <div className="flex flex-col">
             <div>
-              <div><span className="font italic">Product detail:</span></div>
+              <div className="flex flex-col">
+                <span className="font italic pb-4">Product detail:</span>
+                <span>{viewingProduct.description}</span>
+              </div>
               {
                 viewingProduct.imageUrls ?
                   <div className="flex flex-col space-y-2">
