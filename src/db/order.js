@@ -62,7 +62,7 @@ export const getPotentialInvoices = (orderId) => {
 }
 
 export const resolveInvoiceId = (resolverId) => {
-  console.info("Resolve the invoice id from the id {}", resolverId)
+  console.info("Resolve the invoice id from the id %s", resolverId)
   var opts = {
     method: 'GET'
   }

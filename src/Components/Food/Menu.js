@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../../App";
 import { formatISODateTime, formatVND } from "../../Service/Utils";
@@ -32,19 +32,27 @@ export const Menu = () => {
   const [viewingProduct, setViewingProduct] = useState({})
 
   const { group, resolverId } = useParams()
-  const location = useLocation()
+  // const location = useLocation()
 
-  const handlePaginationClick = (pageNumber) => {
-    console.log("Pagination nav bar click to page %s", pageNumber)
-    var pNum = pageNumber < 0 ? 0 : pageNumber > pagination.totalPages - 1 ? pagination.totalPages - 1 : pageNumber;
+  const handlePaginationClick = (page) => {
+    console.log("Pagination nav bar click to page %s", page)
+
+    var pNum = page < 0 ? 0 : page > pagination.totalPages - 1 ? pagination.totalPages - 1 : page;
     var pSize = pagination.pageSize
-    fetchMenuItems(pNum, pSize)
+
+    var nPage = {
+      ...pagination,
+      pageNumber: pNum,
+      pageSize: pSize
+    }
+    setPagination(nPage)
+    fetchMenuItems()
   }
 
-  const fetchMenuItems = (pageNumber, pageSize) => {
+  const fetchMenuItems = () => {
     console.info("Loading foods")
 
-    fetchItems(group, pageNumber, pageSize)
+    fetchItems(group, pagination.pageNumber, pagination.pageSize)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -78,11 +86,11 @@ export const Menu = () => {
   }
 
   useEffect(() => {
-    if (location == null || location.state == null) {
-      console.warn("Invalid prop location!")
-      return
-    }
-    fetchMenuItems(location.state.pageNumber, location.state.pageSize);
+    // if (location == null || location.state == null) {
+    //   console.warn("Invalid prop location!")
+    //   return
+    // }
+    fetchMenuItems();
     registerOrder();
 
     // eslint-disable-next-line
@@ -197,13 +205,13 @@ export const Menu = () => {
       resolveInvoiceId(resolverId)
         .then(rsp => {
           if (rsp.ok) {
-            rsp.text()
+            rsp.json()
               .then(data => {
                 if (data !== null && data !== undefined && data !== '') {
-                  console.info("Resolved invoice id %s", data)
+                  console.info("Resolved invoice id %s", data.id)
                   setPotentialInvoices([data])
+                  handleInvSelection(data)
                   setShowPotentialGuestModal(true)
-                  setChoosenGuest({})
                 } else {
                   console.info("No invoice resolved")
                   getPotentialInvoices(order.origin.orderId)
