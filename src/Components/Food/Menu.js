@@ -28,6 +28,9 @@ export const Menu = () => {
   const [orderSentMessage, setOrderSentMessage] = useState('')
   const [guestName, setGuestName] = useState('')
 
+  const [showProductDetailModal, setShowProductDetailModal] = useState(false)
+  const [viewingProduct, setViewingProduct] = useState({})
+
   const { group, resolverId } = useParams()
   const location = useLocation()
 
@@ -235,7 +238,7 @@ export const Menu = () => {
 
   const finishOrder = () => {
     setShowOrderSentModal(false)
-    if(order.origin.status === OrderStatus.sent){
+    if (order.origin.status === OrderStatus.sent) {
       setOrder({})
     }
   }
@@ -244,6 +247,14 @@ export const Menu = () => {
     var gN = e.target.value
     setChoosenGuest({})
     setGuestName(gN)
+  }
+
+  const viewProductDetail = (product) => {
+    setViewingProduct(product)
+    setShowProductDetailModal(true)
+  }
+  const closeProductDetailModal = () => {
+    setShowProductDetailModal(false)
   }
 
   return (
@@ -263,7 +274,7 @@ export const Menu = () => {
                   <div className="grid grid-cols-1">
                     <div className="flex flex-row">
                       <Link
-                        to={product.id}
+                        onClick={()=>viewProductDetail(product)}
                         state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
                         className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
                       >
@@ -430,6 +441,39 @@ export const Menu = () => {
             {orderSentMessage}
           </div>
         </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showProductDetailModal}
+        onClose={closeProductDetailModal}
+        popup={true}
+      >
+        <Modal.Header>
+
+        </Modal.Header>
+        <Modal.Body>
+          <div className="flex flex-col">
+            <div>
+              <div><span className="font italic">Product detail:</span></div>
+              {
+                viewingProduct.imageUrls ?
+                  <div className="flex flex-col space-y-2">
+                    {viewingProduct.imageUrls.map(imgUrl =>
+                      <img
+                        src={imgUrl}
+                        alt=""
+                      />
+                    )}
+                  </div>
+                  : <></>
+              }
+
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button color="gray" onClick={closeProductDetailModal}>Close</Button>
+        </Modal.Footer>
       </Modal>
 
     </div >
