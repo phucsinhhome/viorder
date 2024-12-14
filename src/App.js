@@ -1,16 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
-import { ProfitReport } from "./Components/Profit/ProfitReport"
 import { Menu } from "./Components/Food/Menu"
-import { EditInvoice } from "./Components/Food/EditInvoice"
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
-import { ExpenseManager } from "./Components/Expense/ExpenseManager";
-import { EditExpense } from "./Components/Expense/EditExpense";
-import { ReservationManager } from "./Components/Reservation/ReservationManager";
-import { EditReservation } from "./Components/Reservation/EditReservation";
-import { Settings } from "./Components/Settings/Settings";
-import { OrderConfirm } from "./Components/Food/OrderConfirm";
-import { Order } from "./Components/Food/Order";
 
 const tele = window.Telegram.WebApp;
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
@@ -29,9 +20,6 @@ export const currentUserFullname = () => {
 
 export default function App() {
 
-  const [syncing, setSyncing] = useState(false)
-  const [syncingRes, setSyncingRes] = useState(false)
-
   useEffect(() => {
     document.title = "PSO"
     tele.ready();
@@ -46,30 +34,11 @@ export default function App() {
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
-          {/* <Link to="profit" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Profit</Link> */}
           <Link to="menu/food/r1" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Food</Link>
           <Link to="menu/baverage/r1" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Baverage</Link>
-          {/* <Link to="reservation" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Reservation</Link> */}
-          {/* <Link to="settings" className="absolute right-2">
-            <IoMdSettings
-              className="pointer-events-auto cursor-pointer w-14 h-7"
-            />
-          </Link> */}
         </div>
         <Routes>
-          <Route path="profit" element={<ProfitReport />} />
           <Route path="menu/:group/:resolverId" element={<Menu />} />
-          <Route path="foods/:invoiceId" element={<EditInvoice />} />
-          <Route path="order" element={<Order />} />
-          <Route path="order/:orderId/:staffId" element={<OrderConfirm />} />
-          <Route path="expenses" element={<ExpenseManager />} />
-          <Route path="expenses/:expenseId" element={<EditExpense />} />
-          <Route path="reservation" element={<ReservationManager />} />
-          <Route path="reservation/:reservationId" element={<EditReservation />} />
-          <Route path="settings" element={<Settings
-            syncing={syncing} changeSyncing={(n) => setSyncing(n)}
-            syncingRes={syncingRes} changeResSyncing={(n) => setSyncingRes(n)}
-          />} />
         </Routes>
       </Router>
       <div className="absolute top-0 right-0 flex flex-col mt-10 mr-2 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">

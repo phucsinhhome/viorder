@@ -214,21 +214,11 @@ export const Menu = () => {
                   setShowPotentialGuestModal(true)
                 } else {
                   console.info("No invoice resolved")
-                  getPotentialInvoices(order.origin.orderId)
-                    .then(rsp => {
-                      if (rsp.ok) {
-                        rsp.json()
-                          .then(data => {
-                            console.info('Fetch invoices successfully')
-                            setPotentialInvoices(data)
-                            setShowPotentialGuestModal(true)
-                            setChoosenGuest({})
-                          })
-                      } else {
-                        showCommonErrorMessage()
-                      }
-                    })
+                  chooseInvoice()
                 }
+              }).catch(e => {
+                console.info("Failed to resolve invoice")
+                chooseInvoice()
               })
           } else {
             showCommonErrorMessage()
@@ -236,6 +226,23 @@ export const Menu = () => {
         })
     }
 
+  }
+
+  const chooseInvoice = () => {
+    getPotentialInvoices(order.origin.orderId)
+      .then(rsp => {
+        if (rsp.ok) {
+          rsp.json()
+            .then(data => {
+              console.info('Fetch invoices successfully')
+              setPotentialInvoices(data)
+              setShowPotentialGuestModal(true)
+              setChoosenGuest({})
+            })
+        } else {
+          showCommonErrorMessage()
+        }
+      })
   }
 
   const showCommonErrorMessage = (msg) => {
