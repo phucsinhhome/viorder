@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "./App.css";
-import { Menu } from "./Components/Food/Menu"
+import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
 
 const tele = window.Telegram.WebApp;
