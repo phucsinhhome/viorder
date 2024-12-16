@@ -275,7 +275,7 @@ export const Menu = () => {
   return (
     <div className="h-full pt-3">
       <div className="max-h-fit overflow-hidden">
-        <div className="flex flex-col space-y-1">
+        <div className="flex flex-col space-y-1 px-2">
           {menuItems.map((product) => {
             return (
               <div
@@ -346,7 +346,7 @@ export const Menu = () => {
           })}
         </div>
       </div>
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row px-2 items-center justify-between">
         <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
           <ul className="inline-flex items-center -space-x-px">
             <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -379,7 +379,7 @@ export const Menu = () => {
 
         </Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full">
             {potentialInvoices && potentialInvoices.length > 0 ?
               <div>
                 <div><span className="font italic">Please choose your name</span></div>
