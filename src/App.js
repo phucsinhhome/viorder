@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
@@ -29,23 +29,24 @@ export default function App() {
 
   }, []);
 
+  const [resolverId, setResolverId] = useState('r1')
+
+  const updateResolver = (rId) => {
+    console.info("Update the resolver id to %s", rId)
+    setResolverId(rId)
+  }
 
   return (
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
-          <Link to="menu/food/r1" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Food</Link>
-          <Link to="menu/baverage/r1" className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm" state={{ pageNumber: 0, pageSize: DEFAULT_PAGE_SIZE }}>Baverage</Link>
+          <Link to={"menu/food/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Food</Link>
+          <Link to={"menu/baverage/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Baverage</Link>
         </div>
         <Routes>
-          <Route path="menu/:group/:resolverId" element={<Menu />} />
+          <Route path="menu/:group/:resolverId" element={<Menu argChangeResolverId={(id) => updateResolver(id)} />} />
         </Routes>
       </Router>
-      <div className="absolute top-0 right-0 flex flex-col mt-10 mr-2 bg-neutral-200 p-1 opacity-90 rounded-md shadow-lg">
-        <span className=" font text-[10px] font-bold text-gray-800 dark:text-white">{currentUserFullname()}</span>
-        <span className=" font text-[8px] italic text-gray-600 dark:text-white">{currentUser.id}</span>
-        <span className=" font font-mono text-center text-[8px] text-gray-900 dark:text-white">{"API " + tele.version}</span>
-      </div>
     </div>
   );
 }

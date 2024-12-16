@@ -6,7 +6,7 @@ import { formatISODateTime, formatVND } from "../Service/Utils";
 import { adjustOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolveInvoiceId, startOrder } from "../db/order";
 
 
-export const Menu = () => {
+export const Menu = ({ argChangeResolverId }) => {
   const OrderStatus = {
     sent: 'SENT'
   }
@@ -24,15 +24,15 @@ export const Menu = () => {
   const [potentialInvoices, setPotentialInvoices] = useState([])
   const [choosenGuest, setChoosenGuest] = useState({})
 
-  const [showOrderSentModal, setShowOrderSentModal] = useState(false)
-  const [orderSentMessage, setOrderSentMessage] = useState('')
+  const [orderSubmitResult, setOrderSubmitResult] = useState({})
   const [guestName, setGuestName] = useState('')
 
   const [showProductDetailModal, setShowProductDetailModal] = useState(false)
   const [viewingProduct, setViewingProduct] = useState({})
 
+  const [showOrderSummary, setShowOrderSummary] = useState(false)
+
   const { group, resolverId } = useParams()
-  // const location = useLocation()
 
   const handlePaginationClick = (page) => {
     console.log("Pagination nav bar click to page %s", page)
@@ -70,9 +70,15 @@ export const Menu = () => {
       })
   }
 
+  const findResolverId = () => {
+    return resolverId
+  }
+
   const registerOrder = () => {
     var startTime = formatISODateTime(new Date())
-    startOrder(resolverId, startTime)
+    let rI = findResolverId()
+    console.info("Register the order with resolverId = %s", rI)
+    startOrder(rI, startTime)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -86,15 +92,16 @@ export const Menu = () => {
   }
 
   useEffect(() => {
-    // if (location == null || location.state == null) {
-    //   console.warn("Invalid prop location!")
-    //   return
-    // }
+
+    if (resolverId !== '' && resolverId !== undefined) {
+      argChangeResolverId(resolverId)
+    }
+
     fetchMenuItems();
     registerOrder();
 
     // eslint-disable-next-line
-  }, [location]);
+  }, [group]);
 
 
   const pageClass = (pageNum) => {
@@ -134,14 +141,18 @@ export const Menu = () => {
                 indexOrder(data)
                 console.info("Submit order %s successfully", cOrder.orderId)
                 var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
-                setOrderSentMessage(successMsg)
-                setShowOrderSentModal(true)
+                setOrderSubmitResult({
+                  success: true,
+                  message: successMsg
+                })
               })
           } else {
             console.info("Failed to submit order %s", cOrder.orderId)
             var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE)
-            setOrderSentMessage(failedMsg)
-            setShowOrderSentModal(true)
+            setOrderSubmitResult({
+              success: false,
+              message: failedMsg
+            })
           }
         })
     } catch (e) {
@@ -152,10 +163,7 @@ export const Menu = () => {
   }
 
   const processMessageAnnotation = (template) => {
-    console.info(template)
-    var result = template.replace('GUEST_NAME', guestName)
-    console.info(result)
-    return result
+    return template.replace('GUEST_NAME', guestName)
   }
 
   const changeQuantity = (product, delta) => {
@@ -201,8 +209,10 @@ export const Menu = () => {
 
   const comfirmOrderInvoice = () => {
 
-    if (resolverId !== null && resolverId !== undefined) {
-      resolveInvoiceId(resolverId)
+    let rI = findResolverId()
+
+    if (rI !== null && rI !== undefined) {
+      resolveInvoiceId(rI)
         .then(rsp => {
           if (rsp.ok) {
             rsp.json()
@@ -211,7 +221,7 @@ export const Menu = () => {
                   console.info("Resolved invoice id %s", data.id)
                   setPotentialInvoices([data])
                   handleInvSelection(data)
-                  setShowPotentialGuestModal(true)
+                  setShowOrderSummary(true)
                 } else {
                   console.info("No invoice resolved")
                   chooseInvoice()
@@ -220,8 +230,6 @@ export const Menu = () => {
                 console.info("Failed to resolve invoice")
                 chooseInvoice()
               })
-          } else {
-            showCommonErrorMessage()
           }
         })
     }
@@ -239,23 +247,8 @@ export const Menu = () => {
               setShowPotentialGuestModal(true)
               setChoosenGuest({})
             })
-        } else {
-          showCommonErrorMessage()
         }
       })
-  }
-
-  const showCommonErrorMessage = (msg) => {
-    var errorMessage = msg ? msg : process.env.REACT_APP_ORDER_COMMON_ERROR_MESSAGE
-    setOrderSentMessage(errorMessage)
-    setShowOrderSentModal(true)
-  }
-
-  const finishOrder = () => {
-    setShowOrderSentModal(false)
-    if (order.origin.status === OrderStatus.sent) {
-      setOrder({})
-    }
   }
 
   const changeGuestName = (e) => {
@@ -439,23 +432,33 @@ export const Menu = () => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={submitOrder} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
+          <Button onClick={() => { setShowPotentialGuestModal(false); setShowOrderSummary(true) }} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
           <Button color="gray" onClick={cancelOrder}>Cancel</Button>
         </Modal.Footer>
       </Modal>
 
-
       <Modal
-        show={showOrderSentModal}
-        onClose={finishOrder}
+        show={showOrderSummary}
+        onClose={() => { setShowOrderSummary(false); if (orderSubmitResult.success !== undefined) { setOrder({}); } setOrderSubmitResult({}) }}
         popup={true}
       >
-        <Modal.Header>Order Sent</Modal.Header>
+        <Modal.Header></Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col space-y-2 text-center py-2">
-            {orderSentMessage}
+          <div className="flex flex-col space-y-2 text-left px-4">
+            <span>Thank <b>{guestName}</b>. Please confirm following order detail:</span>
+            {
+              order.origin ? order.origin.items.map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+            }
+            <span className="font italic">We need around 45 to 60 minutes to prepare. I will come to confirm with you afterward</span>
+          </div>
+          <div className="pt-3">
+            <span className={orderSubmitResult && orderSubmitResult.success ? "font-bold text-green-700" : "font-bold text-red-700"}>{orderSubmitResult.message}</span>
           </div>
         </Modal.Body>
+        <Modal.Footer className="flex justify-center gap-4">
+          <Button onClick={submitOrder} disabled={orderSubmitResult.success !== undefined}>Confirm</Button>
+          <Button onClick={() => { setShowOrderSummary(false); setOrderSubmitResult({}) }} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
+        </Modal.Footer>
       </Modal>
 
       <Modal
