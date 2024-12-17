@@ -442,14 +442,14 @@ export const Menu = ({ argChangeResolverId }) => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={() => { setShowInvoiceModal(false); setShowOrderSummary(true) }} disabled={selectedInvoice.id === undefined && guestName === ''}>Confirm</Button>
+          <Button onClick={() => { setShowInvoiceModal(false); setShowOrderSummary(true) }} disabled={selectedInvoice.id === undefined && guestName === ''}>Next</Button>
           <Button color="gray" onClick={cancelOrder}>Cancel</Button>
         </Modal.Footer>
       </Modal>
 
       <Modal
         show={showOrderSummary}
-        onClose={() => { setShowOrderSummary(false); if (orderSubmitResult.success !== undefined) { setOrder({}); } setOrderSubmitResult({}) }}
+        onClose={() => { setShowOrderSummary(false); if (orderSubmitResult.success === true) { setOrder({}); } setOrderSubmitResult({}) }}
         popup={true}
       >
         <Modal.Header></Modal.Header>
@@ -467,7 +467,7 @@ export const Menu = ({ argChangeResolverId }) => {
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={submitOrder} disabled={orderSubmitResult.success !== undefined}>Confirm</Button>
-          <Button onClick={() => { setShowOrderSummary(false); setOrderSubmitResult({}) }} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
+          <Button color="gray" onClick={() => { setShowOrderSummary(false); setOrderSubmitResult({}) }} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
         </Modal.Footer>
       </Modal>
 
