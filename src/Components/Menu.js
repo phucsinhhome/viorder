@@ -15,7 +15,6 @@ export const Menu = ({ argChangeResolverId }) => {
   const [pagination, setPagination] = useState({
     pageNumber: 0,
     pageSize: DEFAULT_PAGE_SIZE,
-    totalElements: 200,
     totalPages: 20
   })
 
@@ -38,15 +37,10 @@ export const Menu = ({ argChangeResolverId }) => {
     console.log("Pagination nav bar click to page %s", page)
 
     var pNum = page < 0 ? 0 : page > pagination.totalPages - 1 ? pagination.totalPages - 1 : page;
-    var pSize = pagination.pageSize
-
-    var nPage = {
+    setPagination({
       ...pagination,
-      pageNumber: pNum,
-      pageSize: pSize
-    }
-    setPagination(nPage)
-    fetchMenuItems()
+      pageNumber: pNum
+    })
   }
 
   const fetchMenuItems = () => {
@@ -59,12 +53,12 @@ export const Menu = ({ argChangeResolverId }) => {
             .then(data => {
               var availables = data.content.filter(i => i.quantity > 0)
               setMenuItems(availables)
-              setPagination({
-                pageNumber: data.number,
-                pageSize: data.size,
-                totalElements: data.totalElements,
-                totalPages: data.totalPages
-              })
+              if (data.totalPages !== pagination.totalPages) {
+                setPagination({
+                  ...pagination,
+                  totalPages: data.totalPages
+                })
+              }
             })
         }
       })
@@ -98,10 +92,12 @@ export const Menu = ({ argChangeResolverId }) => {
     }
 
     fetchMenuItems();
-    registerOrder();
+    if (order.origin === undefined) {
+      registerOrder()
+    }
 
     // eslint-disable-next-line
-  }, [group]);
+  }, [group, pagination.pageNumber]);
 
 
   const pageClass = (pageNum) => {
