@@ -91,13 +91,23 @@ export const Menu = ({ argChangeResolverId }) => {
       argChangeResolverId(resolverId)
     }
 
-    fetchMenuItems();
     if (order.origin === undefined) {
       registerOrder()
     }
+    setPagination({
+      ...pagination,
+      pageNumber: 0
+    })
 
     // eslint-disable-next-line
-  }, [group, pagination.pageNumber]);
+  }, [group]);
+
+  useEffect(() => {
+
+    fetchMenuItems();
+
+    // eslint-disable-next-line
+  }, [pagination]);
 
 
   const pageClass = (pageNum) => {
