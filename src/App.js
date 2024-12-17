@@ -42,6 +42,7 @@ export default function App() {
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           <Link to={"menu/food/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Food</Link>
           <Link to={"menu/baverage/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Baverage</Link>
+          <Link to={"menu/breakfast/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Breakfast</Link>
         </div>
         <Routes>
           <Route path="menu/:group/:resolverId" element={<Menu argChangeResolverId={(id) => updateResolver(id)} />} />
