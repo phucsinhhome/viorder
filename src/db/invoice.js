@@ -5,5 +5,5 @@ export const listStayingAndComingInvoices = (fromDate, page, size) => {
         method: 'GET'
     }
 
-    return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/upcoming?fromDate=${fromDate}&page=${page}&size=${size}`, opts)
+    return fetch(`${process.env.REACT_APP_INVOICE_SERVICE_ENDPOINT}/list/upcoming?fromDate=${fromDate}&includePrepaid=false&page=${page}&size=${size}`, opts)
 }

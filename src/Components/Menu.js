@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { formatISODateTime, formatVND } from "../Service/Utils";
-import { adjustOrderItem, commitOrder, fetchItems, getPotentialInvoices, resolveInvoiceId, startOrder } from "../db/order";
+import { formatISODate, formatISODateTime, formatVND } from "../Service/Utils";
+import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder } from "../db/order";
+import { listStayingAndComingInvoices } from "../db/invoice";
 
 
 export const Menu = ({ argChangeResolverId }) => {
@@ -18,10 +19,11 @@ export const Menu = ({ argChangeResolverId }) => {
     totalPages: 20
   })
 
-  const [showPotentialGuestModal, setShowPotentialGuestModal] = useState(false)
   const [order, setOrder] = useState({})
-  const [potentialInvoices, setPotentialInvoices] = useState([])
-  const [choosenGuest, setChoosenGuest] = useState({})
+
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false)
+  const [invoices, setInvoices] = useState([])
+  const [selectedInvoice, setSelectedInvoice] = useState({})
 
   const [orderSubmitResult, setOrderSubmitResult] = useState({})
   const [guestName, setGuestName] = useState('')
@@ -119,23 +121,23 @@ export const Menu = ({ argChangeResolverId }) => {
 
   //================ ORDER ==========================//
   const handleInvSelection = (inv) => {
-    setChoosenGuest(inv)
+    setSelectedInvoice(inv)
     setGuestName(inv.guestName)
   }
 
   const cancelOrder = () => {
-    setShowPotentialGuestModal(false)
+    setShowInvoiceModal(false)
   }
 
   const submitOrder = () => {
     try {
-      if (choosenGuest === null) {
+      if (selectedInvoice === null) {
         return
       }
 
       var cOrder = {
         ...order.origin,
-        invoiceId: choosenGuest.id,
+        invoiceId: selectedInvoice.id,
         status: OrderStatus.sent,
         guestName: guestName
       }
@@ -164,7 +166,7 @@ export const Menu = ({ argChangeResolverId }) => {
     } catch (e) {
       console.error(e)
     } finally {
-      setShowPotentialGuestModal(false)
+      setShowInvoiceModal(false)
     }
   }
 
@@ -225,7 +227,7 @@ export const Menu = ({ argChangeResolverId }) => {
               .then(data => {
                 if (data !== null && data !== undefined && data !== '') {
                   console.info("Resolved invoice id %s", data.id)
-                  setPotentialInvoices([data])
+                  setInvoices([data])
                   handleInvSelection(data)
                   setShowOrderSummary(true)
                 } else {
@@ -243,15 +245,16 @@ export const Menu = ({ argChangeResolverId }) => {
   }
 
   const chooseInvoice = () => {
-    getPotentialInvoices(order.origin.orderId)
+    let fromDate = formatISODate(new Date())
+    listStayingAndComingInvoices(fromDate, 0, 7)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
             .then(data => {
               console.info('Fetch invoices successfully')
-              setPotentialInvoices(data)
-              setShowPotentialGuestModal(true)
-              setChoosenGuest({})
+              setInvoices(data.content)
+              setShowInvoiceModal(true)
+              setSelectedInvoice({})
             })
         }
       })
@@ -259,7 +262,7 @@ export const Menu = ({ argChangeResolverId }) => {
 
   const changeGuestName = (e) => {
     var gN = e.target.value
-    setChoosenGuest({})
+    setSelectedInvoice({})
     setGuestName(gN)
   }
 
@@ -370,7 +373,7 @@ export const Menu = ({ argChangeResolverId }) => {
       </div>
 
       <Modal
-        show={showPotentialGuestModal}
+        show={showInvoiceModal}
         onClose={cancelOrder}
         popup={true}
       >
@@ -378,16 +381,16 @@ export const Menu = ({ argChangeResolverId }) => {
 
         </Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col w-full">
-            {potentialInvoices && potentialInvoices.length > 0 ?
+          <div>
+            {invoices && invoices.length > 0 ?
               <div>
                 <div><span className="font italic">Please choose your name</span></div>
-                <div className="flex flex-col space-y-2">
-                  {potentialInvoices.map(inv =>
+                <div className="flex flex-col space-y-1">
+                  {invoices.map(inv =>
                     <div
                       key={inv.id}
-                      className={choosenGuest.id === inv.id
-                        ? "flex flex-col py-1 px-2  border border-gray-100 shadow-sm rounded-md bg-amber-600 dark:bg-slate-500"
+                      className={selectedInvoice.id === inv.id
+                        ? "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-green-200 dark:bg-slate-500"
                         : "flex flex-col py-1 px-2 border border-gray-100 shadow-sm rounded-md bg-white dark:bg-slate-500"
                       }
                       onClick={() => handleInvSelection(inv)}
@@ -405,8 +408,9 @@ export const Menu = ({ argChangeResolverId }) => {
                     </div>
                   )}
                 </div>
-                <div className="pt-4"><span className="font italic">Could not find your name in above list</span>
-                  <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                <div className="block pt-2">
+                  <span className="font italic">Could not find your name in above list</span>
+                  <div className="w-full mb-1 md:mb-0">
                     <TextInput
                       id="guestName"
                       placeholder="John"
@@ -438,7 +442,7 @@ export const Menu = ({ argChangeResolverId }) => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={() => { setShowPotentialGuestModal(false); setShowOrderSummary(true) }} disabled={choosenGuest.id === undefined && guestName === ''}>Confirm</Button>
+          <Button onClick={() => { setShowInvoiceModal(false); setShowOrderSummary(true) }} disabled={selectedInvoice.id === undefined && guestName === ''}>Confirm</Button>
           <Button color="gray" onClick={cancelOrder}>Cancel</Button>
         </Modal.Footer>
       </Modal>
