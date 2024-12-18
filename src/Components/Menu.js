@@ -481,11 +481,16 @@ export const Menu = ({ argChangeResolverId }) => {
         </Modal.Header>
         <Modal.Body>
           <div className="flex flex-col">
-            <div>
+            <div className="space-y-3">
               <div className="flex flex-col">
-                <span className="font italic pb-4">Product detail:</span>
+                <span className="font font-bold text-xl italic pb-4">{viewingProduct.name}</span>
                 <span>{viewingProduct.description}</span>
               </div>
+              <img
+                src={viewingProduct.featureImgUrl}
+                alt=""
+                className="border rounded-md"
+              />
               {
                 viewingProduct.imageUrls ?
                   <div className="flex flex-col space-y-2">
@@ -493,6 +498,7 @@ export const Menu = ({ argChangeResolverId }) => {
                       <img
                         src={imgUrl}
                         alt=""
+                        className="border rounded-md"
                       />
                     )}
                   </div>
