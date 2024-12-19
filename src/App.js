@@ -29,23 +29,36 @@ export default function App() {
 
   }, []);
 
+  const [activeGroup, setActiveGroup] = useState('')
   const [resolverId, setResolverId] = useState('r1')
 
   const updateResolver = (rId) => {
     console.info("Update the resolver id to %s", rId)
     setResolverId(rId)
   }
+  const menus = ['food','baverage','breakfast']
+  const resolveMenuStyle = (menu) => {
+    var st = "px-2 py-1 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm"
+    if (menu === activeGroup) {
+      st = st + ' bg-gray-400'
+    } else {
+      st = st + ' bg-gray-200'
+    }
+    return st
+  }
 
   return (
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
-          <Link to={"menu/food/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Food</Link>
-          <Link to={"menu/baverage/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Baverage</Link>
-          <Link to={"menu/breakfast/" + resolverId} className="px-2 py-1 bg-gray-200 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm">Breakfast</Link>
+          {
+            menus.map(menu => <Link to={"menu/" + menu + "/" + resolverId} className={resolveMenuStyle(menu)}>{menu.toLocaleUpperCase()}</Link>)
+          }
         </div>
         <Routes>
-          <Route path="menu/:group/:resolverId" element={<Menu argChangeResolverId={(id) => updateResolver(id)} />} />
+          <Route path="menu/:group/:resolverId"
+            element={<Menu argChangeResolverId={(id) => updateResolver(id)} argChangeActiveGroup={group => setActiveGroup(group)} />}
+          />
         </Routes>
       </Router>
     </div>

@@ -7,7 +7,7 @@ import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder 
 import { listStayingAndComingInvoices } from "../db/invoice";
 
 
-export const Menu = ({ argChangeResolverId }) => {
+export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const OrderStatus = {
     sent: 'SENT'
   }
@@ -92,6 +92,7 @@ export const Menu = ({ argChangeResolverId }) => {
     if (resolverId !== '' && resolverId !== undefined) {
       argChangeResolverId(resolverId)
     }
+    argChangeActiveGroup(group)
 
     if (order.origin === undefined) {
       registerOrder()
