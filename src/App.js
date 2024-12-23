@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Menu } from "./Components/Menu"
-import { BrowserRouter as Router, Link, Route, Routes } from "react-router-dom"
+import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
 
 const tele = window.Telegram.WebApp;
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
@@ -29,14 +29,14 @@ export default function App() {
 
   }, []);
 
-  const [activeGroup, setActiveGroup] = useState('')
+  const [activeGroup, setActiveGroup] = useState('food')
   const [resolverId, setResolverId] = useState('r1')
 
   const updateResolver = (rId) => {
     console.info("Update the resolver id to %s", rId)
     setResolverId(rId)
   }
-  const menus = ['food','baverage','breakfast']
+  const menus = ['food', 'baverage', 'breakfast']
   const resolveMenuStyle = (menu) => {
     var st = "px-2 py-1 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm"
     if (menu === activeGroup) {
@@ -56,6 +56,7 @@ export default function App() {
           }
         </div>
         <Routes>
+          <Route path="/" element={<Navigate to={"menu/" + activeGroup + "/" + resolverId} />} />
           <Route path="menu/:group/:resolverId"
             element={<Menu argChangeResolverId={(id) => updateResolver(id)} argChangeActiveGroup={group => setActiveGroup(group)} />}
           />
