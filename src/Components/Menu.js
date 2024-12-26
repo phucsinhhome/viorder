@@ -188,6 +188,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       id: product.id,
       name: product.name,
       unitPrice: product.unitPrice,
+      group: product.group,
       quantity: delta
     }
     adjustOrderItem(order.origin.orderId, item)
