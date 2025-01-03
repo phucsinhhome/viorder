@@ -296,7 +296,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                     <Link
                       onClick={() => viewProductDetail(product)}
                       state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                      className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                      className="font-medium text-green-800 hover:underline dark:text-gray-200 overflow-hidden"
                     >
                       {product.name}
                     </Link>
