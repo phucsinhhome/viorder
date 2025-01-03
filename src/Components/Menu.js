@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { formatISODate, formatISODateTime, formatVND } from "../Service/Utils";
+import { formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
 import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
-import { parse, toSeconds } from "iso8601-duration";
 
 
 export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
@@ -212,11 +211,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       origin: order,
       indexedItems: order.items ? order.items
         .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
-      totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0,
-      prepareTime: order.items.length>0 ? order.items.map(i => i.prepareTime)
-        .map(time => parse(time))
-        .map(time => toSeconds(time))
-        .reduce((t1, t2) => t1 > t2 ? t1 : t2) : 3600
+      totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
     }
     setOrder(iO)
   }
@@ -465,7 +460,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
             {
               order.origin ? order.origin.items.map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
             }
-            <span className="font italic">We need around {order.prepareTime / 60} minutes to prepare. I will come to confirm with you afterward</span>
+            <span className="font italic">We need around <b>{order.origin ? toMinutes(order.origin.prepareTime) : 0} minutes</b> to prepare. I will come to confirm with you afterward</span>
           </div>
           <div className="pt-3">
             <span className={orderSubmitResult && orderSubmitResult.success ? "font-bold text-green-700" : "font-bold text-red-700"}>{orderSubmitResult.message}</span>

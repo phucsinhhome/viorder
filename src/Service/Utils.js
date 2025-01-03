@@ -1,3 +1,4 @@
+
 export const formatVND = (amount) => {
     return amount.toLocaleString('us-US', { style: 'currency', currency: 'VND' })
 }
@@ -61,14 +62,14 @@ export const formatISODateTime = (date) => {
 export const formatDatePartition = (date) => {
     // Format: 2024/07/30
     var isoDateString = formatISODate(date)
-    return isoDateString.replaceAll("-","/")
+    return isoDateString.replaceAll("-", "/")
 }
 
 export const formatMonthPartition = (date) => {
     // Format: 2024/07/30
     var isoDateString = formatISODate(date)
     var dateString = isoDateString.substring(0, "2024-07".length)
-    return dateString.replaceAll("-","/")
+    return dateString.replaceAll("-", "/")
 }
 
 const date2DigitOptions = { year: 'numeric', month: '2-digit', day: 'numeric' }
@@ -81,4 +82,32 @@ const dateMonthOptions = { month: 'short', day: 'numeric' }
 export const formatDateMonthDate = (date) => {
     // Format: Jul 30
     return date.toLocaleDateString("en-US", dateMonthOptions)
+}
+
+function parseISODuration(duration) {
+    const regex = /P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const matches = duration.match(regex);
+
+    if (!matches) {
+        throw new Error('Invalid ISO 8601 duration');
+    }
+
+    return {
+        years: parseInt(matches[1] || '0', 10),
+        months: parseInt(matches[2] || '0', 10),
+        days: parseInt(matches[3] || '0', 10),
+        hours: parseInt(matches[4] || '0', 10),
+        minutes: parseInt(matches[5] || '0', 10),
+        seconds: parseInt(matches[6] || '0', 10),
+    };
+}
+
+export const toSeconds = (iso8601duration) => {
+    let dr = parseISODuration(iso8601duration)
+    return dr.years * 31536000 + dr.months * 2592000 + dr.days * 86400 + dr.hours * 3600 + dr.minutes * 60 + dr.seconds
+}
+
+export const toMinutes = (iso8601duration) => {
+    let dr = parseISODuration(iso8601duration)
+    return dr.years * 525600 + dr.months * 43800 + dr.days * 1440 + dr.hours * 60 + dr.minutes
 }
