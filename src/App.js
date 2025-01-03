@@ -52,7 +52,7 @@ export default function App() {
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {
-            menus.map(menu => <Link to={"menu/" + menu + "/" + resolverId} className={resolveMenuStyle(menu)}>{menu.toLocaleUpperCase()}</Link>)
+            menus.map(menu => <Link key={menu} to={"menu/" + menu + "/" + resolverId} className={resolveMenuStyle(menu)}>{menu.toLocaleUpperCase()}</Link>)
           }
         </div>
         <Routes>
