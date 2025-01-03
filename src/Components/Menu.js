@@ -5,6 +5,8 @@ import { DEFAULT_PAGE_SIZE } from "../App";
 import { formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
 import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
+import { GiAlarmClock } from "react-icons/gi";
+import { GoChecklist } from "react-icons/go";
 
 
 export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
@@ -188,6 +190,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       name: product.name,
       unitPrice: product.unitPrice,
       group: product.group,
+      prepareTime: product.prepareTime,
       quantity: delta
     }
     adjustOrderItem(order.origin.orderId, item)
@@ -288,27 +291,32 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                 <div className="pl-0.5 pr-1">
                   <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
-                <div className="px-0 w-full">
-                  <div className="grid grid-cols-1">
-                    <div className="flex flex-row">
-                      <Link
-                        onClick={() => viewProductDetail(product)}
-                        state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                        className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
-                      >
-                        {product.name}
-                      </Link>
+                <div className="flex flex-col px-0 w-full">
+                  <div className="flex flex-row">
+                    <Link
+                      onClick={() => viewProductDetail(product)}
+                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
+                      className="font-medium text-blue-600 hover:underline dark:text-blue-500 overflow-hidden"
+                    >
+                      {product.name}
+                    </Link>
+                  </div>
+                  <div className="flex flex-row text-sm space-x-3">
+                    <div className="flex flex-row items-center space-x-0.5">
+                      <GiAlarmClock />
+                      <span className="font font-mono text-gray-500 text-[13px]">{toMinutes(product.prepareTime) + "min"}</span>
                     </div>
-                    <div className="flex flex-row text-sm space-x-1">
-                      <span className="font font-mono text-gray-500 text-[10px]">{product.description}</span>
+                    <div className="flex flex-row items-center space-x-0.5 w-full">
+                      <GoChecklist />
+                      <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-32">{product.description}</div>
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col pl-0.2 pr-2">
-                  <div>
-                    <span className="w-full text text-center font-mono text-red-700 font-semibold">{formatVND(product.unitPrice)}</span>
+                  <div className="text text-center">
+                    <span className="w-full text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
                   </div>
-                  <div className="relative flex items-center w-full mb-2">
+                  <div className="flex items-center w-full mb-2 text-center">
                     <button
                       type="button"
                       id="decrement-button"
@@ -324,7 +332,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       type="number"
                       id="quantity-input"
                       data-input-counter aria-describedby="helper-text-explanation"
-                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 focus:ring-blue-500 focus:border-blue-500 block w-9 py-1 pr-0 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 block w-11 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="9"
                       required
                       value={order.indexedItems && order.indexedItems[product.id] ? order.indexedItems[product.id].quantity : 0}
