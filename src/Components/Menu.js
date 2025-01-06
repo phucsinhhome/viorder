@@ -391,10 +391,10 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           {menuItems.map((product) => {
             return (
               <div
-                className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 "
+                className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 relative"
                 key={product.id}
               >
-                <div className="pl-0.5 pr-1">
+                <div className="pl-0.5 pr-1 py-2">
                   <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
                 <div className="flex flex-col px-0">
@@ -410,15 +410,15 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                   <div className="flex flex-row text-sm space-x-3">
                     <div className="flex flex-row items-center space-x-0.5">
                       <GiAlarmClock />
-                      <span className="font font-mono text-gray-500 text-[13px]">{toMinutes(product.prepareTime) + "min"}</span>
+                      <span className="font font-mono text-gray-500 text-[13px] w-9">{toMinutes(product.prepareTime) + "min"}</span>
                     </div>
                     <div className="flex flex-row items-center space-x-0.5">
                       <GoChecklist />
-                      <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-32">{product.description}</div>
+                      <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-5/6">{product.description}</div>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col w-28 pl-0.2 pr-2">
+                <div className="flex flex-col w-28 px-1 absolute right-1">
                   <div className="text text-center w-full">
                     <span className="text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
                   </div>
@@ -438,7 +438,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       type="number"
                       id="quantity-input"
                       data-input-counter aria-describedby="helper-text-explanation"
-                      className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full text-center text-gray-900 block py-1"
+                      className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full min-w-min text-center text-gray-900 block py-1"
                       placeholder="9"
                       required
                       value={order.indexedItems && order.indexedItems[product.id] ? order.indexedItems[product.id].quantity : 0}
