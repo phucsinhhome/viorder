@@ -7,6 +7,7 @@ import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder 
 import { listStayingAndComingInvoices } from "../db/invoice";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
+import { getProductGroup } from "../db/pgroup";
 
 
 export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
@@ -34,6 +35,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const [viewingProduct, setViewingProduct] = useState({})
 
   const [showOrderSummary, setShowOrderSummary] = useState(false)
+  const [menu, setMenu] = useState()
 
   const { group, resolverId } = useParams()
 
@@ -48,7 +50,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   }
 
   const fetchMenuItems = () => {
-    console.info("Loading foods")
+    console.info("Loading items for group %s", group)
 
     fetchItems(group, pagination.pageNumber, pagination.pageSize)
       .then(rsp => {
@@ -103,6 +105,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       ...pagination,
       pageNumber: 0
     })
+    fetchTheMenu();
 
     // eslint-disable-next-line
   }, [group]);
@@ -278,8 +281,23 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     setShowProductDetailModal(false)
   }
 
+  const fetchTheMenu = () => {
+    getProductGroup(group)
+      .then((rsp) => {
+        if (rsp.ok) {
+          rsp.json()
+            .then(data => setMenu(data))
+        }else{
+          setMenu(undefined)
+        }
+      })
+  }
+
   return (
     <div className="h-full pt-3">
+      <div className="mx-2 px-2 border bg-green-100 mb-2">
+        {menu ? <span className="font italic text-sm text-amber-700 font-sans">{menu.description}</span> : <></>}
+      </div>
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1 px-2">
           {menuItems.map((product) => {
