@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
+import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
 import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { getProductGroup } from "../db/pgroup";
-
 
 export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const OrderStatus = {
@@ -36,6 +35,9 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [menu, setMenu] = useState()
+  const [timeSlots, setTimeSlots] = useState()
+  const [choosenTimeSlot, setChoosenTimeSlot] = useState('')
+  const [readyTime, setReadyTime] = useState()
 
   const { group, resolverId } = useParams()
 
@@ -117,6 +119,75 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     // eslint-disable-next-line
   }, [pagination]);
 
+  useEffect(() => {
+
+    if (showOrderSummary === true) {
+      var orderTime = formatHourMinute(new Date())
+
+      setTimeSlots([{ name: 'Lunch', slots: generateLunchTimeslots(orderTime, '10:00', '14:30') },
+      { name: 'Dinner', slots: generateLunchTimeslots(orderTime, '18:00', '20:30') }])
+      calculateReadyTime()
+    }
+
+    // eslint-disable-next-line
+  }, [showOrderSummary]);
+
+  useEffect(() => {
+
+    if (order && order.origin && order.origin.prepareTime) {
+      calculateReadyTime()
+    }
+
+    // eslint-disable-next-line
+  }, [choosenTimeSlot]);
+
+  const calculateReadyTime = () => {
+    let readyTime = new Date()
+    if (choosenTimeSlot) {
+      const [hours, minutes] = choosenTimeSlot.split(":").map(Number)
+      readyTime.setHours(hours)
+      readyTime.setMinutes(minutes)
+      readyTime.setSeconds(0)
+      setReadyTime(readyTime)
+      return
+    }
+    var prepareTime = toMinutes(order.origin.prepareTime)
+    readyTime.setMinutes(readyTime.getMinutes() + prepareTime)
+    readyTime.setSeconds(0)
+    setReadyTime(readyTime)
+  }
+
+  function generateLunchTimeslots(orderTime, startTime, endTime) {
+    const slotDuration = 30; // in minutes
+    const preparationTime = toMinutes(order.origin.prepareTime); // in minutes
+
+    // Helper function to convert time in HH:mm format to minutes
+    function convertToMinutes(time) {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    }
+
+    // Helper function to convert minutes to HH:mm format
+    function convertToTime(minutes) {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+
+    const startMinutes = convertToMinutes(startTime);
+    const endMinutes = convertToMinutes(endTime);
+    const orderMinutes = convertToMinutes(orderTime) + preparationTime;
+
+    const timeslots = [];
+    for (let minutes = startMinutes; minutes <= endMinutes; minutes += slotDuration) {
+      if (minutes >= orderMinutes) {
+        timeslots.push(convertToTime(minutes));
+      }
+    }
+
+    return timeslots;
+  }
+
   const pageClass = (pageNum) => {
     var noHighlight = "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
     var highlight = "px-3 py-2 leading-tight text-bold text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
@@ -144,7 +215,8 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
         ...order.origin,
         invoiceId: selectedInvoice.id,
         status: OrderStatus.sent,
-        guestName: guestName
+        guestName: guestName,
+        expectedTime: formatISODateTime(readyTime)
       }
       commitOrder(cOrder)
         .then(rsp => {
@@ -287,10 +359,26 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
         if (rsp.ok) {
           rsp.json()
             .then(data => setMenu(data))
-        }else{
+        } else {
           setMenu(undefined)
         }
       })
+  }
+
+  const changeTimeslot = (timeslot) => {
+    if (choosenTimeSlot === timeslot) {
+      setChoosenTimeSlot('')
+      return
+    }
+    setChoosenTimeSlot(timeslot)
+  }
+
+  const closeOrderSummary = () => {
+    setShowOrderSummary(false);
+    if (orderSubmitResult.success === true) {
+      setOrder({});
+    }
+    setOrderSubmitResult({})
   }
 
   return (
@@ -476,7 +564,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
       <Modal
         show={showOrderSummary}
-        onClose={() => { setShowOrderSummary(false); if (orderSubmitResult.success === true) { setOrder({}); } setOrderSubmitResult({}) }}
+        onClose={closeOrderSummary}
         popup={true}
       >
         <Modal.Header></Modal.Header>
@@ -486,7 +574,20 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
             {
               order.origin ? order.origin.items.map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
             }
-            <span className="font italic">We need around <b>{order.origin ? toMinutes(order.origin.prepareTime) : 0} minutes</b> to prepare. I will come to confirm with you afterward</span>
+            <span className="font italic">Your order will be ready at around <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> Or you can specify the expected time as below:</span>
+          </div>
+          <div className="pt-3">
+            {
+              timeSlots?.map(ts => <div className="flex flex-row items-center pt-1">
+                <span className="font font-sans font-semibold pr-2">{ts.name}: </span>
+                <div className="flex flex-row space-x-1 font-mono text-sm">
+                  {
+                    ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
+                      className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
+                  }
+                </div>
+              </div>)
+            }
           </div>
           <div className="pt-3">
             <span className={orderSubmitResult && orderSubmitResult.success ? "font-bold text-green-700" : "font-bold text-red-700"}>{orderSubmitResult.message}</span>
@@ -494,7 +595,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
           <Button onClick={submitOrder} disabled={orderSubmitResult.success !== undefined}>Confirm</Button>
-          <Button color="gray" onClick={() => { setShowOrderSummary(false); setOrderSubmitResult({}) }} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
+          <Button color="gray" onClick={closeOrderSummary} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
         </Modal.Footer>
       </Modal>
 

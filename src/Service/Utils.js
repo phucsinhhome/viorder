@@ -111,3 +111,34 @@ export const toMinutes = (iso8601duration) => {
     let dr = parseISODuration(iso8601duration)
     return dr.years * 525600 + dr.months * 43800 + dr.days * 1440 + dr.hours * 60 + dr.minutes
 }
+
+export const formatHourMinute = (date) => {
+    // Format: 14:59
+    return date.toLocaleTimeString("en-US", {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    })
+}
+
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+}
+
+export function toICT(date) {
+    return convertTZ(date,"Asia/Jakarta") 
+}
+
+export function formatISODateTimeInICT(date) {
+    const options = {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    };
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+}
