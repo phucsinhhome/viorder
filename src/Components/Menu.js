@@ -291,7 +291,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                 <div className="pl-0.5 pr-1">
                   <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
-                <div className="flex flex-col px-0 w-full">
+                <div className="flex flex-col px-0">
                   <div className="flex flex-row">
                     <Link
                       onClick={() => viewProductDetail(product)}
@@ -306,17 +306,17 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       <GiAlarmClock />
                       <span className="font font-mono text-gray-500 text-[13px]">{toMinutes(product.prepareTime) + "min"}</span>
                     </div>
-                    <div className="flex flex-row items-center space-x-0.5 w-full">
+                    <div className="flex flex-row items-center space-x-0.5">
                       <GoChecklist />
                       <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-32">{product.description}</div>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col pl-0.2 pr-2">
-                  <div className="text text-center">
-                    <span className="w-full text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
+                <div className="flex flex-col w-28 pl-0.2 pr-2">
+                  <div className="text text-center w-full">
+                    <span className="text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
                   </div>
-                  <div className="flex items-center w-full mb-2 text-center">
+                  <div className="flex w-full items-center mb-2 text-center">
                     <button
                       type="button"
                       id="decrement-button"
@@ -332,7 +332,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       type="number"
                       id="quantity-input"
                       data-input-counter aria-describedby="helper-text-explanation"
-                      className="bg-gray-50 border-x-0 border-gray-300 h-7 text-center text-gray-900 block w-11 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full text-center text-gray-900 block py-1"
                       placeholder="9"
                       required
                       value={order.indexedItems && order.indexedItems[product.id] ? order.indexedItems[product.id].quantity : 0}
