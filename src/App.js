@@ -36,7 +36,10 @@ export default function App() {
     console.info("Update the resolver id to %s", rId)
     setResolverId(rId)
   }
-  const menus = ['food', 'baverage', 'breakfast']
+  const menus = [{ name: 'food', displayName: 'Food' },
+  { name: 'baverage', displayName: 'Beverage' },
+  { name: 'breakfast', displayName: 'Breakfast' }]
+
   const resolveMenuStyle = (menu) => {
     var st = "px-2 py-1 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm"
     if (menu === activeGroup) {
@@ -52,7 +55,7 @@ export default function App() {
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {
-            menus.map(menu => <Link key={menu} to={"menu/" + menu + "/" + resolverId} className={resolveMenuStyle(menu)}>{menu.toLocaleUpperCase()}</Link>)
+            menus.map(menu => <Link key={menu.name} to={"menu/" + menu.name + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>)
           }
         </div>
         <Routes>
