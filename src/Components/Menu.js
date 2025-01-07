@@ -39,6 +39,9 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const [choosenTimeSlot, setChoosenTimeSlot] = useState('')
   const [readyTime, setReadyTime] = useState()
 
+  const [menuAvailable, setMenuAvailable] = useState(false)
+  const [menuMessage, setMenuMessage] = useState('')
+
   const { group, resolverId } = useParams()
 
   const handlePaginationClick = (page) => {
@@ -115,7 +118,9 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   useEffect(() => {
 
-    fetchMenuItems();
+    if (menuAvailable) {
+      fetchMenuItems();
+    }
 
     // eslint-disable-next-line
   }, [pagination.pageNumber]);
@@ -149,15 +154,17 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     }
     var now = new Date()
     var dateString = formatISODate(now)
-    console.info(dateString)
     var availT = new Date(`${dateString}T${menu.availTime}Z`)
     var unavailT = new Date(`${dateString}T${menu.unavailTime}Z`)
     console.info("%s is available from %s to %s", menu.displayName, availT.toLocaleTimeString(), unavailT.toLocaleTimeString())
     if (now >= availT && now <= unavailT) {
       fetchMenuItems()
+      setMenuAvailable(true)
+      setMenuMessage(menu.description)
       return
     } else {
       setMenuItems([])
+      setMenuMessage(`${menu.displayName} is availble for ordering from ${formatHourMinute(availT)}`)
       console.info("It's out of available time for menu %s", menu.displayName)
     }
 
@@ -406,8 +413,8 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   return (
     <div className="h-full pt-3">
-      <div className="mx-2 px-2 border bg-green-100 mb-2">
-        {menu ? <span className="font italic text-sm text-amber-700 font-sans">{menu.description}</span> : <></>}
+      <div className="mx-2 px-2 border bg-green-100 mb-2 text-center">
+        {menu ? <span className="font italic text-sm text-amber-700 font-sans">{menuMessage}</span> : <></>}
       </div>
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1 px-2">
@@ -486,29 +493,34 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           })}
         </div>
       </div>
-      <div className="flex flex-row px-2 items-center justify-between">
-        <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
-          <ul className="inline-flex items-center -space-x-px">
-            <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-              <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-            </li>
-            <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
-              1
-            </li>
-            <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
-              {pagination.pageNumber + 1}
-            </li>
-            <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
-              {pagination.totalPages}
-            </li>
-            <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-              <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
-            </li>
-          </ul>
-        </nav>
+      {
+        menuItems.length > 0 ?
 
-        <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={order.totalOrder <= 0}>Order</Button>
-      </div>
+          <div className="flex flex-row px-2 items-center justify-between">
+            <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
+              <ul className="inline-flex items-center -space-x-px">
+                <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
+                </li>
+                <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
+                  1
+                </li>
+                <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
+                  {pagination.pageNumber + 1}
+                </li>
+                <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
+                  {pagination.totalPages}
+                </li>
+                <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+                </li>
+              </ul>
+            </nav>
+
+            <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={order.totalOrder <= 0}>Order</Button>
+          </div>
+          : <></>
+      }
 
       <Modal
         show={showInvoiceModal}
