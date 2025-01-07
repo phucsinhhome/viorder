@@ -101,12 +101,13 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     argChangeActiveGroup(group)
 
     if (order.origin === undefined) {
+
       registerOrder()
     }
-    setPagination({
-      ...pagination,
-      pageNumber: 0
-    })
+    // setPagination({
+    //   ...pagination,
+    //   pageNumber: 0
+    // })
     fetchTheMenu();
 
     // eslint-disable-next-line
@@ -117,7 +118,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     fetchMenuItems();
 
     // eslint-disable-next-line
-  }, [pagination]);
+  }, [pagination.pageNumber]);
 
   useEffect(() => {
 
@@ -140,6 +141,28 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
     // eslint-disable-next-line
   }, [choosenTimeSlot]);
+
+  useEffect(() => {
+
+    if (menu === undefined) {
+      return
+    }
+    var now = new Date()
+    var dateString = formatISODate(now)
+    console.info(dateString)
+    var availT = new Date(`${dateString}T${menu.availTime}Z`)
+    var unavailT = new Date(`${dateString}T${menu.unavailTime}Z`)
+    console.info("%s is available from %s to %s", menu.displayName, availT.toLocaleTimeString(), unavailT.toLocaleTimeString())
+    if (now >= availT && now <= unavailT) {
+      fetchMenuItems()
+      return
+    } else {
+      setMenuItems([])
+      console.info("It's out of available time for menu %s", menu.displayName)
+    }
+
+    // eslint-disable-next-line
+  }, [menu]);
 
   const calculateReadyTime = () => {
     let readyTime = new Date()
