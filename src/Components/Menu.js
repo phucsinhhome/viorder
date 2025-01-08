@@ -45,7 +45,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const { group, resolverId } = useParams()
 
   const handlePaginationClick = (page) => {
-    console.log("Pagination nav bar click to page %s", page)
+    console.log(`Pagination nav bar click to page ${page}`)
 
     var pNum = page < 0 ? 0 : page > pagination.totalPages - 1 ? pagination.totalPages - 1 : page;
     setPagination({
@@ -55,7 +55,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   }
 
   const fetchMenuItems = () => {
-    console.info("Loading items for group %s", group)
+    console.info(`Loading items for group ${group}`)
 
     fetchItems(group, pagination.pageNumber, pagination.pageSize)
       .then(rsp => {
@@ -82,7 +82,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const registerOrder = () => {
     var startTime = formatISODateTime(new Date())
     let rI = findResolverId()
-    console.info("Register the order with resolverId = %s", rI)
+    console.info(`Register the order with resolverId = ${rI}`)
     startOrder(rI, startTime)
       .then(rsp => {
         if (rsp.ok) {
@@ -152,21 +152,48 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     if (menu === undefined) {
       return
     }
-    var now = new Date()
-    var dateString = formatISODate(now)
-    var availT = new Date(`${dateString}T${menu.availTime}Z`)
-    var unavailT = new Date(`${dateString}T${menu.unavailTime}Z`)
-    console.info("%s is available from %s to %s", menu.displayName, availT.toLocaleTimeString(), unavailT.toLocaleTimeString())
-    if (now >= availT && now <= unavailT) {
-      fetchMenuItems()
-      setMenuAvailable(true)
-      setMenuMessage(menu.description)
-      return
-    } else {
+    if (menu.status === 'DISABLED') {
+      setMenuMessage(`Menu ${menu.displayName} is ready at the moment`)
       setMenuItems([])
-      setMenuMessage(`${menu.displayName} is availble for ordering from ${formatHourMinute(availT)}`)
-      console.info("It's out of available time for menu %s", menu.displayName)
+      setMenuAvailable(false)
+      return
     }
+    if (menu.status === 'UNAVAILABLE') {
+      setMenuMessage(`Menu ${menu.displayName} is available at the moment`)
+      setMenuItems([])
+      setMenuAvailable(false)
+      return
+    }
+    fetchMenuItems()
+    setMenuAvailable(true)
+    setMenuMessage(menu.description)
+    
+    // var now = new Date()
+    // var dateString = formatISODate(now)
+    // var availT = new Date(`${dateString}T${menu.availTime}Z`)
+    // var unavailT = new Date(`${dateString}T${menu.unavailTime}Z`)
+    // if (unavailT < availT) {
+    //   unavailT = new Date(unavailT.setDate(unavailT.getDate() + 1))
+    // }
+    // console.log(now)
+    // console.log(availT)
+    // console.log(unavailT)
+    // console.info(`${menu.displayName} is available from ${availT.toLocaleTimeString()} to ${unavailT.toLocaleTimeString()}`)
+    // if (now >= availT && now <= unavailT) {
+    //   fetchMenuItems()
+    //   setMenuAvailable(true)
+    //   setMenuMessage(menu.description)
+    //   return
+    // } else {
+    //   setMenuAvailable(false)
+    //   setMenuItems([])
+    //   if (now < availT) {
+    //     setMenuMessage(`Sorry, ${menu.displayName} is availble for ordering from ${formatHourMinute(availT)}. Please text me on WhatsApp`)
+    //   } else {
+    //     setMenuMessage(`${menu.displayName} is not available since ${formatHourMinute(unavailT)}.<br>Please let text me on WhatsApp`)
+    //   }
+    //   console.info(`It's out of available time for menu ${menu.displayName}`)
+    // }
 
     // eslint-disable-next-line
   }, [menu]);
