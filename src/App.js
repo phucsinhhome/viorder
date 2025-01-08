@@ -38,7 +38,8 @@ export default function App() {
   }
   const menus = [{ name: 'food', displayName: 'Food' },
   { name: 'baverage', displayName: 'Beverage' },
-  { name: 'breakfast', displayName: 'Breakfast' }]
+  { name: 'breakfast', displayName: 'Breakfast' },
+  { name: 'other', displayName: 'Other' }]
 
   const resolveMenuStyle = (menu) => {
     var st = "px-2 py-1 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm"
