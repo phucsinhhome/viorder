@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../App";
 import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
-import { adjustOrderItem, commitOrder, fetchItems, resolveInvoiceId, startOrder } from "../db/order";
+import { adjustOrderItem, commitOrder, resolveInvoiceId, startOrder } from "../db/order";
+import { fetchProductItems } from "../db/inventory";
 import { listStayingAndComingInvoices } from "../db/invoice";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
@@ -57,7 +58,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   const fetchMenuItems = () => {
     console.info(`Loading items for group ${group}`)
 
-    fetchItems(group, pagination.pageNumber, pagination.pageSize)
+    fetchProductItems(group, pagination.pageNumber, pagination.pageSize)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()

@@ -35,14 +35,6 @@ export const fetchAvailability = (itemIds) => {
   return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/availability`, opts);
 }
 
-export const fetchItems = (group, page, size) => {
-  console.info("Fetch all the available items of group %s", group)
-  var opts = {
-    method: 'GET'
-  }
-  return fetch(`${process.env.REACT_APP_ORDER_ENDPOINT}/items?group=${group}&page=${page}&size=${size}`, opts);
-}
-
 export const commitOrder = (order) => {
   console.info("Commit the order")
   var opts = {
