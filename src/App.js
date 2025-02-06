@@ -37,7 +37,7 @@ export default function App() {
     setResolverId(rId)
   }
   const menus = [{ name: 'food', displayName: 'Food' },
-  { name: 'baverage', displayName: 'Beverage' },
+  { name: 'beverage', displayName: 'Beverage' },
   { name: 'breakfast', displayName: 'Breakfast' },
   { name: 'other', displayName: 'Other' }]
 
