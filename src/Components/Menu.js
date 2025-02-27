@@ -168,7 +168,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     fetchMenuItems()
     setMenuAvailable(true)
     setMenuMessage(menu.description)
-    
+
     // var now = new Date()
     // var dateString = formatISODate(now)
     // var availT = new Date(`${dateString}T${menu.availTime}Z`)
@@ -635,21 +635,63 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           <div className="flex flex-col space-y-2 text-left px-4">
             <span>Thank <b>{guestName}</b>.<br /><br />Please confirm following order detail:</span>
             {
-              order.origin ? order.origin.items.map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+              order.origin.items.filter(item => item.group === 'breakfast').length > 0 ?
+                <div>
+                  <span className="font font-bold text-lg">Breakfast</span>
+                  <ul>
+                    {
+                      order.origin ? order.origin.items.filter(item => item.group === 'breakfast').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    }
+                  </ul>
+                  <span className="font italic">The breakfast time is from 07:00 to 09:30</span>
+                </div> : <></>
             }
-            <span className="font italic">Your order will be ready at around <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> Or you can specify the expected time as below:</span>
-          </div>
-          <div className="pt-3">
             {
-              timeSlots?.map(ts => <div className="flex flex-row items-center pt-1">
-                <span className="font font-sans font-semibold pr-2">{ts.name}: </span>
-                <div className="flex flex-row space-x-1 font-mono text-sm">
-                  {
-                    ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
-                      className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
-                  }
-                </div>
-              </div>)
+              order.origin.items.filter(item => item.group === 'food').length > 0 ?
+                <div>
+                  <span className="font font-bold text-lg">Food</span>
+                  <ul>
+                    {
+                      order.origin ? order.origin.items.filter(item => item.group === 'food').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    }
+                  </ul>
+                  <span className="font italic">Your order will be ready at around <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> Or you can specify the expected time as below:</span>
+                  <div className="pt-3">
+                    {
+                      timeSlots?.map(ts => <div className="flex flex-row items-center pt-1">
+                        <span className="font font-sans font-semibold pr-2">{ts.name}: </span>
+                        <div className="flex flex-row space-x-1 font-mono text-sm">
+                          {
+                            ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
+                              className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
+                          }
+                        </div>
+                      </div>)
+                    }
+                  </div>
+                </div> : <></>
+            }
+            {
+              order.origin.items.filter(item => item.group === 'baverage').length > 0 ?
+                <div>               <span className="font font-bold text-lg">Beverage</span>
+                  <ul>
+                    {
+                      order.origin ? order.origin.items.filter(item => item.group === 'baverage').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    }
+                  </ul>
+                  <span className="font italic">Fill free to take beer, coke from the fridge at the central area</span>
+                </div> : <></>
+            }
+            {
+              order.origin.items.filter(item => item.group === 'other').length > 0 ?
+                <div>
+                  <span className="font font-bold text-lg">Other</span>
+                  <ul>
+                    {
+                      order.origin ? order.origin.items.filter(item => item.group === 'other').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    }
+                  </ul>
+                </div> : <></>
             }
           </div>
           <div className="pt-3">
