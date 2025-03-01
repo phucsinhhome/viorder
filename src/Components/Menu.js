@@ -126,13 +126,30 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     // eslint-disable-next-line
   }, [pagination.pageNumber]);
 
+  const timeSlotConfig = [
+    {
+      name: 'Lunch',
+      start: '10:00',
+      end: '14:30'
+    },
+    {
+      name: 'Dinner',
+      start: '18:00',
+      end: '20:30'
+    }
+  ]
+
   useEffect(() => {
 
     if (showOrderSummary === true) {
       var orderTime = formatHourMinute(new Date())
 
-      setTimeSlots([{ name: 'Lunch', slots: generateLunchTimeslots(orderTime, '10:00', '14:30') },
-      { name: 'Dinner', slots: generateLunchTimeslots(orderTime, '18:00', '20:30') }])
+      var slots = timeSlotConfig.map(ts => ({
+        name: ts.name,
+        slots: generateLunchTimeslots(orderTime, ts.start, ts.end)
+      }))
+      var hasSlot = slots.find(ts => ts.slots.length > 0)
+      setTimeSlots({ hasSlot: hasSlot !== undefined, slots: slots })
       calculateReadyTime()
     }
 
@@ -540,7 +557,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                   {pagination.totalPages}
                 </li>
                 <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a 1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
                 </li>
               </ul>
             </nav>
@@ -632,65 +649,67 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       >
         <Modal.Header></Modal.Header>
         <Modal.Body>
-          <div className="flex flex-col space-y-2 text-left px-4">
+          <div className="flex flex-col space-y-2 text-left">
             <span>Thank <b>{guestName}</b>.<br /><br />Please confirm following order detail:</span>
             {
-              order.origin.items.filter(item => item.group === 'breakfast').length > 0 ?
-                <div>
-                  <span className="font font-bold text-lg">Breakfast</span>
-                  <ul>
-                    {
-                      order.origin ? order.origin.items.filter(item => item.group === 'breakfast').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
-                    }
-                  </ul>
-                  <span className="font italic">The breakfast time is from 07:00 to 09:30</span>
+              order.origin?.items.filter(item => item.group === 'breakfast').length > 0 ?
+                <div className="border border-gray-200 rounded-md shadow-md p-2">
+                  <span className="font font-bold text-lg text-green-600 uppercase">Breakfast</span>
+                  {
+                    order.origin ? order.origin.items.filter(item => item.group === 'breakfast')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                  }
+                  <span className="font italic"><b>Breakfast Time:</b> from 07:00 to 09:30</span>
                 </div> : <></>
             }
             {
-              order.origin.items.filter(item => item.group === 'food').length > 0 ?
-                <div>
-                  <span className="font font-bold text-lg">Food</span>
-                  <ul>
-                    {
-                      order.origin ? order.origin.items.filter(item => item.group === 'food').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
-                    }
-                  </ul>
-                  <span className="font italic">Your order will be ready at around <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> Or you can specify the expected time as below:</span>
-                  <div className="pt-3">
-                    {
-                      timeSlots?.map(ts => <div className="flex flex-row items-center pt-1">
-                        <span className="font font-sans font-semibold pr-2">{ts.name}: </span>
-                        <div className="flex flex-row space-x-1 font-mono text-sm">
-                          {
-                            ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
-                              className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
-                          }
-                        </div>
-                      </div>)
-                    }
-                  </div>
-                </div> : <></>
-            }
-            {
-              order.origin.items.filter(item => item.group === 'baverage').length > 0 ?
-                <div>               <span className="font font-bold text-lg">Beverage</span>
-                  <ul>
-                    {
-                      order.origin ? order.origin.items.filter(item => item.group === 'baverage').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
-                    }
-                  </ul>
+              order.origin?.items.filter(item => item.group === 'baverage').length > 0 ?
+                <div className="border border-gray-200 rounded-md shadow-md p-2">
+                  <span className="font font-bold text-lg text-green-600 uppercase">Beverage</span>
+                  {
+                    order.origin ? order.origin.items.filter(item => item.group === 'baverage')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                  }
                   <span className="font italic">Fill free to take beer, coke from the fridge at the central area</span>
                 </div> : <></>
             }
             {
-              order.origin.items.filter(item => item.group === 'other').length > 0 ?
-                <div>
-                  <span className="font font-bold text-lg">Other</span>
-                  <ul>
-                    {
-                      order.origin ? order.origin.items.filter(item => item.group === 'other').map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
-                    }
-                  </ul>
+              order.origin?.items.filter(item => item.group === 'other').length > 0 ?
+                <div className="border border-gray-200 rounded-md shadow-md p-2">
+                  <span className="font font-bold text-lg text-green-600 uppercase">Other</span>
+                  {
+                    order.origin ? order.origin.items.filter(item => item.group === 'other')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                  }
+                  <span className="font italic">I will bring them to you shortly</span>
+                </div> : <></>
+            }
+            {
+              order.origin?.items.filter(item => item.group === 'food').length > 0 ?
+                <div className="border border-gray-200 rounded-md shadow-md p-2">
+                  <span className="font font-bold text-lg text-green-600">LUNCH or DINNER</span>
+                  {
+                    order.origin ? order.origin.items.filter(item => item.group === 'food')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                  }
+                  <span className="font italic"><b>Time:</b> ~ <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> </span>
+                  {
+                    timeSlots?.hasSlot ?
+                      <div className="pt-3">
+                        <span>You can also specify the time options below:</span>
+                        {
+                          timeSlots?.slots.map(ts => <div className="flex flex-row items-center pt-1">
+                            <div className="flex flex-row space-x-1 font-mono text-sm">
+                              {
+                                ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
+                                  className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
+                              }
+                            </div>
+                          </div>)
+                        }
+                      </div> : <></>
+                  }
+
                 </div> : <></>
             }
           </div>
