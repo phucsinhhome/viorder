@@ -698,14 +698,14 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       <div className="pt-3">
                         <span>You can also specify the time options below:</span>
                         {
-                          timeSlots?.slots.map(ts => <div className="flex flex-row items-center pt-1">
-                            <div className="flex flex-row space-x-1 font-mono text-sm">
+                          timeSlots?.slots.map(ts =>
+                            <div className="flex flex-row space-x-1 font-mono text-sm pt-1 overflow-scroll">
                               {
                                 ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
                                   className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
                               }
                             </div>
-                          </div>)
+                          )
                         }
                       </div> : <></>
                   }
