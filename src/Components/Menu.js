@@ -22,7 +22,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     totalPages: 20
   })
 
-  const [order, setOrder] = useState({})
+  const [order, setOrder] = useState()
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false)
   const [invoices, setInvoices] = useState([])
@@ -104,7 +104,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     }
     argChangeActiveGroup(group)
 
-    if (order.origin === undefined) {
+    if (order === undefined) {
 
       registerOrder()
     }
@@ -158,7 +158,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   useEffect(() => {
 
-    if (order && order.origin && order.origin.prepareTime) {
+    if (order?.prepareTime) {
       calculateReadyTime()
     }
 
@@ -226,7 +226,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       setReadyTime(readyTime)
       return
     }
-    var prepareTime = toMinutes(order.origin.prepareTime)
+    var prepareTime = toMinutes(order.prepareTime)
     readyTime.setMinutes(readyTime.getMinutes() + prepareTime)
     readyTime.setSeconds(0)
     setReadyTime(readyTime)
@@ -234,7 +234,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   function generateLunchTimeslots(orderTime, startTime, endTime) {
     const slotDuration = 30; // in minutes
-    const preparationTime = toMinutes(order.origin.prepareTime); // in minutes
+    const preparationTime = toMinutes(order.prepareTime); // in minutes
 
     // Helper function to convert time in HH:mm format to minutes
     function convertToMinutes(time) {
@@ -287,7 +287,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       }
 
       var cOrder = {
-        ...order.origin,
+        ...order,
         invoiceId: selectedInvoice.id,
         status: OrderStatus.sent,
         guestName: guestName,
@@ -343,7 +343,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       prepareTime: product.prepareTime,
       quantity: delta
     }
-    adjustOrderItem(order.origin.orderId, item)
+    adjustOrderItem(order.orderId, item)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
@@ -360,13 +360,14 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   }
 
   const indexOrder = (order) => {
-    var iO = {
-      origin: order,
-      indexedItems: order.items ? order.items
-        .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
-      totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
-    }
-    setOrder(iO)
+    // var iO = {
+    //   origin: order,
+    //   indexedItems: order.items ? order.items
+    //     .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
+    //   totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
+    // }
+    // setOrder(iO)
+    setOrder(order)
   }
 
   const comfirmOrderInvoice = () => {
@@ -562,7 +563,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
               </ul>
             </nav>
 
-            <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={order.totalOrder <= 0}>Order</Button>
+            <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={!order?.items || order?.items.map(o => o.quantity).reduce((i1, i2) => i1 + i2, 0) <= 0}>Order</Button>
           </div>
           : <></>
       }
@@ -652,45 +653,45 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           <div className="flex flex-col space-y-2 text-left">
             <span>Thank <b>{guestName}</b>.<br /><br />Please confirm following order detail:</span>
             {
-              order.origin?.items.filter(item => item.group === 'breakfast').length > 0 ?
+              order?.items.filter(item => item.group === 'breakfast').length > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Breakfast</span>
                   {
-                    order.origin ? order.origin.items.filter(item => item.group === 'breakfast')
+                    order ? order.items.filter(item => item.group === 'breakfast')
                       .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
                   }
                   <span className="font italic"><b>Breakfast Time:</b> from 07:00 to 09:30</span>
                 </div> : <></>
             }
             {
-              order.origin?.items.filter(item => item.group === 'baverage').length > 0 ?
+              order?.items.filter(item => item.group === 'baverage').length > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Beverage</span>
                   {
-                    order.origin ? order.origin.items.filter(item => item.group === 'baverage')
-                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    order?.items.filter(item => item.group === 'baverage')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic">Fill free to take beer, coke from the fridge at the central area</span>
                 </div> : <></>
             }
             {
-              order.origin?.items.filter(item => item.group === 'other').length > 0 ?
+              order?.items.filter(item => item.group === 'other').length > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Other</span>
                   {
-                    order.origin ? order.origin.items.filter(item => item.group === 'other')
-                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    order?.items.filter(item => item.group === 'other')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic">I will bring them to you shortly</span>
                 </div> : <></>
             }
             {
-              order.origin?.items.filter(item => item.group === 'food').length > 0 ?
+              order?.items.filter(item => item.group === 'food').length > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600">LUNCH or DINNER</span>
                   {
-                    order.origin ? order.origin.items.filter(item => item.group === 'food')
-                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    order?.items.filter(item => item.group === 'food')
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic"><b>Time:</b> ~ <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> </span>
                   {
