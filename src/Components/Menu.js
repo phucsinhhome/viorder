@@ -1,19 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
+import { Avatar, Button, Modal } from "flowbite-react";
 import { DEFAULT_PAGE_SIZE } from "../App";
-import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
-import { adjustOrderItem, commitOrder, resolveInvoiceId, startOrder } from "../db/order";
+import { formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
+import { adjustOrderItem, startOrder } from "../db/order";
 import { fetchProductItems } from "../db/inventory";
-import { listStayingAndComingInvoices } from "../db/invoice";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { getProductGroup } from "../db/pgroup";
 
-export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
-  const OrderStatus = {
-    sent: 'SENT'
-  }
+export const Menu = ({ changeOrder, getOrder, changeActiveGroup, changeResolverId }) => {
+  // const OrderStatus = {
+  //   sent: 'SENT'
+  // }
   const [menuItems, setMenuItems] = useState([])
 
   const [pagination, setPagination] = useState({
@@ -24,21 +23,21 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
 
   const [order, setOrder] = useState()
 
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false)
-  const [invoices, setInvoices] = useState([])
-  const [selectedInvoice, setSelectedInvoice] = useState({})
+  // const [showInvoiceModal, setShowInvoiceModal] = useState(false)
+  // const [invoices, setInvoices] = useState([])
+  // const [selectedInvoice, setSelectedInvoice] = useState({})
 
-  const [orderSubmitResult, setOrderSubmitResult] = useState({})
-  const [guestName, setGuestName] = useState('')
+  // const [orderSubmitResult, setOrderSubmitResult] = useState({})
+  // const [guestName, setGuestName] = useState('')
 
   const [showProductDetailModal, setShowProductDetailModal] = useState(false)
   const [viewingProduct, setViewingProduct] = useState({})
 
-  const [showOrderSummary, setShowOrderSummary] = useState(false)
+  // const [showOrderSummary, setShowOrderSummary] = useState(false)
   const [menu, setMenu] = useState()
-  const [timeSlots, setTimeSlots] = useState()
-  const [choosenTimeSlot, setChoosenTimeSlot] = useState('')
-  const [readyTime, setReadyTime] = useState()
+  // const [timeSlots, setTimeSlots] = useState()
+  // const [choosenTimeSlot, setChoosenTimeSlot] = useState('')
+  // const [readyTime, setReadyTime] = useState()
 
   const [menuAvailable, setMenuAvailable] = useState(false)
   const [menuMessage, setMenuMessage] = useState('')
@@ -80,34 +79,43 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     return resolverId
   }
 
-  const registerOrder = () => {
+  const registerOrder = async (group) => {
     var startTime = formatISODateTime(new Date())
     let rI = findResolverId()
-    console.info(`Register the order with resolverId = ${rI}`)
-    startOrder(rI, startTime)
-      .then(rsp => {
-        if (rsp.ok) {
-          rsp.json()
-            .then(data => {
-              console.info('Started order %s', data.orderId)
-              indexOrder(data)
-              return data
-            })
-        }
-      })
+    console.info(`Register the order with resolverId = ${rI} and group = ${group}`)
+    const rsp = await startOrder(rI, startTime);
+    if (rsp.ok) {
+      const data = await rsp.json();
+      console.info(`Started order with id = ${data.orderId}`);
+      const order = { ...data, totalQuantity: 0, group: group }
+      setOrder(order);
+      return order;
+    }
   }
 
   useEffect(() => {
 
+    if (order !== undefined) {
+      changeOrder(order)
+      console.info(`Sync order ${order.id} with parent component`)
+    }
+
+    // eslint-disable-next-line
+  }, [order]);
+
+  useEffect(() => {
+
     if (resolverId !== '' && resolverId !== undefined) {
-      argChangeResolverId(resolverId)
+      changeResolverId(resolverId)
     }
-    argChangeActiveGroup(group)
+    changeActiveGroup(group)
+    const order = getOrder(group)
+    console.info(`Get order for group ${group} with id = ${order?.orderId}`)
+    setOrder(order)
 
-    if (order === undefined) {
-
-      registerOrder()
-    }
+    // if (order === undefined) {
+    //   registerOrder()
+    // }
     // setPagination({
     //   ...pagination,
     //   pageNumber: 0
@@ -126,44 +134,44 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     // eslint-disable-next-line
   }, [pagination.pageNumber]);
 
-  const timeSlotConfig = [
-    {
-      name: 'Lunch',
-      start: '10:00',
-      end: '14:30'
-    },
-    {
-      name: 'Dinner',
-      start: '18:00',
-      end: '20:30'
-    }
-  ]
+  // const timeSlotConfig = [
+  //   {
+  //     name: 'Lunch',
+  //     start: '10:00',
+  //     end: '14:30'
+  //   },
+  //   {
+  //     name: 'Dinner',
+  //     start: '18:00',
+  //     end: '20:30'
+  //   }
+  // ]
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (showOrderSummary === true) {
-      var orderTime = formatHourMinute(new Date())
+  //   if (showOrderSummary === true) {
+  //     var orderTime = formatHourMinute(new Date())
 
-      var slots = timeSlotConfig.map(ts => ({
-        name: ts.name,
-        slots: generateLunchTimeslots(orderTime, ts.start, ts.end)
-      }))
-      var hasSlot = slots.find(ts => ts.slots.length > 0)
-      setTimeSlots({ hasSlot: hasSlot !== undefined, slots: slots })
-      calculateReadyTime()
-    }
+  //     var slots = timeSlotConfig.map(ts => ({
+  //       name: ts.name,
+  //       slots: generateLunchTimeslots(orderTime, ts.start, ts.end)
+  //     }))
+  //     var hasSlot = slots.find(ts => ts.slots.length > 0)
+  //     setTimeSlots({ hasSlot: hasSlot !== undefined, slots: slots })
+  //     calculateReadyTime()
+  //   }
 
-    // eslint-disable-next-line
-  }, [showOrderSummary]);
+  //   // eslint-disable-next-line
+  // }, [showOrderSummary]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (order?.prepareTime) {
-      calculateReadyTime()
-    }
+  //   if (orders?.prepareTime) {
+  //     calculateReadyTime()
+  //   }
 
-    // eslint-disable-next-line
-  }, [choosenTimeSlot]);
+  //   // eslint-disable-next-line
+  // }, [choosenTimeSlot]);
 
   useEffect(() => {
 
@@ -216,52 +224,52 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
     // eslint-disable-next-line
   }, [menu]);
 
-  const calculateReadyTime = () => {
-    let readyTime = new Date()
-    if (choosenTimeSlot) {
-      const [hours, minutes] = choosenTimeSlot.split(":").map(Number)
-      readyTime.setHours(hours)
-      readyTime.setMinutes(minutes)
-      readyTime.setSeconds(0)
-      setReadyTime(readyTime)
-      return
-    }
-    var prepareTime = toMinutes(order.prepareTime)
-    readyTime.setMinutes(readyTime.getMinutes() + prepareTime)
-    readyTime.setSeconds(0)
-    setReadyTime(readyTime)
-  }
+  // const calculateReadyTime = () => {
+  //   let readyTime = new Date()
+  //   if (choosenTimeSlot) {
+  //     const [hours, minutes] = choosenTimeSlot.split(":").map(Number)
+  //     readyTime.setHours(hours)
+  //     readyTime.setMinutes(minutes)
+  //     readyTime.setSeconds(0)
+  //     setReadyTime(readyTime)
+  //     return
+  //   }
+  //   var prepareTime = toMinutes(orders.prepareTime)
+  //   readyTime.setMinutes(readyTime.getMinutes() + prepareTime)
+  //   readyTime.setSeconds(0)
+  //   setReadyTime(readyTime)
+  // }
 
-  function generateLunchTimeslots(orderTime, startTime, endTime) {
-    const slotDuration = 30; // in minutes
-    const preparationTime = toMinutes(order.prepareTime); // in minutes
+  // function generateLunchTimeslots(orderTime, startTime, endTime) {
+  //   const slotDuration = 30; // in minutes
+  //   const preparationTime = toMinutes(orders.prepareTime); // in minutes
 
-    // Helper function to convert time in HH:mm format to minutes
-    function convertToMinutes(time) {
-      const [hours, minutes] = time.split(":").map(Number);
-      return hours * 60 + minutes;
-    }
+  //   // Helper function to convert time in HH:mm format to minutes
+  //   function convertToMinutes(time) {
+  //     const [hours, minutes] = time.split(":").map(Number);
+  //     return hours * 60 + minutes;
+  //   }
 
-    // Helper function to convert minutes to HH:mm format
-    function convertToTime(minutes) {
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-    }
+  //   // Helper function to convert minutes to HH:mm format
+  //   function convertToTime(minutes) {
+  //     const hours = Math.floor(minutes / 60);
+  //     const mins = minutes % 60;
+  //     return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+  //   }
 
-    const startMinutes = convertToMinutes(startTime);
-    const endMinutes = convertToMinutes(endTime);
-    const orderMinutes = convertToMinutes(orderTime) + preparationTime;
+  //   const startMinutes = convertToMinutes(startTime);
+  //   const endMinutes = convertToMinutes(endTime);
+  //   const orderMinutes = convertToMinutes(orderTime) + preparationTime;
 
-    const timeslots = [];
-    for (let minutes = startMinutes; minutes <= endMinutes; minutes += slotDuration) {
-      if (minutes >= orderMinutes) {
-        timeslots.push(convertToTime(minutes));
-      }
-    }
+  //   const timeslots = [];
+  //   for (let minutes = startMinutes; minutes <= endMinutes; minutes += slotDuration) {
+  //     if (minutes >= orderMinutes) {
+  //       timeslots.push(convertToTime(minutes));
+  //     }
+  //   }
 
-    return timeslots;
-  }
+  //   return timeslots;
+  // }
 
   const pageClass = (pageNum) => {
     var noHighlight = "px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -271,65 +279,74 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
   }
 
   //================ ORDER ==========================//
-  const handleInvSelection = (inv) => {
-    setSelectedInvoice(inv)
-    setGuestName(inv.guestName)
-  }
+  // const handleInvSelection = (inv) => {
+  //   setSelectedInvoice(inv)
+  //   setGuestName(inv.guestName)
+  // }
 
-  const cancelOrder = () => {
-    setShowInvoiceModal(false)
-  }
+  // const cancelOrder = () => {
+  //   setShowInvoiceModal(false)
+  // }
 
-  const submitOrder = () => {
-    try {
-      if (selectedInvoice === null) {
-        return
-      }
+  // const submitOrder = () => {
 
-      var cOrder = {
-        ...order,
-        invoiceId: selectedInvoice.id,
-        status: OrderStatus.sent,
-        guestName: guestName,
-        expectedTime: formatISODateTime(readyTime)
-      }
-      commitOrder(cOrder)
-        .then(rsp => {
-          if (rsp.ok) {
-            rsp.json()
-              .then((data) => {
-                indexOrder(data)
-                console.info("Submit order %s successfully", cOrder.orderId)
-                var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
-                setOrderSubmitResult({
-                  success: true,
-                  message: successMsg
-                })
-              })
-          } else {
-            console.info("Failed to submit order %s", cOrder.orderId)
-            var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE)
-            setOrderSubmitResult({
-              success: false,
-              message: failedMsg
-            })
-          }
-        })
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setShowInvoiceModal(false)
+  //   if (selectedInvoice === null) {
+  //     return
+  //   }
+  //   orders.forEach(order => submitOneOrder(order));
+  // }
+
+  // const submitOneOrder = (order) => {
+  //   try {
+  //     var cOrder = {
+  //       ...order,
+  //       invoiceId: selectedInvoice.id,
+  //       status: OrderStatus.sent,
+  //       guestName: guestName,
+  //       expectedTime: formatISODateTime(readyTime)
+  //     }
+  //     commitOrder(cOrder)
+  //       .then(rsp => {
+  //         if (rsp.ok) {
+  //           rsp.json()
+  //             .then((data) => {
+  //               indexOrder(data)
+  //               console.info("Submit order %s successfully", cOrder.orderId)
+  //               var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
+  //               setOrderSubmitResult({
+  //                 success: true,
+  //                 message: successMsg
+  //               })
+  //             })
+  //         } else {
+  //           console.info("Failed to submit order %s", cOrder.orderId)
+  //           var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE)
+  //           setOrderSubmitResult({
+  //             success: false,
+  //             message: failedMsg
+  //           })
+  //         }
+  //       })
+  //   } catch (e) {
+  //     console.error(e)
+  //   } finally {
+  //     setShowInvoiceModal(false)
+  //   }
+  // }
+
+  // const processMessageAnnotation = (template) => {
+  //   return template.replace('GUEST_NAME', guestName)
+  // }
+
+  const changeQuantity = async (product, delta) => {
+    let od = order
+    if (od === undefined) {
+      od = await registerOrder(product.group)
+      console.info('Register order')
     }
-  }
-
-  const processMessageAnnotation = (template) => {
-    return template.replace('GUEST_NAME', guestName)
-  }
-
-  const changeQuantity = (product, delta) => {
 
     if (delta <= 0) {
-      var existedItem = order.indexedItems[product.id]
+      var existedItem = od.items.find(p => p.id === product.id)
       if (existedItem !== undefined && existedItem.quantity <= 0) {
         return
       }
@@ -343,12 +360,15 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       prepareTime: product.prepareTime,
       quantity: delta
     }
-    adjustOrderItem(order.orderId, item)
+    adjustOrderItem(od.orderId, item)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
             .then(data => {
-              indexOrder(data)
+              setOrder({
+                ...data,
+                totalQuantity: data.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0)
+              })
               console.info("Change item %s with quantity %s order successfully", item.id, item.quantity)
             })
         } else if (rsp.status === 400) {
@@ -359,67 +379,75 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       })
   }
 
-  const indexOrder = (order) => {
-    // var iO = {
-    //   origin: order,
-    //   indexedItems: order.items ? order.items
-    //     .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
-    //   totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
-    // }
-    // setOrder(iO)
-    setOrder(order)
-  }
+  // const indexOrder = (order) => {
+  //   // var iO = {
+  //   //   origin: order,
+  //   //   indexedItems: order.items ? order.items
+  //   //     .reduce((map, item) => { map[item.id] = item; return map }, {}) : {},
+  //   //   totalOrder: order.items ? order.items.map(p => p.quantity).reduce((p1, p2) => p1 + p2, 0) : 0
+  //   // }
+  //   // setOrder(iO)
+  //   // setOrders([...orders, order])
+  //   let o = order?.find(o => o.orderId === order.orderId)
+  //   if (o === undefined) {
+  //     setOrder([...(order || []), order])
+  //   } else {
+  //     var idx = order.indexOf(o)
+  //     order[idx] = order
+  //     setOrder([...order])
+  //   }
+  // }
 
-  const comfirmOrderInvoice = () => {
+  // const comfirmOrderInvoice = () => {
 
-    let rI = findResolverId()
+  //   let rI = findResolverId()
 
-    if (rI !== null && rI !== undefined) {
-      resolveInvoiceId(rI)
-        .then(rsp => {
-          if (rsp.ok) {
-            rsp.json()
-              .then(data => {
-                if (data !== null && data !== undefined && data !== '') {
-                  console.info("Resolved invoice id %s", data.id)
-                  setInvoices([data])
-                  handleInvSelection(data)
-                  setShowOrderSummary(true)
-                } else {
-                  console.info("No invoice resolved")
-                  chooseInvoice()
-                }
-              }).catch(e => {
-                console.info("Failed to resolve invoice")
-                chooseInvoice()
-              })
-          }
-        })
-    }
+  //   if (rI !== null && rI !== undefined) {
+  //     resolveInvoiceId(rI)
+  //       .then(rsp => {
+  //         if (rsp.ok) {
+  //           rsp.json()
+  //             .then(data => {
+  //               if (data !== null && data !== undefined && data !== '') {
+  //                 console.info("Resolved invoice id %s", data.id)
+  //                 setInvoices([data])
+  //                 handleInvSelection(data)
+  //                 setShowOrderSummary(true)
+  //               } else {
+  //                 console.info("No invoice resolved")
+  //                 chooseInvoice()
+  //               }
+  //             }).catch(e => {
+  //               console.info("Failed to resolve invoice")
+  //               chooseInvoice()
+  //             })
+  //         }
+  //       })
+  //   }
 
-  }
+  // }
 
-  const chooseInvoice = () => {
-    let fromDate = formatISODate(new Date())
-    listStayingAndComingInvoices(fromDate, 0, 7)
-      .then(rsp => {
-        if (rsp.ok) {
-          rsp.json()
-            .then(data => {
-              console.info('Fetch invoices successfully')
-              setInvoices(data.content)
-              setShowInvoiceModal(true)
-              setSelectedInvoice({})
-            })
-        }
-      })
-  }
+  // const chooseInvoice = () => {
+  //   let fromDate = formatISODate(new Date())
+  //   listStayingAndComingInvoices(fromDate, 0, 7)
+  //     .then(rsp => {
+  //       if (rsp.ok) {
+  //         rsp.json()
+  //           .then(data => {
+  //             console.info('Fetch invoices successfully')
+  //             setInvoices(data.content)
+  //             setShowInvoiceModal(true)
+  //             setSelectedInvoice({})
+  //           })
+  //       }
+  //     })
+  // }
 
-  const changeGuestName = (e) => {
-    var gN = e.target.value
-    setSelectedInvoice({})
-    setGuestName(gN)
-  }
+  // const changeGuestName = (e) => {
+  //   var gN = e.target.value
+  //   setSelectedInvoice({})
+  //   setGuestName(gN)
+  // }
 
   const viewProductDetail = (product) => {
     setViewingProduct(product)
@@ -441,21 +469,21 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
       })
   }
 
-  const changeTimeslot = (timeslot) => {
-    if (choosenTimeSlot === timeslot) {
-      setChoosenTimeSlot('')
-      return
-    }
-    setChoosenTimeSlot(timeslot)
-  }
+  // const changeTimeslot = (timeslot) => {
+  //   if (choosenTimeSlot === timeslot) {
+  //     setChoosenTimeSlot('')
+  //     return
+  //   }
+  //   setChoosenTimeSlot(timeslot)
+  // }
 
-  const closeOrderSummary = () => {
-    setShowOrderSummary(false);
-    if (orderSubmitResult.success === true) {
-      setOrder({});
-    }
-    setOrderSubmitResult({})
-  }
+  // const closeOrderSummary = () => {
+  //   setShowOrderSummary(false);
+  //   if (orderSubmitResult.success === true) {
+  //     setOrders({});
+  //   }
+  //   setOrderSubmitResult({})
+  // }
 
   return (
     <div className="h-full pt-3">
@@ -517,7 +545,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
                       className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full min-w-min text-center text-gray-900 block py-1"
                       placeholder="9"
                       required
-                      value={order.indexedItems && order.indexedItems[product.id] ? order.indexedItems[product.id].quantity : 0}
+                      value={order?.items.find(p => p.id === product.id)?.quantity || 0}
                       readOnly
                     />
                     <button
@@ -563,12 +591,12 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
               </ul>
             </nav>
 
-            <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={!order?.items || order?.items.map(o => o.quantity).reduce((i1, i2) => i1 + i2, 0) <= 0}>Order</Button>
+            {/* <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={!order?.items || order?.items.map(o => o.quantity).reduce((i1, i2) => i1 + i2, 0) <= 0}>Order</Button> */}
           </div>
           : <></>
       }
 
-      <Modal
+      {/* <Modal
         show={showInvoiceModal}
         onClose={cancelOrder}
         popup={true}
@@ -653,44 +681,44 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           <div className="flex flex-col space-y-2 text-left">
             <span>Thank <b>{guestName}</b>.<br /><br />Please confirm following order detail:</span>
             {
-              order?.items.filter(item => item.group === 'breakfast').length > 0 ?
+              orders.find(item => item.group === 'breakfast')?.totalQuantity > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Breakfast</span>
                   {
-                    order ? order.items.filter(item => item.group === 'breakfast')
-                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>) : <></>
+                    orders?.find(item => item.group === 'breakfast').items
+                      .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic"><b>Breakfast Time:</b> from 07:00 to 09:30</span>
                 </div> : <></>
             }
             {
-              order?.items.filter(item => item.group === 'baverage').length > 0 ?
+              orders.find(item => item.group === 'baverage')?.totalQuantity > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Beverage</span>
                   {
-                    order?.items.filter(item => item.group === 'baverage')
+                    orders?.find(item => item.group === 'baverage').items
                       .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic">Fill free to take beer, coke from the fridge at the central area</span>
                 </div> : <></>
             }
             {
-              order?.items.filter(item => item.group === 'other').length > 0 ?
+              orders.find(item => item.group === 'other')?.totalQuantity > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600 uppercase">Other</span>
                   {
-                    order?.items.filter(item => item.group === 'other')
+                    orders?.find(item => item.group === 'other').items
                       .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic">I will bring them to you shortly</span>
                 </div> : <></>
             }
             {
-              order?.items.filter(item => item.group === 'food').length > 0 ?
+              orders.find(item => item.group === 'food')?.totalQuantity > 0 ?
                 <div className="border border-gray-200 rounded-md shadow-md p-2">
                   <span className="font font-bold text-lg text-green-600">LUNCH or DINNER</span>
                   {
-                    order?.items.filter(item => item.group === 'food')
+                    orders?.find(item => item.group === 'food').items
                       .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic"><b>Time:</b> ~ <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> </span>
@@ -722,7 +750,7 @@ export const Menu = ({ argChangeResolverId, argChangeActiveGroup }) => {
           <Button onClick={submitOrder} disabled={orderSubmitResult.success !== undefined}>Confirm</Button>
           <Button color="gray" onClick={closeOrderSummary} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
 
       <Modal
         show={showProductDetailModal}
