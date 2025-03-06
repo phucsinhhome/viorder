@@ -273,10 +273,28 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
     if (selectedInvoice === null) {
       return
     }
-    orders.forEach(order => submitOneOrder(order));
+    Promise.all(orders.map(order => submitOneOrder(order)))
+      .then(results => {
+        const anyFailureResult = results.find(r => r.success === false);
+        if (anyFailureResult) {
+          var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE);
+          console.info("Submit all orders failed")
+          setOrderSubmitResult({
+            success: false,
+            message: failedMsg
+          })
+        } else {
+          var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE);
+          console.info("Submit all orders successfully")
+          setOrderSubmitResult({
+            success: true,
+            message: successMsg
+          })
+        }
+      })
   }
 
-  const submitOneOrder = (order) => {
+  const submitOneOrder = async (order) => {
     try {
       var cOrder = {
         ...order,
@@ -285,35 +303,24 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
         guestName: guestName,
         expectedTime: formatISODateTime(readyTime)
       }
-      commitOrder(cOrder)
-        .then(rsp => {
-          if (rsp.ok) {
-            rsp.json()
-              .then((data) => {
-                indexOrder(data)
-                console.info("Submit order %s successfully", cOrder.orderId)
-                var successMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_SUCCESS_MESSAGE)
-                setOrderSubmitResult({
-                  success: true,
-                  message: successMsg
-                })
-              })
-          } else {
-            console.info("Failed to submit order %s", cOrder.orderId)
-            var failedMsg = processMessageAnnotation(process.env.REACT_APP_ORDER_FAILED_MESSAGE)
-            setOrderSubmitResult({
-              success: false,
-              message: failedMsg
-            })
-          }
-        })
+      const rsp = await commitOrder(cOrder);
+      if (rsp.ok) {
+        const data = await rsp.json();
+        indexOrder(data);
+        console.info(`Submit order ${cOrder.orderId} successfully`);
+        return { success: true, orderId: order.id };
+      } else {
+        console.info(`Failed to submit order ${cOrder.orderId}`);
+        return { success: false, orderId: order.id };
+      }
     } catch (e) {
-      console.error(e)
+      console.error(e);
+      return { success: false, message: e.message };
     } finally {
-      setShowInvoiceModal(false)
+      setShowInvoiceModal(false);
     }
   }
-
+  
   const processMessageAnnotation = (template) => {
     return template.replace('GUEST_NAME', guestName)
   }
@@ -384,7 +391,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
   const closeOrderSummary = () => {
     setShowOrderSummary(false);
     if (orderSubmitResult.success === true) {
-      setOrders({});
+      setOrders([]);
     }
     setOrderSubmitResult({})
   }
