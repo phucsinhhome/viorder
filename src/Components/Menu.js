@@ -245,22 +245,6 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       })
   }
 
-  // const changeTimeslot = (timeslot) => {
-  //   if (choosenTimeSlot === timeslot) {
-  //     setChoosenTimeSlot('')
-  //     return
-  //   }
-  //   setChoosenTimeSlot(timeslot)
-  // }
-
-  // const closeOrderSummary = () => {
-  //   setShowOrderSummary(false);
-  //   if (orderSubmitResult.success === true) {
-  //     setOrders({});
-  //   }
-  //   setOrderSubmitResult({})
-  // }
-
   useEffect(() => {
 
     if (showOrderSummary === true) {
