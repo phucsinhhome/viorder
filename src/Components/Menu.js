@@ -257,8 +257,9 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
 
   useEffect(() => {
 
-    if (orders?.prepareTime) {
-      calculateReadyTime()
+    const foodOrder = getOrder('food')
+    if (foodOrder !== undefined) {
+      calculateReadyTime(foodOrder.prepareTime)
     }
 
     // eslint-disable-next-line
@@ -301,7 +302,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
         invoiceId: selectedInvoice.id,
         status: OrderStatus.sent,
         guestName: guestName,
-        expectedTime: formatISODateTime(readyTime)
+        expectedTime: readyTime?formatISODateTime(readyTime):'',
       }
       const rsp = await commitOrder(cOrder);
       if (rsp.ok) {
