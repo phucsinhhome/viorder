@@ -2,28 +2,14 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
-import { Button } from "flowbite-react";
 
 
 export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
 
-// export const currentUserFullname = () => {
-//   let sufix = currentUser.last_name === null || currentUser.last_name === undefined || currentUser.last_name === "" ? "" : (" " + currentUser.last_name)
-//   return currentUser.first_name + sufix
-// }
-
-
 export default function App() {
-
-
-
   const [activeGroup, setActiveGroup] = useState('food')
   const [resolverId, setResolverId] = useState('r1')
 
-  // const updateResolver = (rId) => {
-  //   console.info("Update the resolver id to %s", rId)
-  //   // setResolverId(rId)
-  // }
   const menus = [{ name: 'food', displayName: 'Food' },
   { name: 'baverage', displayName: 'Beverage' },
   { name: 'breakfast', displayName: 'Breakfast' },
@@ -33,14 +19,7 @@ export default function App() {
 
   useEffect(() => {
     document.title = "PSO"
-    // tele.ready();
-    // tele.expand();
-    // tele.disableVerticalSwipes();
-    // console.info("TELEGRAM BOT API VERSION: %s", tele.version)
-
   }, []);
-
-
 
   const resolveMenuStyle = (menu) => {
     var st = "px-2 py-1 text-center text-amber-900 text-sm font-sans rounded-sm shadow-sm"

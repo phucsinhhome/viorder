@@ -410,8 +410,8 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       setReadyTime(readyTime)
       return
     }
-    var prepareTime = toMinutes(prepareTime)
-    readyTime.setMinutes(readyTime.getMinutes() + prepareTime)
+    var prepareTimeInMin = toMinutes(prepareTime)
+    readyTime.setMinutes(readyTime.getMinutes() + prepareTimeInMin)
     readyTime.setSeconds(0)
     setReadyTime(readyTime)
   }
