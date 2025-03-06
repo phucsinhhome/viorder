@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { DEFAULT_PAGE_SIZE } from "../App";
 import { fetchProductItems } from "../db/inventory";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
@@ -32,7 +31,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
-    pageSize: DEFAULT_PAGE_SIZE,
+    pageSize: process.env.REACT_APP_DEFAULT_PAGE_SIZE,
     totalPages: 20
   })
 
@@ -116,16 +115,6 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       return order;
     }
   }
-
-  // useEffect(() => {
-
-  //   if (order !== undefined) {
-  //     changeOrder(order)
-  //     console.info(`Sync order ${order.id} with parent component`)
-  //   }
-
-  //   // eslint-disable-next-line
-  // }, [order]);
 
   useEffect(() => {
 

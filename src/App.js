@@ -3,9 +3,6 @@ import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
 
-
-export const DEFAULT_PAGE_SIZE = process.env.REACT_APP_DEFAULT_PAGE_SIZE
-
 export default function App() {
   const [activeGroup, setActiveGroup] = useState('food')
   const [resolverId, setResolverId] = useState('r1')
@@ -14,8 +11,6 @@ export default function App() {
   { name: 'baverage', displayName: 'Beverage' },
   { name: 'breakfast', displayName: 'Breakfast' },
   { name: 'other', displayName: 'Other' }]
-
-
 
   useEffect(() => {
     document.title = "PSO"
@@ -30,8 +25,6 @@ export default function App() {
     }
     return st
   }
-
-
 
   return (
     <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
