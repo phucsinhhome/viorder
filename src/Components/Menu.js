@@ -302,7 +302,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
         invoiceId: selectedInvoice.id,
         status: OrderStatus.sent,
         guestName: guestName,
-        expectedTime: readyTime?formatISODateTime(readyTime):'',
+        expectedTime: readyTime ? formatISODateTime(readyTime) : '',
       }
       const rsp = await commitOrder(cOrder);
       if (rsp.ok) {
@@ -321,7 +321,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       setShowInvoiceModal(false);
     }
   }
-  
+
   const processMessageAnnotation = (template) => {
     return template.replace('GUEST_NAME', guestName)
   }
@@ -572,8 +572,6 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
                 </li>
               </ul>
             </nav>
-
-            {/* <Button className="px-3 py-2 mt-2 mx-3 h-9" onClick={comfirmOrderInvoice} disabled={!order?.items || order?.items.map(o => o.quantity).reduce((i1, i2) => i1 + i2, 0) <= 0}>Order</Button> */}
           </div>
           : <></>
       }
@@ -777,8 +775,8 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       </Modal>
 
 
-      <div className="flex flex-row justify-center">
-        <Button className="w-2/3 px-3 py-2 mt-2 mx-3 h-9 absolute bottom-1"
+      <div className="flex flex-row justify-end">
+        <Button className="w-40 px-3 py-2 mt-2 mx-3 h-9 absolute bottom-1"
           onClick={comfirmOrderInvoice} disabled={!orders || orders.length <= 0}>Order</Button>
       </div>
     </div >
