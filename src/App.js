@@ -3,6 +3,10 @@ import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
 
+export const tenantGroup = (group) => {
+  return `${process.env.REACT_APP_TENANT}${group}`
+}
+
 export default function App() {
   const [activeGroup, setActiveGroup] = useState('food')
   const [resolverId, setResolverId] = useState('r1')
@@ -31,7 +35,7 @@ export default function App() {
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {
-            menus.map(menu => <Link key={menu.name} to={"menu/" + menu.name + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>)
+            menus.map(menu => <Link key={menu.name} to={"menu/" + tenantGroup(menu.name) + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>)
           }
         </div>
         <Routes>
