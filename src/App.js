@@ -8,7 +8,7 @@ export const tenantGroup = (group) => {
 }
 
 export default function App() {
-  const [activeGroup, setActiveGroup] = useState('food')
+  const [activeGroup, setActiveGroup] = useState(tenantGroup('food'))
   const [resolverId, setResolverId] = useState('r1')
 
   const menus = [{ name: 'food', displayName: 'Food' },
