@@ -2,22 +2,33 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
+import { getProductGroup } from "./db/pgroup";
 
 export const tenantGroup = (group) => {
   return `${process.env.REACT_APP_TENANT}${group}`
 }
 
+const menuNames = process.env.REACT_APP_PRODUCT_GROUPS.split(',')
+
 export default function App() {
   const [activeGroup, setActiveGroup] = useState(tenantGroup('food'))
   const [resolverId, setResolverId] = useState('r1')
 
-  const menus = [{ name: 'food', displayName: 'Food' },
-  { name: 'baverage', displayName: 'Beverage' },
-  { name: 'breakfast', displayName: 'Breakfast' },
-  { name: 'other', displayName: 'Other' }]
+  const [groups, setGroups] = useState([])
 
   useEffect(() => {
-    document.title = "PSO"
+    document.title = "PSO";
+    menuNames.forEach(group => {
+      getProductGroup(group)
+        .then(rsp => {
+          if (rsp.ok) {
+            return rsp.json()
+              .then(data => {
+                setGroups(groups => [...groups, data])
+              })
+          }
+        })
+    })
   }, []);
 
   const resolveMenuStyle = (menu) => {
@@ -35,7 +46,9 @@ export default function App() {
       <Router>
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {
-            menus.map(menu => <Link key={menu.name} to={"menu/" + tenantGroup(menu.name) + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>)
+            menuNames.map(grp => groups.find(g => g.name === grp))
+              .map(menu => menu ? <Link key={menu.name} to={"menu/" + tenantGroup(menu.name) + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>
+                : <div></div>)
           }
         </div>
         <Routes>
