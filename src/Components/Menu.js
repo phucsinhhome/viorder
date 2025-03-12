@@ -8,7 +8,7 @@ import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
 import { commitOrder, resolveInvoiceId, adjustOrderItem, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
-import { tenantGroup } from "../App";
+import { defaultMenuName } from "../App";
 
 export const OrderStatus = {
   sent: 'SENT'
@@ -238,7 +238,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
   useEffect(() => {
 
     if (showOrderSummary === true) {
-      var foodOrder = orders.find(o => o.group === tenantGroup('food'))
+      var foodOrder = orders.find(o => o.group === defaultMenuName)
       if (foodOrder === undefined) {
         return
       }
@@ -258,7 +258,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
 
   useEffect(() => {
 
-    const foodOrder = getOrder(tenantGroup('food'))
+    const foodOrder = getOrder(defaultMenuName)
     if (foodOrder !== undefined) {
       calculateReadyTime(foodOrder.prepareTime)
     }
@@ -737,11 +737,11 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
                 </div> : <></>
             }
             {
-              getOrder(tenantGroup('food'))?.totalQuantity > 0 ?
-                <div className={summaryOrderStyle(getOrder(tenantGroup('food')))}>
+              getOrder(defaultMenuName)?.totalQuantity > 0 ?
+                <div className={summaryOrderStyle(getOrder(defaultMenuName))}>
                   <span className="font font-bold text-lg text-green-600">LUNCH or DINNER</span>
                   {
-                    getOrder(tenantGroup('food')).items
+                    getOrder(defaultMenuName).items
                       .map(item => <li key={item.id}>{item.quantity + 'x ' + item.name}</li>)
                   }
                   <span className="font italic"><b>Time:</b> ~ <b>{readyTime ? formatHourMinute(readyTime) : ''}</b>.<br /> </span>

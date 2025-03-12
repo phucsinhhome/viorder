@@ -4,14 +4,11 @@ import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
 import { getProductGroup } from "./db/pgroup";
 
-export const tenantGroup = (group) => {
-  return `${process.env.REACT_APP_TENANT}${group}`
-}
-
-const menuNames = process.env.REACT_APP_PRODUCT_GROUPS.split(',')
+export const menuNames = process.env.REACT_APP_PRODUCT_GROUPS.split(',')
+export const defaultMenuName = menuNames[0]
 
 export default function App() {
-  const [activeGroup, setActiveGroup] = useState(tenantGroup('food'))
+  const [activeGroup, setActiveGroup] = useState(menuNames[0])
   const [resolverId, setResolverId] = useState('r1')
 
   const [groups, setGroups] = useState([])
@@ -47,7 +44,7 @@ export default function App() {
         <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-2">
           {
             menuNames.map(grp => groups.find(g => g.name === grp))
-              .map(menu => menu ? <Link key={menu.name} to={"menu/" + tenantGroup(menu.name) + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>
+              .map(menu => menu ? <Link key={menu.name} to={"menu/" + menu.name + "/" + resolverId} className={resolveMenuStyle(menu.name)}>{menu.displayName}</Link>
                 : <div></div>)
           }
         </div>
