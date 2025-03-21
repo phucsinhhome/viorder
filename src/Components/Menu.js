@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchAvailableProductItems, fetchProductItems } from "../db/inventory";
+import { fetchAvailableProductItems } from "../db/inventory";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { getProductGroup } from "../db/pgroup";
