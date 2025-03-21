@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchProductItems } from "../db/inventory";
+import { fetchAvailableProductItems, fetchProductItems } from "../db/inventory";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { getProductGroup } from "../db/pgroup";
@@ -71,9 +71,10 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
   }
 
   const fetchMenuItems = () => {
-    console.info(`Loading items for group ${group}`)
+    let queryTime = formatISODateTime(new Date())
+    console.info(`Loading items for group ${group} queryTime ${queryTime}`)
 
-    fetchProductItems(group, pagination.pageNumber, pagination.pageSize)
+    fetchAvailableProductItems(group, queryTime, pagination.pageNumber, pagination.pageSize)
       .then(rsp => {
         if (rsp.ok) {
           rsp.json()
