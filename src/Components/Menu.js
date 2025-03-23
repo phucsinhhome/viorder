@@ -158,7 +158,14 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       setMenuAvailable(false)
       return
     }
-    fetchMenuItems()
+    if (pagination.pageNumber !== 0) {
+      setPagination({
+        ...pagination,
+        pageNumber: 0
+      })
+    } else {
+      fetchMenuItems()
+    }
     setMenuAvailable(true)
     setMenuMessage(menu.description)
 
