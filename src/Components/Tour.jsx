@@ -4,7 +4,7 @@ import { BiSolidShow } from "react-icons/bi";
 import { FaPersonWalkingLuggage } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-export const Tour = () => {
+export const Tour = ({ resolverId }) => {
     const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -56,7 +56,7 @@ export const Tour = () => {
                                 size="xs"
                                 color="green"
                             ><FaPersonWalkingLuggage className="mr-2" />
-                                <Link to={"tour/"+tour.id}>Request to join</Link></Button>
+                                <Link to={ tour.id + "/" + resolverId}>Request to join</Link></Button>
                         </div>
                     </div>
                 ))}

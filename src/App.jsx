@@ -63,9 +63,9 @@ export default function App() {
             />}
           />
           <Route path="tour"
-            element={<Tour />}
+            element={<Tour resolverId={resolverId}/>}
           />
-          <Route path="tour/:tourId"
+          <Route path="tour/:tourId/:resolverId"
             element={<TourRequest />}
           />
         </Routes>
