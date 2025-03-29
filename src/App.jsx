@@ -3,7 +3,8 @@ import "./App.css";
 import { Menu } from "./Components/Menu"
 import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom"
 import { getProductGroup } from "./db/pgroup";
-import { Button } from "flowbite-react";
+import { Tour } from "./Components/Tour";
+import { TourRequest } from "./Components/TourRequest";
 
 export const menuNames = process.env.REACT_APP_PRODUCT_GROUPS.split(',')
 export const defaultMenuName = menuNames[0]
@@ -48,6 +49,10 @@ export default function App() {
                 >{menu.displayName}</Link>
                 : <div></div>)
           }
+          <Link
+            to={"tour"}
+            className={resolveMenuStyle(activeGroup === "tour")}
+          >Tour</Link>
         </div>
         <Routes>
           <Route path="/" element={<Navigate to={"menu/" + activeGroup + "/" + resolverId} />} />
@@ -56,6 +61,12 @@ export default function App() {
               changeResolverId={(id) => setResolverId(id)}
               changeActiveGroup={(group) => setActiveGroup(group)}
             />}
+          />
+          <Route path="tour"
+            element={<Tour />}
+          />
+          <Route path="tour/:tourId"
+            element={<TourRequest />}
           />
         </Routes>
       </Router>
