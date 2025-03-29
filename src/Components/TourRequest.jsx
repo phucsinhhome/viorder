@@ -148,7 +148,6 @@ export const TourRequest = () => {
                                         ? "flex flex-col space-y-1 border rounded-md px-1 py-0.5 shadow-md w-24 bg-orange-500"
                                         : "flex flex-col space-y-1 border rounded-md px-1 py-0.5 shadow-md w-24"
                                     }
-                                // className="flex flex-col space-y-1 border rounded-md px-1 py-0.5 shadow-md w-24 bg-orange-500"
                                 >
                                     <div className="flex flex-col  bg-green-500  rounded-md px-0.5">
                                         <span className="font font-bold text-sm text-white">{`${slot.name}`}</span>
@@ -172,6 +171,7 @@ export const TourRequest = () => {
                                             })
                                             setShowRequestDetail(true)
                                         }}
+                                        disabled={choosenSlot?.slot.id === slot.id}
                                     ><IoIosBoat className="mr-2" />Join</Button></div>
                                 </div>))
                             }
