@@ -9,6 +9,9 @@ import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinute
 import { commitOrder, resolveInvoiceId, adjustOrderItem, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
 import { defaultMenuName } from "../App";
+import { FaRegCheckCircle, FaShoppingCart } from "react-icons/fa";
+import { MdOutlineNextWeek } from "react-icons/md";
+import { IoBackspaceOutline } from "react-icons/io5";
 
 export const OrderStatus = {
   sent: 'SENT'
@@ -479,7 +482,9 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
   return (
     <div className="w-full h-full pt-3 relative">
       <div className="mx-2 px-2 border bg-green-100 mb-2 text-center">
-        {menu ? <span className="font italic text-sm text-amber-700 font-sans">{menuMessage}</span> : <></>}
+        {menu
+          ? <span className="font italic text-sm text-amber-700 font-sans">{menuMessage}</span>
+          : <></>}
       </div>
       <div className="max-h-fit overflow-hidden">
         <div className="flex flex-col space-y-1 px-2">
@@ -651,7 +656,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
                       onClick={() => handleInvSelection(inv)}
                     >
                       <Label
-                        className="font-bold text-xs text-left text-blue-600 hover:underline overflow-hidden"
+                        className="font-bold text-xs text-left text-green-600 hover:underline overflow-hidden"
                       >
                         {inv.guestName}
                       </Label>
@@ -697,8 +702,17 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={() => { setShowInvoiceModal(false); setShowOrderSummary(true) }} disabled={selectedInvoice.id === undefined && guestName === ''}>Next</Button>
-          <Button color="gray" onClick={cancelOrder}>Cancel</Button>
+          <Button
+            onClick={() => { setShowInvoiceModal(false); setShowOrderSummary(true) }}
+            disabled={selectedInvoice.id === undefined && guestName === ''}
+            color="green"
+            size="sm"
+          ><MdOutlineNextWeek className="mr-2" />Next</Button>
+          <Button
+            onClick={cancelOrder}
+            color="red"
+            size="sm"
+          ><IoBackspaceOutline className="mr-2" />Cancel</Button>
         </Modal.Footer>
       </Modal>
 
@@ -778,15 +792,28 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
           </div>
         </Modal.Body>
         <Modal.Footer className="flex justify-center gap-4">
-          <Button onClick={submitOrder} disabled={orderSubmitResult.success !== undefined}>Confirm</Button>
-          <Button color="gray" onClick={closeOrderSummary} disabled={orderSubmitResult.success !== undefined}>Cancel</Button>
+          <Button
+            onClick={submitOrder}
+            disabled={orderSubmitResult.success !== undefined}
+            color="green"
+            size="sm"
+          ><FaRegCheckCircle className="mr-2" />Confirm</Button>
+          <Button
+            onClick={closeOrderSummary}
+            disabled={orderSubmitResult.success !== undefined}
+            color="red"
+            size="sm"
+          ><IoBackspaceOutline className="mr-2" />Cancel</Button>
         </Modal.Footer>
       </Modal>
 
 
-      <div className="flex flex-row justify-end">
-        <Button className="w-40 px-3 py-2 mt-2 mx-3 h-9 absolute bottom-1"
-          onClick={comfirmOrderInvoice} disabled={!orders || orders.length <= 0}>Order</Button>
+      <div className="flex flex-row justify-end absolute bottom-2 right-2">
+        <Button
+          color="green"
+          size="sm"
+          onClick={comfirmOrderInvoice} disabled={!orders || orders.length <= 0}
+        ><FaShoppingCart className="mr-2" />Order</Button>
       </div>
     </div >
   );
