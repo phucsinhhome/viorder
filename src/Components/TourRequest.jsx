@@ -1,10 +1,11 @@
 import { Button, Modal } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { FaPersonWalkingLuggage } from "react-icons/fa6";
-import { formatVND } from "../Service/Utils";
+import { formatISODate, formatVND } from "../Service/Utils";
 import { FaChild } from "react-icons/fa";
 import { IoIosBoat } from "react-icons/io";
 import { IoBackspaceOutline } from "react-icons/io5";
+import { listTourRequests } from "../db/tour-request";
 
 
 export const TourRequest = () => {
@@ -19,6 +20,21 @@ export const TourRequest = () => {
 
     const [tourId] = useState(1); // Assuming you get this from the URL or props
     const [resolverId] = useState(2); // Assuming you get this from the URL or props
+
+    const fetchTourRequests = ()=>{
+        let fromDate = invoice.checkInDate
+        let toDate = invoice.checkOutDate
+        listTourRequests(fromDate, toDate, 0, 50)
+        .then(rsp=>{
+            if(rsp.ok){
+                rsp.json()
+                .then(data=>{
+                    setTourRequest(data.content)
+                    setLoading(false)
+                })
+            }
+        })
+    }
 
     useEffect(() => {
         if (tour === undefined) {
@@ -43,90 +59,7 @@ export const TourRequest = () => {
 
     useEffect(() => {
         if (tour && invoice) {
-            setTourRequest([
-                {
-                    id: 1,
-                    tourId: tour.id,
-                    date: "2023-10-01",
-                    timeSlots: [{
-                        id: "uuid1",
-                        name: "Morning",
-                        startTime: "08:00",
-                        endTime: "12:30",
-                        numOfAdult: 4,
-                        numOfKid: 2,
-                        estimatedPrice: 500000,
-                        status: "Planning",
-                        invoiceIds: ["inv1", "inv2"]
-                    }, {
-                        id: "uuid2",
-                        name: "Afternoon",
-                        startTime: "14:00",
-                        endTime: "18:30",
-                        numOfAdult: 2,
-                        numOfKid: 1,
-                        estimatedPrice: 700000,
-                        status: "Planning",
-                        invoiceIds: ["inv3"]
-                    }, {
-                        id: "uuid3",
-                        name: "Firefly",
-                        startTime: "15:00",
-                        endTime: "17:30",
-                        numOfAdult: 1,
-                        numOfKid: 0,
-                        estimatedPrice: 900000,
-                        status: "Planning",
-                        invoiceIds: ["inv4"]
-                    }]
-                }, {
-                    id: 4,
-                    tourId: tour.id,
-                    date: "2023-10-03",
-                    timeSlots: [{
-                        id: "uuid4",
-                        name: "Morning",
-                        startTime: "08:00",
-                        endTime: "12:30",
-                        numOfAdult: 3,
-                        numOfKid: 2,
-                        estimatedPrice: 1200000,
-                        status: "Planning",
-                        invoiceIds: ["inv5", "inv6"]
-                    }]
-                }, {
-                    id: 5,
-                    tourId: tour.id,
-                    date: "2023-10-04",
-                    timeSlots: [{
-                        id: "uuid5",
-                        name: "Morning",
-                        startTime: "08:00",
-                        endTime: "12:30",
-                        numOfAdult: 5,
-                        numOfKid: 3,
-                        estimatedPrice: 1500000,
-                        status: "Planning",
-                        invoiceIds: ["inv7"]
-                    }]
-                },
-                {
-                    id: 6,
-                    tourId: tour.id,
-                    date: "2023-10-05",
-                    timeSlots: [{
-                        id: "uuid6",
-                        name: "Morning",
-                        startTime: "08:00",
-                        endTime: "12:30",
-                        numOfAdult: 2,
-                        numOfKid: 1,
-                        estimatedPrice: 2000000,
-                        status: "Planning",
-                        invoiceIds: ["inv8"]
-                    }]
-                }]);
-            setLoading(false);
+            fetchTourRequests()
         }
     }, [tour, invoice]);
 
