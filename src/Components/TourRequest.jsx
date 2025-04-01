@@ -1,11 +1,14 @@
 import { Button, Modal } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { FaPersonWalkingLuggage } from "react-icons/fa6";
-import { formatISODate, formatVND } from "../Service/Utils";
+import { formatVND } from "../Service/Utils";
 import { FaChild } from "react-icons/fa";
 import { IoIosBoat } from "react-icons/io";
 import { IoBackspaceOutline } from "react-icons/io5";
 import { listTourRequests } from "../db/tour-request";
+import { getTour } from "../db/tour";
+import { resolveInvoice } from "../db/order";
+import { useLocation } from "react-router-dom";
 
 
 export const TourRequest = () => {
@@ -18,49 +21,66 @@ export const TourRequest = () => {
     const [choosenSlot, setChoosenSlot] = useState()
     const [editingSlot, setEditingSlot] = useState()
 
-    const [tourId] = useState(1); // Assuming you get this from the URL or props
-    const [resolverId] = useState(2); // Assuming you get this from the URL or props
+    // const [tourId] = useState(1); // Assuming you get this from the URL or props
+    // const [resolverId] = useState(2); // Assuming you get this from the URL or props
+    const [tourId, resolverId] = useLocation()
 
-    const fetchTourRequests = ()=>{
+    const fetchTourRequests = () => {
         let fromDate = invoice.checkInDate
         let toDate = invoice.checkOutDate
         listTourRequests(fromDate, toDate, 0, 50)
-        .then(rsp=>{
-            if(rsp.ok){
-                rsp.json()
-                .then(data=>{
-                    setTourRequest(data.content)
-                    setLoading(false)
-                })
-            }
-        })
+            .then(rsp => {
+                if (rsp.ok) {
+                    rsp.json()
+                        .then(data => {
+                            setTourRequest(data.content)
+                            setLoading(false)
+                        })
+                }
+            })
     }
 
     useEffect(() => {
-        if (tour === undefined) {
-            setTour({
-                id: tourId,
-                name: "Private Mekong Tour",
-                info: "This is a sample tour description.",
-                image: "https://phucsinhhcm.hopto.org/os/ps-dc-pub/tour/private_mekong_tour/private_mekong_tour_feature.jpg",
-                price: 100,
-            })
+        if (tourId === undefined || tourId === null) {
+            return
         }
-        if (invoice === undefined) {
-            setInvoice({
-                id: "inv1",
-                guestName: "John Doe",
-                numOfGuest: 2,
-                checkIn: "2023-10-01",
-                checkOut: "2023-10-05"
+        getTour(tourId)
+            .then(rsp => {
+                if (rsp.ok) {
+                    rsp.json()
+                        .then(data => {
+                            setTour(data)
+                        })
+                }
             })
+
+        // eslint-disable-next-line
+    }, [tourId]);
+
+
+    useEffect(() => {
+        if (resolverId === undefined || resolverId === null) {
+            return
         }
-    }, []);
+        resolveInvoice(resolverId)
+            .then(rsp => {
+                if (rsp.ok) {
+                    rsp.json()
+                        .then(data => {
+                            setInvoice(data)
+                        })
+                }
+            })
+
+        // eslint-disable-next-line
+    }, [resolverId]);
+
 
     useEffect(() => {
         if (tour && invoice) {
             fetchTourRequests()
         }
+        // eslint-disable-next-line
     }, [tour, invoice]);
 
     if (loading) {

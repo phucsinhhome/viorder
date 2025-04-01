@@ -6,7 +6,7 @@ import { GoChecklist } from "react-icons/go";
 import { getProductGroup } from "../db/pgroup";
 import { Avatar, Button, Label, Modal, TextInput } from "flowbite-react";
 import { formatHourMinute, formatISODate, formatISODateTime, formatVND, toMinutes } from "../Service/Utils";
-import { commitOrder, resolveInvoiceId, adjustOrderItem, startOrder } from "../db/order";
+import { commitOrder, resolveInvoice, adjustOrderItem, startOrder } from "../db/order";
 import { listStayingAndComingInvoices } from "../db/invoice";
 import { defaultMenuName } from "../App";
 import { FaRegCheckCircle, FaShoppingCart } from "react-icons/fa";
@@ -353,7 +353,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
     let rI = resolverId
 
     if (rI !== null && rI !== undefined) {
-      resolveInvoiceId(rI)
+      resolveInvoice(rI)
         .then(rsp => {
           if (rsp.ok) {
             rsp.json()
