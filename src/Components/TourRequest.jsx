@@ -8,7 +8,7 @@ import { IoBackspaceOutline } from "react-icons/io5";
 import { listTourRequests } from "../db/tour-request";
 import { getTour } from "../db/tour";
 import { resolveInvoice } from "../db/order";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 
 export const TourRequest = () => {
@@ -23,7 +23,8 @@ export const TourRequest = () => {
 
     // const [tourId] = useState(1); // Assuming you get this from the URL or props
     // const [resolverId] = useState(2); // Assuming you get this from the URL or props
-    const [tourId, resolverId] = useLocation()
+    // const [tourId, resolverId] = useLocation()
+    const {tourId, resolverId}=useParams()
 
     const fetchTourRequests = () => {
         let fromDate = invoice.checkInDate
@@ -42,6 +43,7 @@ export const TourRequest = () => {
 
     useEffect(() => {
         if (tourId === undefined || tourId === null) {
+            console.info("Tour id is null")
             return
         }
         getTour(tourId)
@@ -88,7 +90,7 @@ export const TourRequest = () => {
     }
 
     return (
-        <di>
+        <div>
             <div className="flex flex-col h-full bg-slate-50 pt-2 space-y-3">
                 {
                     tourRequest.map((request) => (<div className="flex flex-col divide-y px-2 py-0">
@@ -169,6 +171,6 @@ export const TourRequest = () => {
                     </div>
                 </Modal.Footer>
             </Modal>
-        </di>
+        </div>
     );
 }

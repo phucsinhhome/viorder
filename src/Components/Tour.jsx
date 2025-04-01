@@ -52,7 +52,9 @@ export const Tour = ({ resolverId }) => {
                                 size="xs"
                                 color="green"
                             ><FaPersonWalkingLuggage className="mr-2" />
-                                <Link to={tour.tourId + "/" + resolverId}>Request to join</Link></Button>
+                                <Link to={tour.tourId + "/" + resolverId}
+                                // state={tou}
+                                >Request to join</Link></Button>
                         </div>
                     </div>
                 ))}
