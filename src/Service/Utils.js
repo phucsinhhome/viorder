@@ -142,3 +142,8 @@ export function formatISODateTimeInICT(date) {
     };
     return new Intl.DateTimeFormat('en-US', options).format(date);
 }
+
+export const formatShortHour = (hourString) => {
+    const [hours, minutes]=hourString.split(":")
+    return `${hours}:${minutes}`
+}
