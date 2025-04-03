@@ -113,6 +113,15 @@ export const TourRequest = () => {
             }, [])
         console.info("Change dates to %s", dates)
         setDates(dates)
+        requests.forEach(request=>{
+            const req ={
+                ...request,
+                groups:[...request.groups,{
+                    invoiceId: invoice.invoiceId,
+                    numOfAdult: invoice.numOfAdult
+                }]
+            }
+        })
         // eslint-disable-next-line
     }, [requests]);
 
