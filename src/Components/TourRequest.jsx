@@ -138,47 +138,6 @@ export const TourRequest = () => {
         // eslint-disable-next-line
     }, [tour, invoice]);
 
-    useEffect(() => {
-        // if (requests === undefined || requests.length === 0) {
-        //     setDates([])
-        //     return
-        // }
-        // const arrD = requests.map(req => req.date);
-        // console.info("Request size %s", arrD)
-        // const dates = arrD
-        //     .reduce((arr, e) => {
-        //         if (!arr.includes(e)) {
-        //             arr.push(e)
-        //         }
-        //         return arr;
-        //     }, [])
-        // console.info("Change dates to %s", dates)
-        // setDates(dates)
-        // requests.forEach((request, idx) => {
-        //     const req = {
-        //         ...request,
-        //         groups: request.groups ? [...request.groups, {
-        //             invoiceId: invoice.id,
-        //             numOfAdult: invoice.numOfAdult,
-        //             numOfKid: invoice.numOfKid
-        //         }] : [{
-        //             invoiceId: invoice.id,
-        //             numOfAdult: invoice.numOfAdult,
-        //             numOfKid: invoice.numOfKid
-        //         }]
-        //     }
-        //     join(req, true)
-        //         .then(data => {
-        //             // setRequests(arr => {
-        //             //     let cA = [...arr]
-        //             //     cA[idx] = data
-        //             //     return cA
-        //             // })
-        //         })
-        // })
-        // eslint-disable-next-line
-    }, []);
-
     const join = async (request, tryOut) => {
         try {
 
