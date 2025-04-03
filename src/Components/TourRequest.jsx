@@ -1,14 +1,14 @@
 import { Button, Modal } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { FaPersonWalkingLuggage } from "react-icons/fa6";
-import { formatShortHour, formatVND } from "../Service/Utils";
+import { formatISODateTime, formatShortHour, formatVND } from "../Service/Utils";
 import { FaChild } from "react-icons/fa";
 import { IoIosBoat } from "react-icons/io";
 import { IoBackspaceOutline } from "react-icons/io5";
-import { listTourRequests } from "../db/tour-request";
+import { listTourRequests, requestToJoin } from "../db/tour-request";
 import { getTour } from "../db/tour";
 import { resolveInvoice } from "../db/order";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 
 export const TourRequest = () => {
@@ -27,19 +27,60 @@ export const TourRequest = () => {
     // const [tourId, resolverId] = useLocation()
     const { tourId, resolverId } = useParams()
 
-    const fetchTourRequests = () => {
+    const fetchTourRequests = async () => {
         let fromDate = invoice.checkInDate
         let toDate = invoice.checkOutDate
-        listTourRequests(tourId, fromDate, toDate)
-            .then(rsp => {
-                if (rsp.ok) {
-                    rsp.json()
-                        .then(data => {
-                            setRequests(data)
-                            setLoading(false)
-                        })
+        let queryTime = formatISODateTime(new Date())
+        let rsp = await listTourRequests(tourId, fromDate, toDate, queryTime)
+        if (!rsp.ok) {
+            return
+        }
+        let data = await rsp.json()
+        if (data.length === 0) {
+            setRequests([])
+            setDates([])
+            return
+        }
+
+        const arrD = data.map(req => req.date);
+        const dates = arrD
+            .reduce((arr, e) => {
+                if (!arr.includes(e)) {
+                    arr.push(e)
                 }
-            })
+                return arr;
+            }, [])
+        console.info("Change dates to %s", dates)
+
+        let updatedReqs = await Promise.all(data.map(async (request) => {
+            if (requested(request)) {
+                return request
+            }
+            const req = {
+                ...request,
+                groups: request.groups ? [...request.groups, {
+                    invoiceId: invoice.id,
+                    numOfAdult: invoice.numOfAdult,
+                    numOfKid: invoice.numOfKid
+                }] : [{
+                    invoiceId: invoice.id,
+                    numOfAdult: invoice.numOfAdult,
+                    numOfKid: invoice.numOfKid
+                }]
+            }
+            return await join(req, true)
+        }));
+        setDates(dates)
+        setRequests(updatedReqs)
+        setLoading(false)
+    }
+
+    const requested = (request) => {
+        if (request.requestId === undefined || request.requestId === null) {
+            return false
+        }
+        let grp = request.groups?.find(g => g.invoiceId === invoice.id)
+        return grp !== undefined
     }
 
     const indexRequests = (reqs) => {
@@ -98,32 +139,61 @@ export const TourRequest = () => {
     }, [tour, invoice]);
 
     useEffect(() => {
-        if (requests == undefined || requests.length === 0) {
-            setDates([])
-            return
-        }
-        const arrD = requests.map(req => req.date);
-        console.info("Request size %s", arrD)
-        const dates = arrD
-            .reduce((arr, e) => {
-                if (!arr.includes(e)) {
-                    arr.push(e)
-                }
-                return arr;
-            }, [])
-        console.info("Change dates to %s", dates)
-        setDates(dates)
-        requests.forEach(request=>{
-            const req ={
-                ...request,
-                groups:[...request.groups,{
-                    invoiceId: invoice.invoiceId,
-                    numOfAdult: invoice.numOfAdult
-                }]
-            }
-        })
+        // if (requests === undefined || requests.length === 0) {
+        //     setDates([])
+        //     return
+        // }
+        // const arrD = requests.map(req => req.date);
+        // console.info("Request size %s", arrD)
+        // const dates = arrD
+        //     .reduce((arr, e) => {
+        //         if (!arr.includes(e)) {
+        //             arr.push(e)
+        //         }
+        //         return arr;
+        //     }, [])
+        // console.info("Change dates to %s", dates)
+        // setDates(dates)
+        // requests.forEach((request, idx) => {
+        //     const req = {
+        //         ...request,
+        //         groups: request.groups ? [...request.groups, {
+        //             invoiceId: invoice.id,
+        //             numOfAdult: invoice.numOfAdult,
+        //             numOfKid: invoice.numOfKid
+        //         }] : [{
+        //             invoiceId: invoice.id,
+        //             numOfAdult: invoice.numOfAdult,
+        //             numOfKid: invoice.numOfKid
+        //         }]
+        //     }
+        //     join(req, true)
+        //         .then(data => {
+        //             // setRequests(arr => {
+        //             //     let cA = [...arr]
+        //             //     cA[idx] = data
+        //             //     return cA
+        //             // })
+        //         })
+        // })
         // eslint-disable-next-line
-    }, [requests]);
+    }, []);
+
+    const join = async (request, tryOut) => {
+        try {
+
+            let res = await requestToJoin(request, tryOut)
+            if (!res.ok) {
+                return request
+            }
+            let resJson = await res.json()
+            console.info(`Request to join acceptance is ${resJson.accepted} with message ${resJson.message}`)
+            return resJson.result
+        } catch (err) {
+            console.error(err)
+            return request
+        }
+    }
 
 
     if (loading) {
@@ -140,8 +210,8 @@ export const TourRequest = () => {
                             {
                                 requests.filter(req => req.date === date)
                                     .map((request) => (<div
-                                        key={request.requestId}
-                                        className={choosenSlot?.requestId === request.requestId
+                                        key={`${request.requestId}_${request.slot.id}`}
+                                        className={requested(request)
                                             ? "flex flex-col space-y-1 border rounded-md px-1 py-0.5 shadow-md w-24 bg-orange-500"
                                             : "flex flex-col space-y-1 border rounded-md px-1 py-0.5 shadow-md w-24"
                                         }
