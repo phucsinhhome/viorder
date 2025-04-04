@@ -15,3 +15,12 @@ export const requestToJoin = (request, tryOut) => {
   }
   return fetch(`${process.env.REACT_APP_TOUR_REQUEST_ENDPOINT}/join?try=${tryOut}`, opts);
 }
+
+export const cancelRequestToJoin = (request) => {
+  var opts = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request)
+  }
+  return fetch(`${process.env.REACT_APP_TOUR_REQUEST_ENDPOINT}/cancel?`, opts);
+}
