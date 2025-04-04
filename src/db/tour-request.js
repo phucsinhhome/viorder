@@ -17,6 +17,7 @@ export const requestToJoin = (request, tryOut) => {
 }
 
 export const cancelRequestToJoin = (request) => {
+  console.info(`Cancel request to join tour ${request.tourId} for user ${request.userId}`)
   var opts = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
