@@ -57,11 +57,7 @@ export const TourRequest = () => {
             }
             const req = {
                 ...request,
-                groups: request.groups ? [...request.groups, {
-                    invoiceId: invoice.id,
-                    numOfAdult: invoice.numOfAdult,
-                    numOfKid: invoice.numOfKid
-                }] : [{
+                groups: [{
                     invoiceId: invoice.id,
                     numOfAdult: invoice.numOfAdult,
                     numOfKid: invoice.numOfKid
@@ -79,7 +75,7 @@ export const TourRequest = () => {
             return false
         }
         let grp = request.groups?.find(g => g.invoiceId === invoice.id)
-        return grp !== undefined
+        return grp && grp.confirmedAt !== undefined && grp.confirmedAt !== null
     }
 
     const indexRequests = (reqs) => {
@@ -160,11 +156,7 @@ export const TourRequest = () => {
         }
         let req = {
             ...editingSlot,
-            groups: editingSlot.groups ? [...editingSlot.groups, {
-                invoiceId: invoice.id,
-                numOfAdult: invoice.numOfAdult,
-                numOfKid: invoice.numOfKid
-            }] : [{
+            groups: [{
                 invoiceId: invoice.id,
                 numOfAdult: invoice.numOfAdult,
                 numOfKid: invoice.numOfKid
@@ -173,7 +165,6 @@ export const TourRequest = () => {
         let res = await join(req, false)
         if (res === undefined || res === null) {
             console.info("Join request is null")
-
             return
         }
         if (res.requestId === undefined || res.requestId === null) {
@@ -219,13 +210,22 @@ export const TourRequest = () => {
             console.info("Cancel request id is null")
             return
         }
+
+        let reqToJoin = {
+            ...result,
+            groups: [{
+                invoiceId: invoice.id,
+                numOfAdult: invoice.numOfAdult,
+                numOfKid: invoice.numOfKid
+            }]
+        }
+        let updatedReq = await join(reqToJoin, true)
         setRequests(requests.map(r => {
             if (r.requestId === result.requestId) {
-                return result
+                return updatedReq
             }
             return r
         }))
-        setShowRequestDetail(false)
         setEditingSlot(undefined)
     }
 
@@ -238,7 +238,7 @@ export const TourRequest = () => {
         <div>
             <div className="flex flex-col h-full bg-slate-50 pt-2 space-y-3">
                 {
-                    dates?.map((date, idx) => (<div className="flex flex-col divide-y px-2 py-0">
+                    dates?.map((date) => (<div className="flex flex-col divide-y px-2 py-0">
                         <div className="text-sm text-amber-800 font-medium text-center">{date}</div>
                         <div className="flex flex-row space-x-2">
                             {
