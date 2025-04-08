@@ -78,10 +78,9 @@ export const format2DigitDate = (date) => {
     return date.toLocaleDateString("en-US", date2DigitOptions)
 }
 
-const dateMonthOptions = { month: 'short', day: 'numeric' }
 export const formatDateMonthDate = (date) => {
     // Format: Jul 30
-    return date.toLocaleDateString("en-US", dateMonthOptions)
+    return date.toLocaleDateString("en-US", { month: 'short', day: 'numeric' })
 }
 
 function parseISODuration(duration) {
@@ -122,11 +121,11 @@ export const formatHourMinute = (date) => {
 }
 
 function convertTZ(date, tzString) {
-    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
 }
 
 export function toICT(date) {
-    return convertTZ(date,"Asia/Jakarta") 
+    return convertTZ(date, "Asia/Jakarta")
 }
 
 export function formatISODateTimeInICT(date) {
@@ -144,6 +143,6 @@ export function formatISODateTimeInICT(date) {
 }
 
 export const formatShortHour = (hourString) => {
-    const [hours, minutes]=hourString.split(":")
+    const [hours, minutes] = hourString.split(":")
     return `${hours}:${minutes}`
 }

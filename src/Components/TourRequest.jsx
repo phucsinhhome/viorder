@@ -1,7 +1,7 @@
 import { Button, Modal } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { FaPersonWalkingLuggage } from "react-icons/fa6";
-import { formatISODateTime, formatShortHour, formatVND } from "../Service/Utils";
+import { formatDateMonthDate, formatISODateTime, formatShortHour, formatVND } from "../Service/Utils";
 import { FaChild } from "react-icons/fa";
 import { IoIosBoat } from "react-icons/io";
 import { IoBackspaceOutline } from "react-icons/io5";
@@ -312,15 +312,15 @@ export const TourRequest = () => {
                 <Modal.Body className="flex flex-col px-2">
                     <span>Thank <b>{invoice.guestName}</b> so much!</span>
                     <span className="pb-3">please confirm following tour details:</span>
-                    <span>Time: <b>{editingSlot?.date} {editingSlot?.slot.startTime}</b> - <b>{editingSlot?.slot.endTime}</b></span>
-                    <span>Group: <b>{editingSlot?.numOfAdult}</b> adults & <b>{editingSlot?.numOfKid}</b> kids <span className="text-[12px] text-gray-500 italic">(under 10yrs)</span></span>
+                    <li><span>Time: <b>{editingSlot ? `${formatDateMonthDate(new Date(editingSlot.date + " " + editingSlot.slot.startTime))}, ${formatShortHour(editingSlot.slot.startTime)}-${formatShortHour(editingSlot.slot.endTime)}` : ""}</b></span></li>
+                    <li><span>Group: <b>{editingSlot?.numOfAdult}</b> adults & <b>{editingSlot?.numOfKid}</b> kids <span className="text-[12px] text-gray-500 italic">(under 10yrs)</span></span></li>
                     <span className="text-[12px] text-gray-500 italic pl-4">Including your group</span>
-                    <span>Price: <b>{editingSlot ? formatVND(editingSlot.estimatedPrice) : 0}</b> per person</span>
+                    <li><span>Price: <b>{editingSlot ? formatVND(editingSlot.estimatedPrice) : 0}</b> per person</span></li>
 
-                    <span className="text-green-700 font-serif text-sm pt-4">We will arrange and let you know soon</span>
+                    <span className="text-green-700 font-serif text-md pt-4">We will arrange and let you know soon</span>
                 </Modal.Body>
                 <Modal.Footer>
-                    <div className="flex flex-row space-x-2 w-full justify-items-center items-center">
+                    <div className="flex flex-row space-x-2 w-full items-center">
                         <Button
                             size="xs"
                             color="green"
