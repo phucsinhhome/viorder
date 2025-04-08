@@ -163,6 +163,7 @@ export const TourRequest = () => {
             }]
         }
         let res = await join(req, false)
+        console.log(res)
         if (res === undefined || res === null) {
             console.info("Join request is null")
             return
@@ -171,7 +172,24 @@ export const TourRequest = () => {
             console.info("Join request id is null")
             return
         }
-        setRequests(requests.map(r => {
+        console.info(`Update the request ${res.requestId}`)
+        setRequests(curReqs => curReqs.map(r => {
+            if (r.requestId === undefined || r.requestId === null) {
+                if (r.tourId !== res.tourId) {
+                    return r;
+                }
+                if (r.slot.id !== res.slot.id) {
+                    return r;
+                }
+                if (r.date !== res.date) {
+                    return r;
+                }
+                let invId = r.groups[0].invoiceId
+                if (!res.groups.some(g => g.invoiceId === invId)) {
+                    return r;
+                }
+                return res;
+            }
             if (r.requestId === res.requestId) {
                 return res
             }
