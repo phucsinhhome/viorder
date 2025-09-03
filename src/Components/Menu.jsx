@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { fetchAvailableProductItems } from "../db/inventory";
 import { GiAlarmClock } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
@@ -489,28 +489,22 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
                 className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 relative"
                 key={product.id}
               >
-                <div className="pl-0.5 pr-1 py-2">
+                <div className="pl-0.5 pr-1 py-2 cursor-pointer" onClick={() => viewProductDetail(product)}>
                   <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
                 </div>
-                <div className="flex flex-col px-0">
-                  <div className="flex flex-row">
-                    <Link
-                      onClick={() => viewProductDetail(product)}
-                      state={{ pageNumber: pagination.pageNumber, pageSize: pagination.pageSize }}
-                      className="font-medium text-green-800 hover:underline dark:text-gray-200 overflow-hidden"
-                    >
-                      {product.name}
-                    </Link>
+                <div className="flex flex-col px-0 cursor-pointer" onClick={() => viewProductDetail(product)}>
+                  <div className="flex flex-row font-medium text-lg text-green-800 overflow-hidden">
+                    {product.name}
                   </div>
                   <div className="flex flex-row text-sm space-x-3">
                     <div className="flex flex-row items-center space-x-0.5">
                       <GiAlarmClock />
                       <span className="font font-mono text-gray-500 text-[13px] w-9">{toMinutes(product.prepareTime) + "min"}</span>
                     </div>
-                    <div className="flex flex-row items-center space-x-0.5">
+                    {product.description ? <div className="flex flex-row items-center space-x-0.5">
                       <GoChecklist />
                       <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-5/6">{product.description}</div>
-                    </div>
+                    </div> : <></>}
                   </div>
                 </div>
                 <div className="flex flex-col w-28 px-1 absolute right-1">
