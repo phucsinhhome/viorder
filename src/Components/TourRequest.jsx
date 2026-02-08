@@ -78,16 +78,16 @@ export const TourRequest = () => {
         return grp && grp.confirmedAt !== undefined && grp.confirmedAt !== null
     }
 
-    const indexRequests = (reqs) => {
-        return reqs.reduce((map, e) => {
-            const { key } = e.date;
-            if (!map[key]) {
-                map[key] = [];
-            }
-            map[key].push(e);
-            return map;
-        })
-    }
+    // const indexRequests = (reqs) => {
+    //     return reqs.reduce((map, e) => {
+    //         const { key } = e.date;
+    //         if (!map[key]) {
+    //             map[key] = [];
+    //         }
+    //         map[key].push(e);
+    //         return map;
+    //     })
+    // }
 
     useEffect(() => {
         if (tourId === undefined || tourId === null) {

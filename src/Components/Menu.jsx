@@ -286,7 +286,8 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
     if (selectedInvoice === null) {
       return
     }
-    Promise.all(orders.map(order => submitOneOrder(order)))
+    let confirmedOrders = orders.filter(o => o.items.length > 0)
+    Promise.all(confirmedOrders.map(order => submitOneOrder(order)))
       .then(results => {
         const anyFailureResult = results.find(r => r.success === false);
         if (anyFailureResult) {
@@ -480,109 +481,89 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
   }
 
   return (
-    <div className="w-full h-full pt-3 relative">
-      <div className="mx-2 px-2 border bg-green-100 mb-2 text-center">
+    <div className="flex-1 flex-col w-full border-spacing-2 overflow-y-auto" id="menu-space">
+      <div className="h-9 mx-2 px-2 border rounded-2xl bg-green-100 text-center">
         {menu
           ? <span className="font italic text-sm text-amber-700 font-sans">{menuMessage}</span>
           : <></>}
       </div>
-      <div className="max-h-fit overflow-hidden">
-        <div className="flex flex-col space-y-1 px-2">
-          {menuItems.map((product) => {
-            return (
-              <div
-                className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 relative"
-                key={product.id}
-              >
-                <div className="pl-0.5 pr-1 py-2 cursor-pointer" onClick={() => viewProductDetail(product)}>
-                  <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
-                </div>
-                <div className="flex flex-col px-0 cursor-pointer" onClick={() => viewProductDetail(product)}>
-                  <div className="flex flex-row font-medium text-lg text-green-800 overflow-hidden">
-                    {product.name}
-                  </div>
-                  <div className="flex flex-row text-sm space-x-3">
-                    <div className="flex flex-row items-center space-x-0.5">
-                      <GiAlarmClock />
-                      <span className="font font-mono text-gray-500 text-[13px] w-9">{toMinutes(product.prepareTime) + "min"}</span>
-                    </div>
-                    {product.description ? <div className="flex flex-row items-center space-x-0.5">
-                      <GoChecklist />
-                      <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-5/6">{product.description}</div>
-                    </div> : <></>}
-                  </div>
-                </div>
-                <div className="flex flex-col w-28 px-1 absolute right-1">
-                  <div className="text text-center w-full">
-                    <span className="text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
-                  </div>
-                  <div className="flex w-full items-center mb-2 text-center">
-                    <button
-                      type="button"
-                      id="decrement-button"
-                      data-input-counter-decrement="quantity-input"
-                      className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                      onClick={() => changeQuantity(product, -1)}
-                    >
-                      <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
-                      </svg>
-                    </button>
-                    <input
-                      type="number"
-                      id="quantity-input"
-                      data-input-counter aria-describedby="helper-text-explanation"
-                      className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full min-w-min text-center text-gray-900 block py-1"
-                      placeholder="9"
-                      required
-                      value={activeOrder()?.items.find(item => item.id === product.id)?.quantity || 0}
-                      readOnly
-                    />
-                    <button
-                      type="button"
-                      id="increment-button"
-                      data-input-counter-increment="quantity-input"
-                      className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                      onClick={() => changeQuantity(product, 1)}
-                    >
-                      <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
+      <div className="flex flex-col space-y-1 px-2 ">
+        {menuItems.map((product) => {
+          return (
+            <div
+              className="flex flex-row items-center border border-gray-300 shadow-2xl rounded-md bg-white dark:bg-slate-500 relative"
+              key={product.id}
+            >
+              <div className="pl-0.5 pr-1 py-2 cursor-pointer" onClick={() => viewProductDetail(product)}>
+                <Avatar img={product.featureImgUrl} alt="dish image" rounded className="w-12" />
               </div>
-            )
-          })}
-        </div>
-      </div>
-      {
-        menuItems.length > 0 ?
+              <div className="flex flex-col px-0 cursor-pointer" onClick={() => viewProductDetail(product)}>
+                <div className="flex flex-row font-medium text-lg text-green-800 overflow-hidden">
+                  {product.name}
+                </div>
+                <div className="flex flex-row text-sm space-x-3">
+                  <div className="flex flex-row items-center space-x-0.5">
+                    <GiAlarmClock />
+                    <span className="font font-mono text-gray-500 text-[13px] w-9">{toMinutes(product.prepareTime) + "min"}</span>
+                  </div>
+                  {product.description ? <div className="flex flex-row items-center space-x-0.5">
+                    <GoChecklist />
+                    <div className="font font-mono text-gray-500 text-[13px] overflow-hidden whitespace-nowrap w-5/6">{product.description}</div>
+                  </div> : <></>}
+                </div>
+              </div>
+              <div className="flex flex-col w-28 px-1 absolute right-1">
+                <div className="text text-center w-full">
+                  <span className="text-sm text-amber-800">{formatVND(product.unitPrice)}</span>
+                </div>
+                <div className="flex w-full items-center mb-2 text-center">
+                  <button
+                    type="button"
+                    id="decrement-button"
+                    data-input-counter-decrement="quantity-input"
+                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                    onClick={() => changeQuantity(product, -1)}
+                  >
+                    <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16" />
+                    </svg>
+                  </button>
+                  <input
+                    type="number"
+                    id="quantity-input"
+                    data-input-counter aria-describedby="helper-text-explanation"
+                    className="bg-gray-50 border-x-0 border-gray-300 h-7 w-full min-w-min text-center text-gray-900 block py-1"
+                    placeholder="9"
+                    required
+                    value={activeOrder()?.items.find(item => item.id === product.id)?.quantity || 0}
+                    readOnly
+                  />
+                  <button
+                    type="button"
+                    id="increment-button"
+                    data-input-counter-increment="quantity-input"
+                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg py-1 px-2 h-7 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                    onClick={() => changeQuantity(product, 1)}
+                  >
+                    <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 1v16M1 9h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
 
-          <div className="flex flex-row px-2 items-center justify-between">
-            <nav className="flex items-center justify-between pt-2" aria-label="Table navigation">
-              <ul className="inline-flex items-center -space-x-px">
-                <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-                </li>
-                <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
-                  1
-                </li>
-                <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
-                  {pagination.pageNumber + 1}
-                </li>
-                <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
-                  {pagination.totalPages}
-                </li>
-                <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a 1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          : <></>
+            </div>
+          )
+        })}
+      </div>
+      {menuItems?.length > 0 ? <div className="w-full h-24 px-2 py-2 text-sm text-gray-700 italic">
+        <span>Choose the page for more...</span>
+      </div>
+        : <div className="w-full h-24 px-2 py-2 text-sm text-orange-600 italic">
+          <span>Oh sorry. It's out of service!</span>
+        </div>
       }
+
 
       <Modal
         show={showProductDetailModal}
@@ -767,7 +748,7 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
                         <span>You can also specify the time options below:</span>
                         {
                           timeSlots?.slots.map(ts =>
-                            <div className="flex flex-row space-x-1 font-mono text-sm pt-1 overflow-scroll">
+                            <div className="flex flex-row space-x-1 font-mono font-semibold text-xl text-amber-950 pt-1 overflow-scroll">
                               {
                                 ts.slots?.map(timeslot => <span onClick={() => changeTimeslot(timeslot)}
                                   className={timeslot === choosenTimeSlot ? 'border rounded-sm px-0.5 bg-slate-400' : 'border rounded-sm px-0.5'}>{timeslot}</span>)
@@ -802,12 +783,39 @@ export const Menu = ({ changeActiveGroup, changeResolverId }) => {
       </Modal>
 
 
-      <div className="flex flex-row justify-end absolute bottom-2 right-2">
+      <div className="flex flex-row h-14 w-11/12 absolute left-1/2 -translate-x-1/2 py-2 px-2 justify-between bottom-0 rounded-2xl shadow-sm opacity-90 bg-green-100 items-center">
+        {
+          menuItems.length > 0 ?
+
+            <div className="flex flex-row items-center justify-between">
+              <nav className="flex items-center justify-between." aria-label="Table navigation">
+                <ul className="inline-flex items-center -space-x-px">
+                  <li onClick={() => handlePaginationClick(pagination.pageNumber - 1)} className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
+                  </li>
+                  <li onClick={() => handlePaginationClick(0)} className={pageClass(0)}>
+                    1
+                  </li>
+                  <li hidden={pagination.pageNumber + 1 <= 1 || pagination.pageNumber + 1 >= pagination.totalPages} aria-current="page" className={pageClass(pagination.pageNumber)}>
+                    {pagination.pageNumber + 1}
+                  </li>
+                  <li hidden={pagination.totalPages <= 1} onClick={() => handlePaginationClick(pagination.totalPages - 1)} className={pageClass(pagination.totalPages - 1)}>
+                    {pagination.totalPages}
+                  </li>
+                  <li onClick={() => handlePaginationClick(pagination.pageNumber + 1)} className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a 1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            : <></>
+        }
         <Button
           color="green"
           size="sm"
+          className="h-10"
           onClick={comfirmOrderInvoice} disabled={!orders || orders.length <= 0}
-        ><FaShoppingCart className="mr-2" />Order</Button>
+        ><FaShoppingCart className="mr-1" />Order</Button>
       </div>
     </div >
   );

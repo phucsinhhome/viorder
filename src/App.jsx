@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-ro
 import { getProductGroup } from "./db/pgroup";
 import { Tour } from "./Components/Tour";
 import { TourRequest } from "./Components/TourRequest";
+import { Button } from "flowbite-react";
 
 export const menuNames = process.env.REACT_APP_PRODUCT_GROUPS.split(',')
 export const defaultMenuName = menuNames[0]
@@ -30,29 +31,26 @@ export default function App() {
     })
   }, []);
 
-  const resolveMenuStyle = (focused) => {
-    return focused ? "px-2 py-1 text-center text-white text-sm font-sans rounded-lg shadow-lg bg-green-700"
-      : "px-2 py-1 text-center text-white text-sm font-sans rounded-lg shadow-lg bg-green-400"
-  }
-
   return (
-    <div className="flex flex-col relative h-[100dvh] min-h-0 bg-slate-50">
+    <div className="flex flex-col h-screen relative">
+
       <Router>
-        <div className="mt-2 ml-2 pr-4 w-full flex flex-row items-center space-x-1.5">
+        <div className="h-12 w-full flex flex-row justify-center space-x-1 px-2 place-items-center">
           {
             menuNames.map(grp => groups.find(g => g.name === grp))
               .map(menu => menu
-                ? <Link
-                  to={"menu/" + menu.name + "/" + resolverId}
-                  key={menu.name}
-                  className={resolveMenuStyle(activeGroup === menu.name)}
-                >{menu.displayName}</Link>
+                ? <Button
+                  size="xs"
+                  color="green"
+                  className="h-9 w-"
+                >
+                  <Link
+                    to={"menu/" + menu.name + "/" + resolverId}
+                    key={menu.name}
+                  >{menu.displayName}</Link>
+                </Button>
                 : <div></div>)
           }
-          <Link
-            to={"tour"}
-            className={resolveMenuStyle(activeGroup === "tour")}
-          >Tour</Link>
         </div>
         <Routes>
           <Route path="/" element={<Navigate to={"menu/" + activeGroup + "/" + resolverId} />} />
@@ -63,7 +61,7 @@ export default function App() {
             />}
           />
           <Route path="tour"
-            element={<Tour resolverId={resolverId}/>}
+            element={<Tour resolverId={resolverId} />}
           />
           <Route path="tour/:tourId/:resolverId"
             element={<TourRequest />}
