@@ -32,7 +32,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen relative">
+    <div className="flex flex-col h-[100dvh] relative">
 
       <Router>
         <div className="h-12 w-full flex flex-row justify-center space-x-1 px-2 place-items-center">
